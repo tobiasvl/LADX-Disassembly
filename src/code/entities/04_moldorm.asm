@@ -126,6 +126,17 @@ BossDestructionHandler_04::
 ; Load heart container value to load when boss is killed
 ; Used from 4 different bosses: Moldorm, Genie, Slime Eye, Facade
 DropHeartContainer_04::
+    ld   hl, wFarcallParams
+    ld   a, BANK(Foo)
+    ld   [hl+], a
+    ld   a, HIGH(Foo)
+    ld   [hl+], a
+    ld   a, LOW(Foo)
+    ld   [hl+], a
+    ld   a, BANK(@)
+    ld   [hl], a
+    call Farcall
+
     ld   a, ENTITY_HEART_CONTAINER                ; $5751: $3E $36
     call SpawnNewEntity_trampoline                ; $5753: $CD $86 $3B
     ldh  a, [hMultiPurpose0]                      ; $5756: $F0 $D7
