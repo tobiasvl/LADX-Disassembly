@@ -1167,7 +1167,7 @@ Dialog22F:: ; Narrator
 Dialog230:: ; Narrator
     db "Hunh?  A keyhole"
     db "here?  It says, "
-    db "'Tale Keyhole'@"
+    db "'Tail Keyhole'@"
 
 Dialog231:: ; Narrator
     db "Hunh?  A keyhole"
