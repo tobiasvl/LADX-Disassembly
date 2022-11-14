@@ -195,6 +195,7 @@ JumpTable_037_40EC::
     xor  a                                        ; $4139: $AF
     ldh  [rSVBK], a                               ; $413A: $E0 $70
     ld   a, [wTunicType]                          ; $413C: $FA $0F $DC
+    and  $03
     sla  a                                        ; $413F: $CB $27
     sla  a                                        ; $4141: $CB $27
     ld   e, a                                     ; $4143: $5F

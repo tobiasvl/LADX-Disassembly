@@ -189,7 +189,7 @@ func_015_7DF5::
     ldh  [hLinkAnimationState], a                 ; $7E09: $E0 $9D
     ld   de, Unknown061SpriteVariants             ; $7E0B: $11 $50 $7D
     ld   a, [wTunicType]                          ; $7E0E: $FA $0F $DC
-    and  a                                        ; $7E11: $A7
+    and  $03                                        ; $7E11: $A7
     jr   z, .render                               ; $7E12: $28 $0A
 
     ld   de, Unknown059SpriteVariants             ; $7E14: $11 $58 $7D

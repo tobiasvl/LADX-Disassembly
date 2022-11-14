@@ -486,7 +486,7 @@ RoomTransitionPrepareHandler::
 
 IF !__PATCH_0__
     ld   a, [wTunicType]                          ; $7AD0: $FA $0F $DC
-    and  a                                        ; $7AD3: $A7
+    and  $03                                        ; $7AD3: $A7
     ldh  a, [hDefaultMusicTrack]                  ; $7AD4: $F0 $B0
     jr   nz, .jr_002_7AE2                         ; $7AD6: $20 $0A
 ENDC

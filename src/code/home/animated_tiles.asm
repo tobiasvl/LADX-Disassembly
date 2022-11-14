@@ -520,7 +520,7 @@ ENDC
 
 label_1D8C::
     ld   a, [wTunicType]                          ; $1D8C: $FA $0F $DC
-    and  a                                        ; $1D8F: $A7
+    and  $03                                        ; $1D8F: $A7
     jr   z, label_1D95                            ; $1D90: $28 $03
     inc  a                                        ; $1D92: $3C
     or   [hl]                                     ; $1D93: $B6
@@ -575,7 +575,7 @@ label_1DA1::
 
 label_1DD2::
     ld   a, [wTunicType]                          ; $1DD2: $FA $0F $DC
-    and  a                                        ; $1DD5: $A7
+    and  $03                                        ; $1DD5: $A7
     jr   z, label_1DDB                            ; $1DD6: $28 $03
     inc  a                                        ; $1DD8: $3C
     or   [hl]                                     ; $1DD9: $B6

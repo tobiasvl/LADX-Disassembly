@@ -475,7 +475,7 @@ func_001_651E::
     ldh  [hActiveEntityPosX], a                   ; $656F: $E0 $EE
     ld   de, Data_001_6512                        ; $6571: $11 $12 $65
     ld   a, [wTunicType]                          ; $6574: $FA $0F $DC
-    and  a                                        ; $6577: $A7
+    and  $03                                        ; $6577: $A7
     jr   z, .jr_6584                              ; $6578: $28 $0A
     ld   de, Data_001_6516                        ; $657A: $11 $16 $65
     cp   $01                                      ; $657D: $FE $01

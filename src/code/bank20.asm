@@ -3374,6 +3374,7 @@ InventoryCursorLeftRightOffset:: ; Indexed by left/right button press to offset 
 InventoryCursorUpDownOffset::  ; Indexed by up/down button press to offset the inventory cursor
     db   $00, $FE, $02
 
+
 moveInventoryCursor::
     ld   a, [wInventorySelection]                 ; $5F06: $FA $A3 $DB
     ld   [wC1B6], a                               ; $5F09: $EA $B6 $C1
@@ -4101,8 +4102,9 @@ jr_020_63A2:
 
 jr_020_63BE:
     ld   a, $01                                   ; $63BE: $3E $01
-    call func_015_7964_trampoline                 ; $63C0: $CD $A0 $3D
-    ret                                           ; $63C3: $C9
+    jp func_015_7964_trampoline                 ; $63C0: $CD $A0 $3D
+    ;call func_015_7964_trampoline                 ; $63C0: $CD $A0 $3D
+    ;ret                                           ; $63C3: $C9
 
 InventoryInteractiveHandler::
     call func_020_5EB5                            ; $63C4: $CD $B5 $5E
@@ -4118,7 +4120,8 @@ InventoryInteractiveHandler::
 
     ld   a, [wGameplaySubtype]                    ; $63DF: $FA $96 $DB
     cp   GAMEPLAY_INVENTORY_FADE_OUT              ; $63E2: $FE $0C
-    jr   nz, CloseInventory.return                ; $63E4: $20 $5F
+    ret  nz
+    ;jr   nz, CloseInventory.return                ; $63E4: $20 $5F
 
     xor  a                                        ; $63E6: $AF
     ld   [wCloseInventoryAfterOcarinaMenuClosed], a ; $63E7: $EA $BA $C1
@@ -4140,7 +4143,8 @@ InventoryInteractiveHandler::
     ld   [wDE0A], a                               ; $6402: $EA $0A $DE
     ld   a, [ROM_DebugTool3]                      ; $6405: $FA $05 $00
     and  a                                        ; $6408: $A7
-    jr   z, .jr_641C                              ; $6409: $28 $11
+    ret  z
+    ;jr   z, .jr_641C                              ; $6409: $28 $11
 
     ld   a, [wFreeMovementMode]                   ; $640B: $FA $7B $C1
     xor  $01                                      ; $640E: $EE $01
@@ -4154,7 +4158,8 @@ IF !__PATCH_3__
 ENDC
 
 .jr_641C
-    jr   CloseInventory.return                    ; $641C: $18 $27
+    ret
+    ;jr   CloseInventory.return                    ; $641C: $18 $27
 
 jr_020_641E:
     ld   a, [wOcarinaMenuOpen]                    ; $641E: $FA $B5 $C1
@@ -4162,11 +4167,13 @@ jr_020_641E:
     or   [hl]                                     ; $6424: $B6
     ld   hl, wOcarinaMenuClosing                  ; $6425: $21 $B9 $C1
     or   [hl]                                     ; $6428: $B6
-    jr   nz, CloseInventory.return                ; $6429: $20 $1A
+    ret  nz
+    ;jr   nz, CloseInventory.return                ; $6429: $20 $1A
 
     ldh  a, [hJoypadState]                        ; $642B: $F0 $CC
     and  J_START                                  ; $642D: $E6 $80
-    jr   z, CloseInventory.return                 ; $642F: $28 $14
+    ret  z
+    ;jr   z, CloseInventory.return                 ; $642F: $28 $14
 
     ld   a, GAMEPLAY_INVENTORY_FADE_OUT           ; $6431: $3E $0C
     ld   [wGameplaySubtype], a                    ; $6433: $EA $96 $DB
@@ -4251,7 +4258,7 @@ Data_020_64E4::
     db   $7A, $03, $68, $03, $6A, $03   ; $64E2
     db   $7C, $03, $7C, $03                       ; $64EA
 
-func_020_64EE::
+DrawStatusWindow::
     ld   hl, wOAMBuffer+$10                       ; $64EE: $21 $10 $C0
     ld   a, $53                                   ; $64F1: $3E $53
     ldh  [hBGMapOffsetLow], a                     ; $64F3: $E0 $E1
@@ -4261,6 +4268,7 @@ func_020_64EE::
     ld   c, $04                                   ; $64FB: $0E $04
     ld   hl, Data_020_6474                        ; $64FD: $21 $74 $64
     ld   a, [wTunicType]                          ; $6500: $FA $0F $DC
+    and  $03
     sla  a                                        ; $6503: $CB $27
     ld   e, a                                     ; $6505: $5F
     ld   d, $00                                   ; $6506: $16 $00
@@ -4343,19 +4351,21 @@ jr_020_654E:
     call func_020_6446                            ; $6577: $CD $46 $64
     ld   c, $05                                   ; $657A: $0E $05
     ld   de, Data_020_64E4                        ; $657C: $11 $E4 $64
-    call func_020_6446                            ; $657F: $CD $46 $64
-    ret                                           ; $6582: $C9
+    jp func_020_6446                            ; $657F: $CD $46 $64
+    ;call func_020_6446                            ; $657F: $CD $46 $64
+    ;ret                                           ; $6582: $C9
 
 InventoryStatusInHandler::
     call func_020_5EB5                            ; $6583: $CD $B5 $5E
-    call func_020_64EE                            ; $6586: $CD $EE $64
+    call DrawStatusWindow                            ; $6586: $CD $EE $64
     ldh  a, [hPressedButtonsMask]                 ; $6589: $F0 $CB
     and  J_SELECT                                 ; $658B: $E6 $40
     jr   nz, .jr_6596                             ; $658D: $20 $07
 
     ld   a, GAMEPLAY_INVENTORY_STATUS_OUT         ; $658F: $3E $0B
     ld   [wGameplaySubtype], a                    ; $6591: $EA $96 $DB
-    jr   .return                                  ; $6594: $18 $11
+    ret
+    ;jr   .return                                  ; $6594: $18 $11
 
 .jr_6596
     ld   a, [wDE0A]                               ; $6596: $FA $0A $DE
@@ -4374,19 +4384,35 @@ InventoryStatusInHandler::
 
 InventoryStatusHandler::
     call func_020_5EB5                            ; $65A8: $CD $B5 $5E
-    call func_020_64EE                            ; $65AB: $CD $EE $64
+    call DrawStatusWindow                            ; $65AB: $CD $EE $64
     ldh  a, [hPressedButtonsMask]                 ; $65AE: $F0 $CB
     and  J_SELECT                                 ; $65B0: $E6 $40
-    jr   nz, .ret_65B7                            ; $65B2: $20 $03
+    jp   z, IncrementGameplaySubtype_20              ; $65B4: $CD $83 $66
 
-    call IncrementGameplaySubtype_20              ; $65B4: $CD $83 $66
-
+    ldh  a, [hJoypadState]
+    and  J_A
+    ret  z
+    ;jr   z, .ret_65B7
+    ld   hl, wTunicType
+    ld   a, [hl]
+    swap a
+    and  a, $0F
+    ld   b, a
+    ; b is now unlocked tunic
+    ld   a, [hl]
+    and  a, $0F
+    ; a is now equipped tunic
+    xor  a, b
+    ; a is now new equipped tunic
+    swap b
+    or   a, b
+    ld   [hl], a
 .ret_65B7
     ret                                           ; $65B7: $C9
 
 InventoryStatusOutHandler::
     call func_020_5EB5                            ; $65B8: $CD $B5 $5E
-    call func_020_64EE                            ; $65BB: $CD $EE $64
+    call DrawStatusWindow                            ; $65BB: $CD $EE $64
     ld   a, [wDE0A]                               ; $65BE: $FA $0A $DE
     add  $04                                      ; $65C1: $C6 $04
     cp   $90                                      ; $65C3: $FE $90
@@ -5087,11 +5113,12 @@ LoadFileMenuBG::
 CopyLinkTunicPalette::
     ldh  a, [hIsGBC]                              ; $6C24: $F0 $FE
     and  a                                        ; $6C26: $A7
-    jr   z, .return                               ; $6C27: $28 $25
+    ret  z
+    ;jr   z, .return                               ; $6C27: $28 $25
 
     ld   hl, wObjPal1                             ; $6C29: $21 $50 $DC
     ld   a, [wTunicType]                          ; $6C2C: $FA $0F $DC
-    and  a                                        ; $6C2F: $A7
+    and  $03
     jr   z, .specialTunicEnd                      ; $6C30: $28 $0B
     ; Change the base pointer for the color tunics
     inc  a                                        ; $6C32: $3C
