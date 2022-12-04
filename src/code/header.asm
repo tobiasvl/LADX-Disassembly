@@ -23,6 +23,19 @@ ELSE
     db 0
 ENDC
 
+section "Bank 3E trampoline", rom0[$0008]
+    ; Create a trampoline to bank 0x3E in bank 0x00.
+    ; There is very little room in bank 0, so we set this up as a single trampoline for multiple possible usages.
+    ; the A register is preserved and can directly be used as a jumptable in page 3E.
+    ; Trampoline at rst 8
+    ld   h, a
+    ld   a, [wCurrentBank]
+    push af
+    ld   a, $3E
+    call SwitchBank
+    ld   a, h
+    jp   Bank3ETrampolineTarget
+
 section "Interrupt VBlank", rom0[$0040]
     jp   InterruptVBlank
 
