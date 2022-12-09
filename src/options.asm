@@ -119,9 +119,9 @@ __DIACRITICS_SUPPORT__ = FALSE ; TRUE in JP, DE
 __WEAK_GENIE__ = FALSE ; TRUE in FR, DE
 __USE_FIXED_DIALOG_BANKS__ = FALSE ; TRUE in JP
 __RECALCULATE_MAX_HEARTS__ = FALSE ; Applies to DE1+, JP2+, EN2+, FR1+
-__OPTIMIZATIONS_1__ = FALSE ; Applies to JP1+, EN1+, DE, FR
-__OPTIMIZATIONS_2__ = FALSE ; Applies to DE, JP
-__OPTIMIZATIONS_3__ = FALSE ; Applies to JP1+, EN1+
+__OPTIMIZATIONS_1__ = TRUE ; Applies to JP1+, EN1+, DE, FR
+__OPTIMIZATIONS_2__ = TRUE ; Applies to DE, JP
+__OPTIMIZATIONS_3__ = TRUE ; Applies to JP1+, EN1+
 
 ; If the Key Cavern map is split into 1F and B1F on the subscreen.
 ; See also: https://tcrf.net/The_Legend_of_Zelda:_Link%27s_Awakening/Version_Differences#Key_Cavern
