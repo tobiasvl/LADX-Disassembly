@@ -172,20 +172,20 @@ jr_007_60DD:
     and  a                                        ; $60E5: $A7
     jr   nz, ret_007_6133                         ; $60E6: $20 $4B
 
-    ld   a, [wInventoryItems.BButtonSlot]         ; $60E8: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $60EB: $FE $03
-    jr   nz, .jr_60F7                             ; $60ED: $20 $08
+    ;ld   a, [wInventoryItems.BButtonSlot]         ; $60E8: $FA $00 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $60EB: $FE $03
+    ;jr   nz, .jr_60F7                             ; $60ED: $20 $08
 
-    ldh  a, [hJoypadState]                        ; $60EF: $F0 $CC
-    and  J_B                                      ; $60F1: $E6 $20
-    jr   nz, jr_007_6104                          ; $60F3: $20 $0F
+    ;ldh  a, [hJoypadState]                        ; $60EF: $F0 $CC
+    ;and  J_B                                      ; $60F1: $E6 $20
+    ;jr   nz, jr_007_6104                          ; $60F3: $20 $0F
 
-    jr   ret_007_6133                             ; $60F5: $18 $3C
+    ;jr   ret_007_6133                             ; $60F5: $18 $3C
 
-.jr_60F7
-    ld   a, [wInventoryItems.AButtonSlot]         ; $60F7: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $60FA: $FE $03
-    jr   nz, ret_007_6133                         ; $60FC: $20 $35
+;.jr_60F7
+    ;ld   a, [wInventoryItems.AButtonSlot]         ; $60F7: $FA $01 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $60FA: $FE $03
+    ;jr   nz, ret_007_6133                         ; $60FC: $20 $35
 
     ldh  a, [hJoypadState]                        ; $60FE: $F0 $CC
     and  J_A                                      ; $6100: $E6 $10

@@ -2479,7 +2479,8 @@ data_020_5994::
     db   $9C, $6E, $83, $9A, $9B, $C4, $C5
     db   $9C, $6F, $81, $9C, $9D
     db   $9C, $B0, $81, $C6, $C7
-    db   $9C, $71, $81, $9E, $9F
+    ;db   $9C, $71, $81, $9E, $9F
+    db   $9C, $71, $81, $82, $83
     db   $9C, $B2, $81, $CA, $CB
     db   $9C, $92, $01, $7F, $7F
     db   $9C, $D3, $00, $7F
@@ -2522,6 +2523,16 @@ InventoryLoad1Handler::
     dec  e                                        ; $59EE: $1D
     jr   nz, .loop_59EB                           ; $59EF: $20 $FA
 
+    ld   a, [wPowerBraceletLevel]
+    cp   2
+    jr   nz, .done
+    ld   a, $05 ; use blue palette for L-2 bracelet; L-1 is $03 orange at end of data_020_596A
+    dec  hl
+    dec  hl
+    ld   [hl-], a 
+    ld   [hl], a
+
+.done
     ld   a, $1E                                   ; $59F1: $3E $1E
     ld   [wDrawCommandsAltSize], a                ; $59F3: $EA $90 $DC
 
@@ -2604,6 +2615,13 @@ InventoryLoad1Handler::
     ld   de, wCurrentDungeonItemFlags             ; $5A4C: $11 $CC $DB
 
 .jr_020_5A4F:
+    push de
+    ld   a, e
+    cp   LOW(wSeashellsCount)
+    jr   nz, .notSeashells
+    ld   e, LOW(wPowerBraceletLevel)
+
+.notSeashells
     ; Load current inventory display item memory
     ld   a, [de]                                  ; $5A4F: $1A
     cp   $FF                                      ; $5A50: $FE $FF
@@ -2614,7 +2632,7 @@ InventoryLoad1Handler::
 
 .overwriteInventoryDisplaySprite:
     ; Push current inventory item to the stack
-    push de                                       ; $5A57: $D5
+    ;push de                                       ; $5A57: $D5
 
     ld   hl, data_020_59C7                        ; $5A58: $21 $C7 $59
     add  hl, bc                                   ; $5A5B: $09
@@ -2641,10 +2659,11 @@ InventoryLoad1Handler::
 .tradeSequenceItem2End
 
     ; Reload inventory item to de
-    pop  de                                       ; $5A74: $D1
+    ;pop  de                                       ; $5A74: $D1
 
 ; Increment inventory memory pointer to display next item
 .incrementInventoryDisplay:
+    pop  de
     inc  de                                       ; $5A75: $13
     inc  c                                        ; $5A76: $0C
 
@@ -2657,20 +2676,31 @@ InventoryLoad1Handler::
     ld   hl, wDrawCommand                         ; $5A7C: $21 $01 $D6
     ld   de, $2C                                  ; $5A7F: $11 $2C $00
     add  hl, de                                   ; $5A82: $19
-    ld   a, [wSeashellsCount]                     ; $5A83: $FA $0F $DB
-    and  a                                        ; $5A86: $A7
-    jr   z, .jr_5A97                              ; $5A87: $28 $0E
 
-    ; Offset seashell count sprites to reflect seashell count in inventory
-    ld   e, a                                     ; $5A89: $5F
-    swap a                                        ; $5A8A: $CB $37
-    and  $0F                                      ; $5A8C: $E6 $0F
-    add  $B0                                      ; $5A8E: $C6 $B0
-    ld   [hl+], a                                 ; $5A90: $22
-    ld   a, e                                     ; $5A91: $7B
-    and  $0F                                      ; $5A92: $E6 $0F
-    add  $B0                                      ; $5A94: $C6 $B0
-    ld   [hl+], a                                 ; $5A96: $22
+    ld   a, [wPowerBraceletLevel]
+    and  a
+    jr   z, .jr_5A97
+
+    ld   e, a
+    ld   a, $BA ; L-
+    ld   [hl+], a
+    ld   a, e
+    add  $B0
+    ld   [hl+], a
+    ;ld   a, [wSeashellsCount]                     ; $5A83: $FA $0F $DB
+    ;and  a                                        ; $5A86: $A7
+    ;jr   z, .jr_5A97                              ; $5A87: $28 $0E
+
+    ;; Offset seashell count sprites to reflect seashell count in inventory
+    ;ld   e, a                                     ; $5A89: $5F
+    ;swap a                                        ; $5A8A: $CB $37
+    ;and  $0F                                      ; $5A8C: $E6 $0F
+    ;add  $B0                                      ; $5A8E: $C6 $B0
+    ;ld   [hl+], a                                 ; $5A90: $22
+    ;ld   a, e                                     ; $5A91: $7B
+    ;and  $0F                                      ; $5A92: $E6 $0F
+    ;add  $B0                                      ; $5A94: $C6 $B0
+    ;ld   [hl+], a                                 ; $5A96: $22
 
 .jr_5A97
     ld   hl, wDrawCommand                         ; $5A97: $21 $01 $D6

@@ -1214,20 +1214,24 @@ EntityStunnedHandler::
     call func_003_60B3                            ; $4E10: $CD $B3 $60
     call ClearEntitySpeed                         ; $4E13: $CD $7F $3D
     call func_003_6E2B                            ; $4E16: $CD $2B $6E
-    ld   a, [wInventoryItems.BButtonSlot]         ; $4E19: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $4E1C: $FE $03
-    jr   nz, .jr_4E28                             ; $4E1E: $20 $08
+    ;ld   a, [wInventoryItems.BButtonSlot]         ; $4E19: $FA $00 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $4E1C: $FE $03
+    ;jr   nz, .jr_4E28                             ; $4E1E: $20 $08
 
-    ldh  a, [hJoypadState]                        ; $4E20: $F0 $CC
-    and  J_B                                      ; $4E22: $E6 $20
-    jr   nz, func_003_4E35                        ; $4E24: $20 $0F
+    ;ldh  a, [hJoypadState]                        ; $4E20: $F0 $CC
+    ;and  J_B                                      ; $4E22: $E6 $20
+    ;jr   nz, func_003_4E35                        ; $4E24: $20 $0F
 
-    jr   jr_003_4E72                              ; $4E26: $18 $4A
+    ;jr   jr_003_4E72                              ; $4E26: $18 $4A
 
-.jr_4E28
-    ld   a, [wInventoryItems.AButtonSlot]         ; $4E28: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $4E2B: $FE $03
-    jr   nz, jr_003_4E72                          ; $4E2D: $20 $43
+;.jr_4E28
+    ;ld   a, [wInventoryItems.AButtonSlot]         ; $4E28: $FA $01 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $4E2B: $FE $03
+    ;jr   nz, jr_003_4E72                          ; $4E2D: $20 $43
+
+    ld   a, [wPowerBraceletLevel]
+    and  a
+    jr   z, jr_003_4E72
 
     ldh  a, [hJoypadState]                        ; $4E2F: $F0 $CC
     and  J_A                                      ; $4E31: $E6 $10
@@ -1753,6 +1757,7 @@ ENDC
     ; increment the Power bracelet lebel.
     ld   hl, wPowerBraceletLevel                  ; $5108: $21 $43 $DB
     inc  [hl]                                     ; $510B: $34
+    jr   MarkRoomCompleted
 .powerBraceletEnd
 
     ; When finding a bomb's chest…

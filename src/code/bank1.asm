@@ -7,7 +7,7 @@ DebugSaveFileData::
     db INVENTORY_SHIELD          ; B button       ; $4667
     db INVENTORY_SWORD           ; A button       ; $4668
     db INVENTORY_BOMBS           ; Inventory slots ; $4669
-    db INVENTORY_POWER_BRACELET  ; .              ; $466A
+    db INVENTORY_BOOMERANG       ; .              ; $466A
     db INVENTORY_BOW             ; .              ; $466B
     db INVENTORY_HOOKSHOT        ; .              ; $466C
     db INVENTORY_MAGIC_ROD       ; .              ; $466D

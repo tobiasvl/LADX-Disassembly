@@ -69,23 +69,23 @@ LiftableStatueState0Handler::
     and  a                                        ; $408D: $A7
     jp   nz, label_019_411C                       ; $408E: $C2 $1C $41
 
-    ld   a, [wInventoryItems.BButtonSlot]         ; $4091: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $4094: $FE $03
-    jr   nz, .jr_40A0                             ; $4096: $20 $08
+    ;ld   a, [wInventoryItems.BButtonSlot]         ; $4091: $FA $00 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $4094: $FE $03
+    ;jr   nz, .jr_40A0                             ; $4096: $20 $08
 
-    ldh  a, [hPressedButtonsMask]                 ; $4098: $F0 $CB
-    and  $20                                      ; $409A: $E6 $20
-    jr   nz, jr_019_40AD                          ; $409C: $20 $0F
+    ;ldh  a, [hPressedButtonsMask]                 ; $4098: $F0 $CB
+    ;and  $20                                      ; $409A: $E6 $20
+    ;jr   nz, jr_019_40AD                          ; $409C: $20 $0F
 
-    jr   label_019_411C                           ; $409E: $18 $7C
+    ;jr   label_019_411C                           ; $409E: $18 $7C
 
 .jr_40A0
-    ld   a, [wInventoryItems.AButtonSlot]         ; $40A0: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $40A3: $FE $03
-    jr   nz, label_019_411C                       ; $40A5: $20 $75
+    ;ld   a, [wInventoryItems.AButtonSlot]         ; $40A0: $FA $01 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $40A3: $FE $03
+    ;jr   nz, label_019_411C                       ; $40A5: $20 $75
 
     ldh  a, [hPressedButtonsMask]                 ; $40A7: $F0 $CB
-    and  $10                                      ; $40A9: $E6 $10
+    and  J_A                                      ; $40A9: $E6 $10
     jr   z, label_019_411C                        ; $40AB: $28 $6F
 
 jr_019_40AD:

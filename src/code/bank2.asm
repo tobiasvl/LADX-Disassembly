@@ -7122,20 +7122,17 @@ jr_002_72C3:
     jr   jr_002_72EC                              ; $72CF: $18 $1B
 
 jr_002_72D1:
-    cp   $20                                      ; $72D1: $FE $20
+    ; INVENTORY_POWER_BRACELET
+    cp   OBJECT_LIFTABLE_ROCK | OBJECT_LIFTABLE_POT ; $72D1: $FE $20
     jr   nz, jr_002_72FA                          ; $72D3: $20 $25
 
-    ld   a, [wInventoryItems.AButtonSlot]         ; $72D5: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $72D8: $FE $03
-    jr   z, jr_002_72FA                           ; $72DA: $28 $1E
+    ld   a, [wPowerBraceletLevel]
+    and  a
+    jr   nz, jr_002_72FA                           ; $72E1: $28 $17
 
-    ld   a, [wInventoryItems.BButtonSlot]         ; $72DC: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $72DF: $FE $03
-    jr   z, jr_002_72FA                           ; $72E1: $28 $17
-
-    ld   a, [wHasInstrument2]                     ; $72E3: $FA $66 $DB
-    and  $02                                      ; $72E6: $E6 $02
-    jr   nz, jr_002_72FA                          ; $72E8: $20 $10
+    ldh  a, [hPressedButtonsMask]                  ; $20E5: $F0 $CB
+    and  J_A                                       ; $20E7: $E6 $10
+    jr   z, jr_002_72FA                            ; $72E8: $20 $10
 
     ld_dialog_low e, Dialog08D ; "This looks pretty heavy" ; $72EA: $1E $8D
 

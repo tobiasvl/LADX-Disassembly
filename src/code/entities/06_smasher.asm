@@ -456,20 +456,24 @@ jr_006_4806:
     and  a                                        ; $480E: $A7
     jr   nz, ret_006_4852                         ; $480F: $20 $41
 
-    ld   a, [wInventoryItems.BButtonSlot]         ; $4811: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $4814: $FE $03
-    jr   nz, .jr_4820                             ; $4816: $20 $08
+    ;ld   a, [wInventoryItems.BButtonSlot]         ; $4811: $FA $00 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $4814: $FE $03
+    ;jr   nz, .jr_4820                             ; $4816: $20 $08
 
-    ldh  a, [hJoypadState]                        ; $4818: $F0 $CC
-    and  J_B                                      ; $481A: $E6 $20
-    jr   nz, jr_006_482D                          ; $481C: $20 $0F
+    ;ldh  a, [hJoypadState]                        ; $4818: $F0 $CC
+    ;and  J_B                                      ; $481A: $E6 $20
+    ;jr   nz, jr_006_482D                          ; $481C: $20 $0F
 
-    jr   ret_006_4852                             ; $481E: $18 $32
+    ;jr   ret_006_4852                             ; $481E: $18 $32
 
-.jr_4820
-    ld   a, [wInventoryItems.AButtonSlot]         ; $4820: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $4823: $FE $03
-    jr   nz, ret_006_4852                         ; $4825: $20 $2B
+;.jr_4820
+    ;ld   a, [wInventoryItems.AButtonSlot]         ; $4820: $FA $01 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $4823: $FE $03
+    ;jr   nz, ret_006_4852                         ; $4825: $20 $2B
+
+    ld   a, [wPowerBraceletLevel]
+    and  a
+    ret  z
 
     ldh  a, [hJoypadState]                        ; $4827: $F0 $CC
     and  J_A                                      ; $4829: $E6 $10
