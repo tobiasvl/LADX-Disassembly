@@ -2526,7 +2526,7 @@ InventoryLoad1Handler::
     ld   a, [wPowerBraceletLevel]
     cp   2
     jr   nz, .done
-    ld   a, $05 ; use blue palette for L-2 bracelet; L-1 is $03 orange at end of data_020_596A
+    sla  a ; use blue palette for L-2 bracelet; L-1 is $03 orange at end of data_020_596A
     dec  hl
     dec  hl
     ld   [hl-], a 
@@ -4007,28 +4007,32 @@ func_020_62DE::
     ld   a, b                                     ; $62F2: $78
     ld   [wDE09], a                               ; $62F3: $EA $09 $DE
     ldh  [hFreeWarpDataAddress], a                ; $62F6: $E0 $E6
+    and  $03                                      ; $6312: $E6 $03
+    ret  z
+
     ld   hl, wDynamicOAMBuffer+$20                ; $62F8: $21 $50 $C0
     ld   b, $4A                                   ; $62FB: $06 $4A
-    ld   c, $53                                   ; $62FD: $0E $53
-    ld   d, $08                                   ; $62FF: $16 $08
+    ld   c, $0A                                   ; $62FD: $0E $53
+    ld   d, $04                                   ; $62FF: $16 $08
     ld   a, $90                                   ; $6301: $3E $90
     ld   [hl+], a                                 ; $6303: $22
     ld   a, c                                     ; $6304: $79
     ld   [hl+], a                                 ; $6305: $22
-    add  $08                                      ; $6306: $C6 $08
+    add  $10                                      ; $6306: $C6 $08
     ld   c, a                                     ; $6308: $4F
     ld   a, b                                     ; $6309: $78
-    inc  b                                        ; $630A: $04
-    inc  b                                        ; $630B: $04
+    ;inc  b                                        ; $630A: $04
+    ;inc  b                                        ; $630B: $04
+    ld b, $51
     ld   [hl+], a                                 ; $630C: $22
     ld   a, $26                                   ; $630D: $3E $26
     ld   [hl+], a                                 ; $630F: $22
-    ldh  a, [hFreeWarpDataAddress]                ; $6310: $F0 $E6
-    and  $03                                      ; $6312: $E6 $03
-    jr   nz, .loop_631A                           ; $6314: $20 $04
+    ;ldh  a, [hFreeWarpDataAddress]                ; $6310: $F0 $E6
+    ;and  $03                                      ; $6312: $E6 $03
+    ;jr   nz, .loop_631A                           ; $6314: $20 $04
 
-    ld   c, $9B                                   ; $6316: $0E $9B
-    jr   jr_020_632E                              ; $6318: $18 $14
+    ;ld   c, $42                                   ; $6316: $0E $9B
+    ;jr   jr_020_632E                              ; $6318: $18 $14
 
 .loop_631A
     ld   a, $90                                   ; $631A: $3E $90
@@ -4048,10 +4052,11 @@ func_020_62DE::
     and  a                                        ; $632B: $A7
     jr   nz, .loop_631A                           ; $632C: $20 $EC
 
-jr_020_632E:
+;jr_020_632E:
     ld   a, $90                                   ; $632E: $3E $90
     ld   [hl+], a                                 ; $6330: $22
-    ld   a, c                                     ; $6331: $79
+    ;ld   a, c                                     ; $6331: $79
+    ld   a, $42                                     ; $6331: $79
     ld   [hl+], a                                 ; $6332: $22
     ld   a, $4A                                   ; $6333: $3E $4A
     ld   [hl+], a                                 ; $6335: $22
@@ -4300,7 +4305,11 @@ Data_020_64A2::
     dw   Data_020_6498
 
 Data_020_64AA::
-    db   $7C, $03, $48, $03, $48, $23
+    ;db   $7C, $03
+    db   $48, $03, $48, $23
+
+SeashellOAM::
+    db   $7C, $03, $7A, $01
 
 Data_020_64B0::
     db   $66, $03
@@ -4319,7 +4328,7 @@ Data_020_64E4::
 ; Draw the inventory status window that appears when you hold SELECT
 RenderInventoryStatus::
     ld   hl, wOAMBuffer+$10                       ; $64EE: $21 $10 $C0
-    ld   a, $53                                   ; $64F1: $3E $53
+    ld   a, $0A                                   ; $64F1: $3E $53
     ldh  [hBGMapOffsetLow], a                     ; $64F3: $E0 $E1
     ld   a, [wDE0A]                               ; $64F5: $FA $0A $DE
     ldh  [hMultiPurposeB], a                      ; $64F8: $E0 $E2
@@ -4347,7 +4356,7 @@ RenderInventoryStatus::
     ld   a, $03                                   ; $651D: $3E $03
     ld   [hl+], a                                 ; $651F: $22
     push hl                                       ; $6520: $E5
-    ld   c, $06                                   ; $6521: $0E $06
+    ld   c, $02                                   ; $6521: $0E $06
     ld   de, Data_020_64A2                        ; $6523: $11 $A2 $64
     ld   h, $00                                   ; $6526: $26 $00
     ld   a, [wHeartPiecesCount]                   ; $6528: $FA $5C $DB
@@ -4359,12 +4368,17 @@ RenderInventoryStatus::
     ld   d, [hl]                                  ; $6531: $56
     pop  hl                                       ; $6532: $E1
     call func_020_6446                            ; $6533: $CD $46 $64
-    ld   a, $53                                   ; $6536: $3E $53
+    ld   c, $01                                   ; $6541: $0E $03
+    ld   de, SeashellOAM                        ; $6543: $11 $AA $64
+    call func_020_6446                            ; $6546: $CD $46 $64
+
+    ; Photos OAM
+    ld   a, $0A                                   ; $6536: $3E $53
     ldh  [hBGMapOffsetLow], a                     ; $6538: $E0 $E1
     ld   a, [wDE0A]                               ; $653A: $FA $0A $DE
     add  $10                                      ; $653D: $C6 $10
     ldh  [hMultiPurposeB], a                      ; $653F: $E0 $E2
-    ld   c, $03                                   ; $6541: $0E $03
+    ld   c, $02                                   ; $6541: $0E $03
     ld   de, Data_020_64AA                        ; $6543: $11 $AA $64
     call func_020_6446                            ; $6546: $CD $46 $64
     ld   e, $00                                   ; $6549: $1E $00
@@ -4407,9 +4421,54 @@ jr_020_654E:
     pop  de                                       ; $6575: $D1
     pop  hl                                       ; $6576: $E1
     call func_020_6446                            ; $6577: $CD $46 $64
-    ld   c, $05                                   ; $657A: $0E $05
-    ld   de, Data_020_64E4                        ; $657C: $11 $E4 $64
-    call func_020_6446                            ; $657F: $CD $46 $64
+    ;ld   c, $05                                   ; $657A: $0E $05
+    ;ld   de, Data_020_64E4                        ; $657C: $11 $E4 $64
+    ;call func_020_6446                            ; $657F: $CD $46 $64
+
+    ; Seashell OAM
+    ld   c, $02                                   ; $6541: $0E $03
+    ld   de, SeashellOAM                        ; $6543: $11 $AA $64
+    call func_020_6446                            ; $6546: $CD $46 $64
+    ;ldh  a, [hMultiPurposeB]                      ; $6510: $F0 $E2
+    ;ld   [hl+], a                                 ; $6512: $22
+    ;ldh  a, [hBGMapOffsetLow]                     ; $6513: $F0 $E1
+    ;ld   [hl+], a                                 ; $6515: $22
+    ;add  $08                                      ; $6516: $C6 $08
+    ;ldh  [hBGMapOffsetLow], a                     ; $6518: $E0 $E1
+    ;ld a, $7A
+    ;ld [hl+], a
+    ;ld a, $01
+    ;ld [hl+], a
+
+    ; Seashell count OAM
+    ldh  a, [hMultiPurposeB]                      ; $6510: $F0 $E2
+    ld   [hl+], a                                 ; $6512: $22
+    ldh  a, [hBGMapOffsetLow]                     ; $6513: $F0 $E1
+    ld   [hl+], a                                 ; $6515: $22
+    add  $08                                      ; $6516: $C6 $08
+    ldh  [hBGMapOffsetLow], a                     ; $6518: $E0 $E1
+    ld a, [wSeashellsCount]
+    and $F0
+    swap a
+    sla a
+    add $66
+    ld [hl+], a
+    ld a, $03
+    ld [hl+], a
+    ldh  a, [hMultiPurposeB]                      ; $6510: $F0 $E2
+    ld   [hl+], a                                 ; $6512: $22
+    ldh  a, [hBGMapOffsetLow]                     ; $6513: $F0 $E1
+    ld   [hl+], a                                 ; $6515: $22
+    add  $08                                      ; $6516: $C6 $08
+    ldh  [hBGMapOffsetLow], a                     ; $6518: $E0 $E1
+    ld a, [wSeashellsCount]
+    and $0F
+    sla a
+    add $66
+    ld [hl+], a
+    ld a, $03
+    ld [hl+], a
+
     ret                                           ; $6582: $C9
 
 InventoryStatusInHandler::
