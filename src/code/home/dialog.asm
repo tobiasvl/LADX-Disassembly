@@ -693,22 +693,15 @@ DialogBoxOrigin::
 ; length of 16 characters without starting a new line; otherwise
 ; a final line of exactly 16 characters followed by "@" would print
 ; an extra empty line.
-;
-; However, there's a potential bug here; the check for the terminator
-; is done after checking if two full lines of characters have been
-; printed, so it only triggers on even-numbered lines. Dialog ending
-; on an odd-numbered line will still print an empty line at the end.
 DialogBreakHandler::
-    ; @bug: This check should be done after the next two
-    ; checks for terminators to trigger on odd-numbered lines as well.
-    ld   a, [wDialogCharacterIndex]               ;; 00:2695 $FA $70 $C1
-    and  $1F                                      ;; 00:2698 $E6 $1F
-    jr   nz, .buildDrawCommand                    ;; 00:269A $20 $45
     ld   a, [wDialogNextChar]                     ;; 00:269C $FA $C3 $C3
     cp   "@"                                      ;; 00:269F $FE $FF
     jp   z, DialogDrawNextCharacterHandler.end    ;; 00:26A1 $CA $AD $25
     cp   "<ask>"                                  ;; 00:26A4 $FE $FE
     jp   z, DialogDrawNextCharacterHandler.choice ;; 00:26A6 $CA $95 $25
+    ld   a, [wDialogCharacterIndex]               ;; 00:2695 $FA $70 $C1
+    and  $1F                                      ;; 00:2698 $E6 $1F
+    jr   nz, .buildDrawCommand                    ;; 00:269A $20 $45
     ld   a, [wDialogIsWaitingForButtonPress]      ;; 00:26A9 $FA $CC $C1
     and  a                                        ;; 00:26AC $A7
     jr   nz, .dialogButtonPressHandler            ;; 00:26AD $20 $07
