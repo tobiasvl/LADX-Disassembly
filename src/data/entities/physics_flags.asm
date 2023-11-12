@@ -88,16 +88,7 @@ ENDC
 ._47 db 2 | ENTITY_PHYSICS_HARMLESS 
 ._48 db 2 | ENTITY_PHYSICS_HARMLESS 
 ._49 db 2 | ENTITY_PHYSICS_HARMLESS 
-IF __PATCH_0__
-; Fixes two bugs with the Color Dungeon Book in the library:
-; - Link can no longer try to pick it up
-; - It no longer casts a weird shadow
-; However, it also introduces a new bug:
-; - Projectiles now bounce off it instead of passing "over" it
-._4A db 2 | ENTITY_PHYSICS_HARMLESS
-ELSE
-._4A db 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP | ENTITY_PHYSICS_GRABBABLE | ENTITY_PHYSICS_SHADOW
-ENDC
+._4A db 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP
 ._4B db 2 | ENTITY_PHYSICS_HARMLESS 
 ._4C db 1 | ENTITY_PHYSICS_PROJECTILE_NOCLIP 
 ._4D db 2 | ENTITY_PHYSICS_HARMLESS 
