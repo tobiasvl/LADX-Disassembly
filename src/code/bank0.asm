@@ -5780,6 +5780,7 @@ LoadRoom::
     ld   [rSelectROMBank], a                      ; $3126: $EA $00 $21
     ldh  [hRoomBank], a                           ; $3129: $E0 $E8
     call func_014_5897                            ; $312B: $CD $97 $58
+.indoorSpecialCodeEnd
     ; Reset wKillCount and wKillOrder array
     ld   e, a                                     ; $312E: $5F
     ld   hl, wKillCount                           ; $312F: $21 $B5 $DB
@@ -5790,7 +5791,6 @@ LoadRoom::
     ld   a, e                                     ; $3135: $7B
     cp   wKillOrder.end - wKillOrder              ; $3136: $FE $11
     jr   nz, .loop                                ; $3138: $20 $F8
-.indoorSpecialCodeEnd
 
     ;
     ; Load the room status
