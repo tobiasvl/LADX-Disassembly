@@ -631,7 +631,7 @@ Dialog057:: ; Map
 
 Dialog058:: ; Map
     db "Level 3--       "
-    db "      Key Cavern@"
+    db "      Key Cellar@"
 
 Dialog059:: ; Map
     db "Level 4--       "
