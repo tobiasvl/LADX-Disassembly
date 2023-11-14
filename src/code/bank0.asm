@@ -114,7 +114,7 @@ PlayAudioStep::
     ; If a wave SFX is playing, return early
     ldh  a, [hWaveSfx]                            ; $08AC: $F0 $F3
     and  a                                        ; $08AE: $A7
-    jr   nz, .return                              ; $08AF: $20 $25
+    ret nz
 
     ; If wMusicTrackTiming != 0…
     ld   a, [wMusicTrackTiming]                   ; $08B1: $FA $0B $C1
@@ -127,7 +127,7 @@ PlayAudioStep::
     ; Otherwise, play the audio step only on odd frames (half speed)
     ldh  a, [hFrameCounter]                       ; $08BB: $F0 $E7
     and  $01                                      ; $08BD: $E6 $01
-    jr   nz, .return                              ; $08BF: $20 $15
+    ret nz
 
     jr   .doAudioStep                             ; $08C1: $18 $03
 
@@ -217,10 +217,12 @@ func_91D::
     ld   a, $81                                   ; $0957: $3E $81
     ldi  [hl], a                                  ; $0959: $22
     ld   a, [de]                                  ; $095A: $1A
+    or   a, $20
     ldi  [hl], a                                  ; $095B: $22
     inc  de                                       ; $095C: $13
     inc  de                                       ; $095D: $13
     ld   a, [de]                                  ; $095E: $1A
+    or   a, $20
     ldi  [hl], a                                  ; $095F: $22
     dec  de                                       ; $0960: $1B
     ldh  a, [hIntersectedObjectBGAddressHigh]     ; $0961: $F0 $CF
@@ -231,10 +233,12 @@ func_91D::
     ld   a, $81                                   ; $0968: $3E $81
     ldi  [hl], a                                  ; $096A: $22
     ld   a, [de]                                  ; $096B: $1A
+    or   a, $20
     ldi  [hl], a                                  ; $096C: $22
     inc  de                                       ; $096D: $13
     inc  de                                       ; $096E: $13
     ld   a, [de]                                  ; $096F: $1A
+    or   a, $20
     ldi  [hl], a                                  ; $0970: $22
     xor  a                                        ; $0971: $AF
     ldi  [hl], a                                  ; $0972: $22
@@ -270,6 +274,7 @@ func_983::
     ldh  a, [hMultiPurposeA]                      ; $0993: $F0 $E1
     ld   l, a                                     ; $0995: $6F
     ld   a, [hl]                                  ; $0996: $7E
+    or   a, $20
 
     inc  de                                       ; $0997: $13
     ret                                           ; $0998: $C9
@@ -301,8 +306,10 @@ func_999::
     ld   a, $01                                   ; $09BB: $3E $01
     ldi  [hl], a                                  ; $09BD: $22
     ldh  a, [hMultiPurpose0]                      ; $09BE: $F0 $D7
+    or   a, $20
     ldi  [hl], a                                  ; $09C0: $22
     ldh  a, [hMultiPurpose1]                      ; $09C1: $F0 $D8
+    or   a, $20
     ldi  [hl], a                                  ; $09C3: $22
     xor  a                                        ; $09C4: $AF
     ldi  [hl], a                                  ; $09C5: $22
@@ -466,8 +473,7 @@ func_036_705A_trampoline::
 
 RestoreStackedBank::
     pop  af                                       ; $0AB0: $F1
-    call SwitchBank                               ; $0AB1: $CD $0C $08
-    ret                                           ; $0AB4: $C9
+    jp SwitchBank                               ; $0AB1: $CD $0C $08
 
 ChangeBGColumnPaletteAndExecuteDrawCommands::
     push af                                       ; $0AB5: $F5
@@ -544,7 +550,7 @@ CopyObjectsAttributesToWRAM2::
     ld   [rSelectROMBank], a                      ; $0B1C: $EA $00 $21
     ld   a, $02                                   ; $0B1F: $3E $02
     ld   [rSVBK], a                               ; $0B21: $E0 $70
-    call CopyData                                 ; $0B23: $CD $14 $29
+    call CopyDataMirror                                 ; $0B23: $CD $14 $29
     xor  a                                        ; $0B26: $AF
     ld   [rSVBK], a                               ; $0B27: $E0 $70
     ; Restore bank $20
@@ -1770,7 +1776,15 @@ LinkMotionDefaultHandler::
 
     jpsw LinkMotionDefault                        ; $116F: $3E $02 $CD $0C $08 $C3 $87 $42
 
+IF FREE_BANK0
+func_020_48CA_trampoline::
+    callsb func_020_48CA
+    ld   a, [wCurrentBank]
+    ld   [rSelectROMBank], a
+    ret
+ELSE
 include "code/home/check_items_to_use.asm"
+ENDC
 
 ; Use an inventory item.
 ;
@@ -3046,7 +3060,6 @@ IF !__OPTIMIZATIONS_1__
 .return
     ret                                           ; $1A21: $C9
 ENDC
-
 
 func_1A22::
     callsb func_020_6C4F                          ; $1A22: $3E $20 $EA $00 $21 $CD $4F $6C
@@ -4956,8 +4969,7 @@ LoadIndoorTiles::
     ; Replace Magic Powder tile by Toadstool if needed
     ld   a, [wHasToadstool]                       ; $2CFE: $FA $4B $DB
     and  a                                        ; $2D01: $A7
-    jr   z, .noToadstoolEnd                       ; $2D02: $28 $03
-    call ReplaceMagicPowderTilesByToadstool       ; $2D04: $CD $2B $1E
+    call nz, ReplaceMagicPowderTilesByToadstool       ; $2D04: $CD $2B $1E
 .noToadstoolEnd
 
     ; Replace Slime Key tile by Golden Leaf if needed
@@ -4972,14 +4984,13 @@ LoadIndoorTiles::
 .jr_2D17
     ld   a, [wGoldenLeavesCount]                  ; $2D17: $FA $15 $DB
     cp   SLIME_KEY                                ; $2D1A: $FE $06
-    jr   c, .goldenLeafEnd                        ; $2D1C: $38 $03
-    call ReplaceSlimeKeyTilesByGoldenLeaf         ; $2D1E: $CD $A1 $1E
+    call nc, ReplaceSlimeKeyTilesByGoldenLeaf         ; $2D1E: $CD $A1 $1E
 .goldenLeafEnd
 
     ; Update the trading sequence item tile if needed
     ld   a, [wTradeSequenceItem]                  ; $2D21: $FA $0E $DB
     cp   TRADING_ITEM_RIBBON                      ; $2D24: $FE $02
-    jr   c, .return                               ; $2D26: $38 $04
+    ret c
     ld   a, REPLACE_TILES_TRADING_ITEM            ; $2D28: $3E $0D
     ldh  [hReplaceTiles], a                       ; $2D2A: $E0 $A5
 
@@ -5034,8 +5045,7 @@ func_2D50::
     ld   hl, LinkCharacterTiles + $200            ; $2D6C: $21 $00 $42
     ld   de, vTiles0 + $200                       ; $2D6F: $11 $00 $82
     ld   bc, TILE_SIZE * $10                      ; $2D72: $01 $00 $01
-    call CopyData                                 ; $2D75: $CD $14 $29
-    ret                                           ; $2D78: $C9
+    jp CopyData                                 ; $2D75: $CD $14 $29
 
 ; Copy opening sequence tiles to tiles memory
 LoadIntroSequenceTiles::
@@ -5284,8 +5294,8 @@ LoadRoomSpecificTiles::
     add  hl, de                                   ; $2EEA: $19
     ld   a, [hl]                                  ; $2EEB: $7E
     and  a                                        ; $2EEC: $A7
-    jr   z, .bankAdjustmentEnd                    ; $2EED: $28 $03
-    call AdjustBankNumberForGBC                   ; $2EEF: $CD $0B $0B
+    ;jr   z, .bankAdjustmentEnd                    ; $2EED: $28 $03
+    call nz, AdjustBankNumberForGBC                   ; $2EEF: $CD $0B $0B
 .bankAdjustmentEnd
 
     ; Do the actual copy to OAM tiles
@@ -5354,8 +5364,7 @@ LoadRoomSpecificTiles::
     ; Copy sideview tiles to the BG tiles
     ld   de, vTiles2                              ; $2F41: $11 $00 $90
     ld   bc, TILE_SIZE * $80                      ; $2F44: $01 $00 $08
-    call CopyData                                 ; $2F47: $CD $14 $29
-    ret                                           ; $2F4A: $C9
+    jp CopyData                                 ; $2F47: $CD $14 $29
 
 .loadTopViewTiles
     ;
@@ -5393,8 +5402,7 @@ LoadRoomSpecificTiles::
     ld   hl, CameraShopIndoorTiles                ; $2F7A: $21 $00 $66
     ld   de, vTiles1 + $700                       ; $2F7D: $11 $00 $8F
     ld   bc, TILE_SIZE * $20                      ; $2F80: $01 $00 $02
-    call CopyData                                 ; $2F83: $CD $14 $29
-    ret                                           ; $2F86: $C9
+    jp CopyData                                 ; $2F83: $CD $14 $29
 .cameraShopEnd
 
     ; Hack: on GBC, load 2 tiles to a specific location
@@ -5418,8 +5426,7 @@ LoadRoomSpecificTiles::
     ld   hl, PhotoAlbumTiles + $610               ; $2FA0: $21 $10 $6E
     ld   de, vTiles2 + $790                       ; $2FA3: $11 $90 $97
     ld   bc, TILE_SIZE                            ; $2FA6: $01 $10 $00
-    call CopyData                                 ; $2FA9: $CD $14 $29
-    ret                                           ; $2FAC: $C9
+    jp CopyData                                 ; $2FA9: $CD $14 $29
 
 .loadOverworldBGTiles
     ;
@@ -5432,7 +5439,7 @@ LoadRoomSpecificTiles::
     ; If the tileset is W_TILESET_KEEP, do nothing.
     ldh  a, [hWorldTileset]                       ; $2FB5: $F0 $94
     cp   W_TILESET_KEEP                           ; $2FB7: $FE $0F
-    jr   z, .return                               ; $2FB9: $28 $0B
+    ret  z
 
     ; hl = ($40 + hWorldTileset) * $100
     add  a, $40                                   ; $2FBB: $C6 $40
@@ -5451,7 +5458,38 @@ CopyWord::
     inc  de                                       ; $2FC9: $13
     ld   a, [hli]                                 ; $2FCA: $2A
     ld   [de], a                                  ; $2FCB: $12
+    ret              
+
+CopyWordMirror::
+    ;ld a, $13
+    ;sub a, e
+    ;ld e, a
+
+    inc de
+    ld   a, [hli]                                 ; $2FC7: $2A
+    ld   [de], a                                  ; $2FC8: $12
+    dec  de                                       ; $2FC9: $13
+    ld   a, [hli]                                 ; $2FCA: $2A
+    ld   [de], a                                  ; $2FCB: $12
+    inc de
     ret                                           ; $2FCC: $C9
+
+; Copy two bytes from hl to de
+CopyWordAttrMirror::
+;    ;ld a, $13
+;    ;sub a, e
+;    ;ld e, a
+;
+    inc de
+    ld   a, [hli]                                 ; $2FC7: $2A
+    xor  a, $20
+    ld   [de], a                                  ; $2FC8: $12
+    dec  de                                       ; $2FC9: $13
+    ld   a, [hli]                                 ; $2FCA: $2A
+    xor  a, $20
+    ld   [de], a                                  ; $2FCB: $12
+    inc de
+    ret                            ; $2FCC: $C9
 
 ; Given an object (overworld or indoors), retrieve its tiles indices,
 ; and copy them to the BG map.
@@ -5602,7 +5640,7 @@ doCopyObjectToBG:
     ; Copy tile numbers to BG map for tiles on the upper row
     push de                                       ; $304F: $D5
     add  hl, bc                                   ; $3050: $09
-    call CopyWord                                 ; $3051: $CD $C7 $2F
+    call CopyWordMirror                                 ; $3051: $CD $C7 $2F
     pop  de                                       ; $3054: $D1
 
     ; Copy tile attributes to BG map for tiles on the upper row
@@ -5615,7 +5653,7 @@ doCopyObjectToBG:
     ld   l, a                                     ; $3060: $6F
     ld   a, $01                                   ; $3061: $3E $01
     ld   [rVBK], a                                ; $3063: $E0 $4F
-    call CopyWord                                 ; $3065: $CD $C7 $2F
+    call CopyWordAttrMirror                                 ; $3065: $CD $C7 $2F
 
     ; Restore RAM and ROM banks
     xor  a                                        ; $3068: $AF
@@ -5639,7 +5677,7 @@ doCopyObjectToBG:
 
     ; Copy tile numbers for tiles on the lower row
     push de                                       ; $307D: $D5
-    call CopyWord                                 ; $307E: $CD $C7 $2F
+    call CopyWordMirror                                 ; $307E: $CD $C7 $2F
     pop  de                                       ; $3081: $D1
 
     ; Copy palettes from WRAM1 for tiles on the lower row
@@ -5651,7 +5689,7 @@ doCopyObjectToBG:
     ld   l, a                                     ; $308C: $6F
     ld   a, $01                                   ; $308D: $3E $01
     ld   [rVBK], a                                ; $308F: $E0 $4F
-    call CopyWord                                 ; $3091: $CD $C7 $2F
+    call CopyWordAttrMirror                                 ; $3091: $CD $C7 $2F
 
     ; Restore RAM and ROM banks
     xor  a                                        ; $3094: $AF
@@ -6337,6 +6375,13 @@ LoadRoomObject::
     add  hl, de                                   ; $33B7: $19
     dec  bc                                       ; $33B8: $0B
     ld   a, [bc]                                  ; $33B9: $0A
+
+    ; Mirror horizontal position
+    ; for warps/exits
+    ; Not sure if this is correct, uses
+    ; A = YX in tiles*2
+    call MirrorRoomMetaTiles
+
     ld   [hl], a                                  ; $33BA: $77
     inc  bc                                       ; $33BB: $03
 .overworldDoorEnd
@@ -6631,7 +6676,7 @@ LoadRoomObject::
 .closedChestEnd
 
     ; a = multiple-blocks object direction and length
-    ld   d, $00                                   ; $34DA: $16 $00
+;    ld   d, $00                                   ; $34DA: $16 $00
     ldh  a, [hMultiPurpose0]                      ; $34DC: $F0 $D7
     ; If there are no coordinates for a multiple-blocks object…
     and  a                                        ; $34DE: $A7
@@ -6644,6 +6689,13 @@ LoadRoomObject::
     ; hl = initial position address
     dec  bc                                       ; $34E1: $0B
     ld   a, [bc]                                  ; $34E2: $0A
+
+    ; Mirror horizontal position
+    ; for multi-block "objects" in the map
+    ; A = YX in tiles*2
+    call MirrorRoomMetaTiles
+
+    ld d, $00
     ld   e, a                                     ; $34E3: $5F
     ld   hl, wRoomObjects                         ; $34E4: $21 $11 $D7
     add  hl, de                                   ; $34E7: $19
@@ -6665,7 +6717,7 @@ LoadRoomObject::
 FillRoomWithConsecutiveObjects::
     ; Copy object type to the active room map
     ld   a, d                                     ; $34EF: $7A
-    ldi  [hl], a                                  ; $34F0: $22
+    ldd  [hl], a                                  ; $34F0: $22
 
     ; If the object direction is vertical…
     ldh  a, [hMultiPurpose0]                      ; $34F1: $F0 $D7
@@ -6673,7 +6725,7 @@ FillRoomWithConsecutiveObjects::
     jr   z, .verticalEnd                          ; $34F5: $28 $04
     ; … increment the target address to move to the next column
     ld   a, l                                     ; $34F7: $7D
-    add  a, $0F                                   ; $34F8: $C6 $0F
+    add  a, $11                                   ; $34F8: $C6 $0F
     ld   l, a                                     ; $34FA: $6F
 .verticalEnd
 
@@ -6729,6 +6781,13 @@ CopyObjectToActiveRoomMap::
     ; Load the position of the object in the room
     dec  bc                                       ; $352D: $0B
     ld   a, [bc]                                  ; $352E: $0A
+
+    ; Mirror horizontal position
+    ; for single-block "objects" in the map
+    ; A = YX in tiles*2
+    call MirrorRoomMetaTiles
+
+    ld   d, $00
     ld   e, a                                     ; $352F: $5F
     ld   hl, wRoomObjects                         ; $3530: $21 $11 $D7
     add  hl, de                                   ; $3533: $19
@@ -6758,11 +6817,20 @@ SetBankForRoom::
     ld   [rSelectROMBank], a                      ; $3547: $EA $00 $21
     ret                                           ; $354A: $C9
 
-; Load object or objects?
+; Load objects from templates
+; hl = target wRoomObjects
+; bc = wRoomObjects offsets to draw to (terminated by $FF)
+; de = objects to draw
 Func_354B::
     push hl                                       ; $354B: $E5
     push de                                       ; $354C: $D5
     ld   a, [bc]                                  ; $354D: $0A
+
+    ; Mirror horizontal position
+    ; for multi-block "objects" in the map
+    ; A = YX in tiles*2
+    call MirrorRoomMetaTiles
+
     ld   e, a                                     ; $354E: $5F
     ld   d, $00                                   ; $354F: $16 $00
     add  hl, de                                   ; $3551: $19
@@ -6780,9 +6848,15 @@ Func_354B::
     push hl                                       ; $3561: $E5
     push de                                       ; $3562: $D5
     ld   a, l                                     ; $3563: $7D
-    sub  a, $11                                   ; $3564: $D6 $11
+    sub  a, $0A                                   ; $3564: $D6 $11
     push af                                       ; $3566: $F5
     ld   a, [wC19C]                               ; $3567: $FA $9C $C1
+;
+;    ; Mirror horizontal position
+;    ; for multi-block "objects" in the map
+;    ; A = YX in tiles*2
+;    call MirrorRoomMetaTiles
+
     ld   e, a                                     ; $356A: $5F
     inc  a                                        ; $356B: $3C
     and  $03                                      ; $356C: $E6 $03
@@ -6813,6 +6887,12 @@ Func_358B::
     push hl                                       ; $358B: $E5
     push de                                       ; $358C: $D5
     ld   a, [bc]                                  ; $358D: $0A
+; Mirroring has already happened above?
+;
+;    ; Mirror horizontal position
+;    ; for multi-block "objects" in the map
+;    ; A = YX in tiles*2
+;    call MirrorRoomMetaTiles
     ld   e, a                                     ; $358E: $5F
     ld   d, $00                                   ; $358F: $16 $00
     add  hl, de                                   ; $3591: $19
@@ -6830,9 +6910,14 @@ Func_358B::
     push hl                                       ; $35A1: $E5
     push de                                       ; $35A2: $D5
     ld   a, l                                     ; $35A3: $7D
-    sub  a, $11                                   ; $35A4: $D6 $11
+    sub  a, $0A                                   ; $35A4: $D6 $11
     push af                                       ; $35A6: $F5
     ld   a, [wC19C]                               ; $35A7: $FA $9C $C1
+;
+;    ; Mirror horizontal position
+;    ; for multi-block "objects" in the map
+;    ; A = YX in tiles*2
+;    call MirrorRoomMetaTiles
     ld   e, a                                     ; $35AA: $5F
     inc  a                                        ; $35AB: $3C
     and  $03                                      ; $35AC: $E6 $03
@@ -6888,6 +6973,12 @@ label_35E8::
 label_35EE::
     dec  bc                                       ; $35EE: $0B
     ld   a, [bc]                                  ; $35EF: $0A
+
+    ; Mirror horizontal position
+    ; for multi-block "objects" in the map
+    ; A = YX in tiles*2
+    call MirrorRoomMetaTiles
+
     ld   e, a                                     ; $35F0: $5F
     ld   d, $00                                   ; $35F1: $16 $00
     ld   hl, wRoomObjects                         ; $35F3: $21 $11 $D7
@@ -7428,6 +7519,19 @@ LoadEntityFromDefinition::
     inc  bc                                       ; $38C1: $03
     swap a                                        ; $38C2: $CB $37
     and  $F0                                      ; $38C4: $E6 $F0
+
+    ; MirrorMode
+    ; for entities/sprites
+    ; A = YX in pixels
+    ;push bc
+    ;ld b, a
+    ;ld a, $A0 - $10 ; TODO $10 here is the width of the entity
+    ;sub a, b
+    ;pop bc
+
+    cpl
+    add a, $A1 - $10 ; TODO $10 here is the width of the entity
+
     ld   hl, wEntitiesPosXTable                   ; $38C6: $21 $00 $C2
     add  hl, de                                   ; $38C9: $19
     add  a, $08                                   ; $38CA: $C6 $08
@@ -7544,3 +7648,26 @@ ReloadColorDungeonNpcTiles::
     ld   a, BANK(InventoryEntryPoint)             ; $3FE9: $3E $20
     ld   [rSelectROMBank], a                      ; $3FEB: $EA $00 $21
     ret                                           ; $3FEE: $C9
+
+MirrorRoomMetaTiles:
+    push bc
+    and  a, $0F
+    ld b, a
+    ld a, $09
+    sub a, b
+    ld d, a
+    pop bc
+    ld a, [bc]
+    and a, $F0
+    or a, d
+    ret
+    
+    ;push af
+    ;and a, $0F
+    ;cpl
+    ;add a, $0A
+    ;ld d, a
+    ;pop af
+    ;and a, $F0
+    ;or a, d
+    ;ret
