@@ -1230,6 +1230,17 @@ label_005_7570:
 ; Load heart container value to load when boss is killed
 ; Used from 4 different bosses: Slime Eel, Anglerfish, Evil Eagle, Hot Head
 DropHeartContainer_05::
+    ld   hl, wFarcallParams
+    ld   a, BANK(Foo)
+    ld   [hl+], a
+    ld   a, HIGH(Foo)
+    ld   [hl+], a
+    ld   a, LOW(Foo)
+    ld   [hl+], a
+    ld   a, BANK(@)
+    ld   [hl], a
+    call Farcall
+
     ld   a, ENTITY_HEART_CONTAINER                ; $7585: $3E $36
     call SpawnNewEntity_trampoline                ; $7587: $CD $86 $3B
     jr   .notEvilEagle                            ; $758A: $18 $0D
@@ -1243,6 +1254,34 @@ DropHeartContainer_05::
     ldh  [hMultiPurpose1], a                      ; $7597: $E0 $D8
 
 .notEvilEagle:
+    ; Now, check if we should modify another room's status bits as well.
+    ; This is how the Eagle's Tower and Angler's Tunnel bosses
+    ; exist in different rooms -- this sets the room flag in the
+    ; room where the *staircase* is, so that it opens when you return.
+
+    ldh  a, [hMapId]
+
+    ; Set room status pointer to Eagle's Tower Nightmare staircase room
+    ; (IndoorB + $2E)
+    ld   hl, wIndoorBRoomStatus + $2E
+    cp   MAP_EAGLES_TOWER                         ; If we ARE in Eagle's Tower...
+    jr   z, .inEaglesTower                        ; ... skip to setting the bit - address already loaded.
+
+    cp   MAP_ANGLERS_TUNNEL                       ; If we are NOT in Angler's Tunnel...
+    jr   nz, .skipSecondRoomFlags                 ; ... skip setting a second bit entirely - don't need to.
+
+    ; Set room status pointer to Angler's Tunnel Nightmare staircase room.
+    ; (IndoorA + $66)
+    ; Eagle's Tower check skips this, not-Angler's-Tunnel check skips the set too.
+    ld   hl, wIndoorARoomStatus + $66
+
+.inEaglesTower:
+    ; Set the room status bits for the second room.
+    set  5, [hl]                                  ; or $20
+
+.skipSecondRoomFlags:
+    ; Finished setting status bits for rooms, drop heart container
+
     ldh  a, [hMultiPurpose1]                      ; $7599: $F0 $D8
     ld   hl, wEntitiesPosYTable                   ; $759B: $21 $10 $C2
     add  hl, de                                   ; $759E: $19

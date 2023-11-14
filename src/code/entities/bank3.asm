@@ -2756,47 +2756,28 @@ HeartContainerEntityHandler::
     dec  a                                        ; $59E8: $3D
     jr   nz, HoldEntityAboveLink                  ; $59E9: $20 $2C
 
-    ld   a, MUSIC_AFTER_BOSS                      ; $59EB: $3E $18
-    ld   [wMusicTrackToPlay], a                   ; $59ED: $EA $68 $D3
     ; Increase max health, and fully restore health
     ld   hl, wMaxHearts                           ; $59F0: $21 $5B $DB
     inc  [hl]                                     ; $59F3: $34
     ld   hl, wAddHealthBuffer                     ; $59F4: $21 $93 $DB
     ld   [hl], $FF                                ; $59F7: $36 $FF
-    call GetRoomStatusAddressInHL                 ; $59F9: $CD $34 $51
+
+    jp   UnloadEntityAndReturn
+
+Foo:
+    ; Start playing music right away
+    ld a, MUSIC_AFTER_BOSS
+    ld [wMusicTrackToPlay], a
+
+    call GetRoomStatusAddressInHL
+
+    ; set room bits
     ld   a, [hl]                                  ; $59FC: $7E
     or   ROOM_STATUS_EVENT_2                      ; @TODO Set this room's status bit
     ld   [hl], a                                  ; $59FF: $77
     ldh  [hRoomStatus], a                         ; $5A00: $E0 $F8
 
-    ; Now, check if we should modify another room's status bits as well.
-    ; This is how the Eagle's Tower and Angler's Tunnel bosses
-    ; exist in different rooms -- this sets the room flag in the
-    ; room where the *staircase* is, so that it opens when you return.
-
-    ldh  a, [hMapId]
-
-    ; Set room status pointer to Eagle's Tower Nightmare staircase room
-    ; (IndoorB + $2E)
-    ld   hl, wIndoorBRoomStatus + $2E
-    cp   MAP_EAGLES_TOWER                         ; If we ARE in Eagle's Tower...
-    jr   z, .inEaglesTower                        ; ... skip to setting the bit - address already loaded.
-
-    cp   MAP_ANGLERS_TUNNEL                       ; If we are NOT in Angler's Tunnel...
-    jr   nz, .skipSecondRoomFlags                 ; ... skip setting a second bit entirely - don't need to.
-
-    ; Set room status pointer to Angler's Tunnel Nightmare staircase room.
-    ; (IndoorA + $66)
-    ; Eagle's Tower check skips this, not-Angler's-Tunnel check skips the set too.
-    ld   hl, wIndoorARoomStatus + $66
-
-.inEaglesTower:
-    ; Set the room status bits for the second room.
-    set  5, [hl]                                  ; or $20
-
-.skipSecondRoomFlags:
-    ; Finished setting status bits for rooms, delete this
-    jp   UnloadEntityAndReturn
+    ret
 
 HoldEntityAboveLink::
     ldh  a, [hLinkPositionX]                      ; $5A17: $F0 $98
@@ -4465,6 +4446,10 @@ PickDroppableBombs::
     jr   jr_003_635F                              ; $6390: $18 $CD
 
 PickSirensInstrument::
+    ; Fully restore health
+    ld   a, $FF
+    ld   [wAddHealthBuffer], a
+    ; Reset some things
     xor  a                                        ; $6392: $AF
     ld   [wBossDefeated], a                       ; $6393: $EA $6C $D4
     ld   [wObjectAffectingBGPalette], a           ; $6396: $EA $CB $C3
