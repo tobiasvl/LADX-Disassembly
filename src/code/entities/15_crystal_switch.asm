@@ -3,6 +3,9 @@ CrystalSwitchSpriteVariants::
 .variant0
     db $58, $03
     db $58, $23
+.variant1
+    db $58, $01
+    db $58;, $21 ; Re-use byte from below
 
 CrystalSwitchEntityHandler::
     ld   hl, wEntitiesHealthTable                 ;; 15:4324 $21 $60 $C3
@@ -13,6 +16,9 @@ CrystalSwitchEntityHandler::
     and  OAMF_PAL1                                ;; 15:432E $E6 $10
     ldh  [hActiveEntityFlipAttribute], a          ;; 15:4330 $E0 $ED
     ld   de, CrystalSwitchSpriteVariants          ;; 15:4332 $11 $20 $43
+    ld   a, [wSwitchBlocksState]
+    rrca
+    ldh  [hActiveEntitySpriteVariant], a
     call RenderActiveEntitySpritesPair            ;; 15:4335 $CD $C0 $3B
     call ReturnIfNonInteractive_15                ;; 15:4338 $CD $0D $7B
     call DecrementEntityIgnoreHitsCountdown       ;; 15:433B $CD $56 $0C
@@ -23,12 +29,12 @@ CrystalSwitchEntityHandler::
     add  hl, bc                                   ;; 15:434A $09
     ld   a, [hl]                                  ;; 15:434B $7E
     and  a                                        ;; 15:434C $A7
-    jr   z, .ret_4364                             ;; 15:434D $28 $15
+    ret  z
 
     ld   [hl], b                                  ;; 15:434F $70
     ld   a, [wSwitchableObjectAnimationStage]     ;; 15:4350 $FA $F8 $D6
     and  a                                        ;; 15:4353 $A7
-    jr   nz, .ret_4364                            ;; 15:4354 $20 $0E
+    ret  nz
 
     ld   a, $01                                   ;; 15:4356 $3E $01
     ld   [wSwitchableObjectAnimationStage], a     ;; 15:4358 $EA $F8 $D6
