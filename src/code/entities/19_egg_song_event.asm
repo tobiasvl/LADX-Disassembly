@@ -165,7 +165,7 @@ func_019_4B6E::
     call SpawnNewEntity_trampoline                ; $4B7D: $CD $86 $3B
     ret  c                                        ; $4B80: $D8
 
-    ld   a, NOISE_SFX_ROCK_RUMBLE                 ; $4B81: $3E $2B
+    ld   a, NOISE_SFX_RUMBLE2                     ; $4B81: $3E $2B
     ldh  [hNoiseSfx], a                           ; $4B83: $E0 $F4
     push bc                                       ; $4B85: $C5
     ldh  a, [hMultiPurposeG]                      ; $4B86: $F0 $E8
@@ -426,7 +426,7 @@ label_019_4CFF:
 
 .jr_4D1A
     ld   hl, wOverworldRoomStatus + $06           ; $4D1A: $21 $06 $D8
-    set  4, [hl]                                  ; $4D1D: $CB $E6
+    set  OW_ROOM_STATUS_FLAG_CHANGED, [hl]        ; $4D1D: $CB $E6
     ld   a, [hl]                                  ; $4D1F: $7E
     ldh  [hRoomStatus], a                         ; $4D20: $E0 $F8
     jp   ClearEntityStatus_19                     ; $4D22: $C3 $61 $7E

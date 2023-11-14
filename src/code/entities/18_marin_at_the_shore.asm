@@ -8,7 +8,7 @@ MarinAtTheShoreEntityHandler::
     ret  nz                                       ; $6195: $C0
 
     ld   a, [wOverworldRoomStatus + $FD]          ; $6196: $FA $FD $D8
-    and  $20                                      ; $6199: $E6 $20
+    and  OW_ROOM_STATUS_OWL_TALKED                ; $6199: $E6 $20
     jp   nz, ClearEntityStatusBank18              ; $619B: $C2 $08 $7F
 
     ld   a, [wTradeSequenceItem]                  ; $619E: $FA $0E $DB
@@ -41,7 +41,7 @@ MarinAtTheShoreEntityHandler::
 ._06 dw MarinAtTheShoreState6Handler
 
 MarinAtTheShoreTransitionHandler::
-    ld   a, MUSIC_MARIN_BEACH_TRANSITION          ; $61D1: $3E $4D
+    ld   a, MUSIC_MARIN_ON_BEACH                  ; $61D1: $3E $4D
     ld   [wMusicTrackToPlay], a                   ; $61D3: $EA $68 $D3
     ldh  [hDefaultMusicTrack], a                  ; $61D6: $E0 $B0
     ldh  [hDefaultMusicTrackAlt], a               ; $61D8: $E0 $BD
@@ -105,7 +105,7 @@ MarinAtTheShoreState3Handler::
     ld   [wGameplaySubtype], a                    ; $622F: $EA $96 $DB
     ld   a, GAMEPLAY_MARIN_BEACH                  ; $6232: $3E $09
     ld   [wGameplayType], a                       ; $6234: $EA $95 $DB
-    ld   a, MUSIC_MARIN_BEACH                     ; $6237: $3E $4E
+    ld   a, MUSIC_MARIN_BEACH_TALK                ; $6237: $3E $4E
     ld   [wMusicTrackToPlay], a                   ; $6239: $EA $68 $D3
     ret                                           ; $623C: $C9
 

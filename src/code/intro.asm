@@ -77,7 +77,7 @@ IntroHandlerEntryPoint::
     ld   [wC17E], a                               ; $6E81: $EA $7E $C1
 
     call ResetIntroTimers                         ; $6E84: $CD $9D $73
-    ld   a, MUSIC_TITLE_SCREEN                    ; $6E87: $3E $0D
+    ld   a, MUSIC_TITLE_SCREEN_NO_INTRO           ; $6E87: $3E $0D
     ld   [wMusicTrackToPlay], a                   ; $6E89: $EA $68 $D3
     ld   [wD00F], a                               ; $6E8C: $EA $0F $D0
     call func_001_7D4E                            ; $6E8F: $CD $4E $7D
@@ -767,19 +767,19 @@ TitleScreenSfxHandler::
     cp   $10                                      ; $7358: $FE $10
     jr   c, .return                               ; $735A: $38 $07
 
-    ld   a, NOISE_SFX_TITLE_APPEARS               ; $735C: $3E $19
+    ld   a, NOISE_SFX_PING                        ; $735C: $3E $19
     ldh  [hNoiseSfx], a                           ; $735E: $E0 $F4
     call IncrementGameplaySubtype                 ; $7360: $CD $D6 $44
 .return
     ret                                           ; $7363: $C9
 
-Data_001_7364::
+TitleScreenCopyrightDrawCommand::
     db   $9B, $B7, $0D, $65, $66, $67, $68, $69   ; $7364 ; $7364
     db   $6A, $6B, $6C, $6D, $6E, $6F, $70, $71   ; $736C ; $736C
     db   $72, $00                                 ; $7374 ; $7374
 
 IntroStageAHandler::
-    ld   de, Data_001_7364                        ; $7376: $11 $64 $73
+    ld   de, TitleScreenCopyrightDrawCommand      ; $7376: $11 $64 $73
     ld   hl, wDrawCommand                         ; $7379: $21 $01 $D6
     ld   c, $12                                   ; $737C: $0E $12
 
@@ -2011,7 +2011,7 @@ InertLinkState2Handler::
     ld   a, [wD00A]                               ; $7AA6: $FA $0A $D0
     cp   $0B                                      ; $7AA9: $FE $0B
     jr   nz, .return                              ; $7AAB: $20 $05
-    ld   a, MUSIC_TITLE_SCREEN_INTRO              ; $7AAD: $3E $01
+    ld   a, MUSIC_TITLE_SCREEN                    ; $7AAD: $3E $01
     ld   [wMusicTrackToPlay], a                   ; $7AAF: $EA $68 $D3
 
 .return

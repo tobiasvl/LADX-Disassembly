@@ -69,7 +69,7 @@ WarpEntityHandler::
     ld   [wC198], a                               ; $426A: $EA $98 $C1
     ld   a, $51                                   ; $426D: $3E $51
     ld   [wDBCB], a                               ; $426F: $EA $CB $DB
-    ld   a, WAVE_SFX_LINK_FALLS                   ; $4272: $3E $0C
+    ld   a, WAVE_SFX_LINK_FALL                    ; $4272: $3E $0C
     ldh  [hWaveSfx], a                            ; $4274: $E0 $F3
     jp   ClearEntityStatus_19                     ; $4276: $C3 $61 $7E
 
@@ -95,17 +95,17 @@ jr_019_4279:
 
 WarpState0Handler::
     call IncrementEntityState                     ; $429A: $CD $12 $3B
-    ld   a, MUSIC_INSTRUMENT_ACQUIRED             ; $429D: $3E $1B
+    ld   a, MUSIC_OBTAIN_INSTRUMENT               ; $429D: $3E $1B
     ld   [wMusicTrackToPlay], a                   ; $429F: $EA $68 $D3
     ret                                           ; $42A2: $C9
 
 WarpState1Handler::
-    call entityLinkPositionXDifference            ; $42A3: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $42A3: $CD $0B $7E
     add  $04                                      ; $42A6: $C6 $04
     cp   $08                                      ; $42A8: $FE $08
     jp   nc, IncrementEntityState                 ; $42AA: $D2 $12 $3B
 
-    call entityLinkPositionYDifference            ; $42AD: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $42AD: $CD $1B $7E
     add  $04                                      ; $42B0: $C6 $04
     cp   $08                                      ; $42B2: $FE $08
     ret  c                                        ; $42B4: $D8
@@ -117,12 +117,12 @@ WarpState2Handler::
     and  a                                        ; $42BA: $A7
     jr   nz, label_019_42E0                       ; $42BB: $20 $23
 
-    call entityLinkPositionXDifference            ; $42BD: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $42BD: $CD $0B $7E
     add  $03                                      ; $42C0: $C6 $03
     cp   $06                                      ; $42C2: $FE $06
     jr   nc, label_019_42E0                       ; $42C4: $30 $1A
 
-    call entityLinkPositionYDifference            ; $42C6: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $42C6: $CD $1B $7E
     add  $03                                      ; $42C9: $C6 $03
     cp   $06                                      ; $42CB: $FE $06
     jr   nc, label_019_42E0                       ; $42CD: $30 $11
@@ -132,7 +132,7 @@ WarpState2Handler::
     ld   [wC1C6], a                               ; $42D4: $EA $C6 $C1
     call GetEntityTransitionCountdown             ; $42D7: $CD $05 $0C
     ld   [hl], $50                                ; $42DA: $36 $50
-    ld   a, JINGLE_MIDBOSS_WARP                   ; $42DC: $3E $1C
+    ld   a, JINGLE_DUNGEON_WARP                   ; $42DC: $3E $1C
     ldh  [hJingle], a                             ; $42DE: $E0 $F2
 
 label_019_42E0:

@@ -107,7 +107,7 @@ func_007_4F1F::
     ld   a, $02                                   ; $4F2E: $3E $02
     ld   [wExchangingTradeSequenceItem], a        ; $4F30: $EA $7F $DB
     ld   hl, wOverworldRoomStatus + $87           ; $4F33: $21 $87 $D8
-    set  6, [hl]                                  ; $4F36: $CB $F6
+    set  OW_ROOM_STATUS_FLAG_UNKNOWN_6, [hl]      ; $4F36: $CB $F6
     call GetEntityTransitionCountdown             ; $4F38: $CD $05 $0C
     ld   [hl], $A0                                ; $4F3B: $36 $A0
     ld   a, JINGLE_TREASURE_FOUND                 ; $4F3D: $3E $01
@@ -166,7 +166,7 @@ func_007_4F56::
     call GetEntityTransitionCountdown             ; $4F91: $CD $05 $0C
     jr   nz, .jr_4FA5                             ; $4F94: $20 $0F
 
-    ld   a, MUSIC_TARIN_BEEHIVE                   ; $4F96: $3E $34
+    ld   a, MUSIC_TARIN_BEES                      ; $4F96: $3E $34
     ld   [wMusicTrackToPlay], a                   ; $4F98: $EA $68 $D3
     ldh  [hDefaultMusicTrack], a                  ; $4F9B: $E0 $B0
     call GetEntityTransitionCountdown             ; $4F9D: $CD $05 $0C
