@@ -342,7 +342,7 @@ AddEntityZSpeedToPos_07::
     ld   hl, wEntitiesPosZTable                   ; $7E58: $21 $10 $C3
     jr   AddEntitySpeedToPos_07.updatePosition    ; $7E5B: $18 $D2
 
-func_007_7E5D::
+EntityLinkPositionXDifference_07::
     ld   e, $00                                   ; $7E5D: $1E $00
     ldh  a, [hLinkPositionX]                      ; $7E5F: $F0 $98
     ld   hl, wEntitiesPosXTable                   ; $7E61: $21 $00 $C2
@@ -357,7 +357,7 @@ func_007_7E5D::
     ld   d, a                                     ; $7E6B: $57
     ret                                           ; $7E6C: $C9
 
-func_007_7E6D::
+EntityLinkPositionYDifference_07::
     ld   e, $02                                   ; $7E6D: $1E $02
     ldh  a, [hLinkPositionY]                      ; $7E6F: $F0 $99
     ld   hl, wEntitiesPosYTable                   ; $7E71: $21 $10 $C2
@@ -373,7 +373,7 @@ func_007_7E6D::
     ret                                           ; $7E7C: $C9
 
 func_007_7E7D::
-    call func_007_7E5D                            ; $7E7D: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $7E7D: $CD $5D $7E
     ld   a, e                                     ; $7E80: $7B
     ldh  [hMultiPurpose0], a                      ; $7E81: $E0 $D7
     ld   a, d                                     ; $7E83: $7A
@@ -385,7 +385,7 @@ func_007_7E7D::
 
 .jr_7E8A
     push af                                       ; $7E8A: $F5
-    call func_007_7E6D                            ; $7E8B: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $7E8B: $CD $6D $7E
     ld   a, e                                     ; $7E8E: $7B
     ldh  [hMultiPurpose1], a                      ; $7E8F: $E0 $D8
     ld   a, d                                     ; $7E91: $7A
@@ -548,5 +548,5 @@ label_007_7F36:
 jr_007_7F76:
     call ClearEntityStatus_07                     ; $7F76: $CD $A4 $7E
     ld   hl, hNoiseSfx                            ; $7F79: $21 $F4 $FF
-    ld   [hl], NOISE_SFX_1A                       ; $7F7C: $36 $1A
+    ld   [hl], NOISE_SFX_BOSS_EXPLOSION           ; $7F7C: $36 $1A
     ret                                           ; $7F7E: $C9

@@ -18,7 +18,7 @@ SideViewPotState0Handler::
     call CheckLinkCollisionWithEnemy_trampoline   ; $58EF: $CD $5A $3B
     jr   nc, jr_019_5922                          ; $58F2: $30 $2E
 
-    call entityLinkPositionYDifference            ; $58F4: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $58F4: $CD $1B $7E
     ld   e, a                                     ; $58F7: $5F
     add  $03                                      ; $58F8: $C6 $03
     cp   $06                                      ; $58FA: $FE $06
@@ -31,7 +31,7 @@ SideViewPotState0Handler::
     and  $80                                      ; $5903: $E6 $80
     jr   nz, jr_019_5922                          ; $5905: $20 $1B
 
-    call entityLinkPositionYDifference            ; $5907: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $5907: $CD $1B $7E
     add  $08                                      ; $590A: $C6 $08
     bit  7, a                                     ; $590C: $CB $7F
     jr   z, jr_019_5922                           ; $590E: $28 $12
@@ -47,12 +47,12 @@ SideViewPotState0Handler::
     ld   [wC147], a                               ; $591F: $EA $47 $C1
 
 jr_019_5922:
-    call entityLinkPositionXDifference            ; $5922: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $5922: $CD $0B $7E
     add  $12                                      ; $5925: $C6 $12
     cp   $24                                      ; $5927: $FE $24
     ret  nc                                       ; $5929: $D0
 
-    call entityLinkPositionYDifference            ; $592A: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $592A: $CD $1B $7E
     add  $12                                      ; $592D: $C6 $12
     cp   $24                                      ; $592F: $FE $24
     ret  nc                                       ; $5931: $D0
@@ -100,7 +100,7 @@ jr_019_5950:
     call GetEntityTransitionCountdown             ; $5964: $CD $05 $0C
     ld   [hl], $02                                ; $5967: $36 $02
     ld   hl, hWaveSfx                             ; $5969: $21 $F3 $FF
-    ld   [hl], WAVE_SFX_ZIP                       ; $596C: $36 $02
+    ld   [hl], WAVE_SFX_LIFT_UP                   ; $596C: $36 $02
     call IncrementEntityState                     ; $596E: $CD $12 $3B
     ld   [hl], $02                                ; $5971: $36 $02
     ldh  a, [hLinkDirection]                      ; $5973: $F0 $9E
@@ -141,7 +141,7 @@ func_019_599B::
 
     ld   a, $02                                   ; $59A4: $3E $02
     ld   [wIgnoreLinkCollisionsCountdown], a      ; $59A6: $EA $3E $C1
-    call entityLinkPositionXDifference            ; $59A9: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $59A9: $CD $0B $7E
     ld   a, e                                     ; $59AC: $7B
     and  a                                        ; $59AD: $A7
     ld   a, $10                                   ; $59AE: $3E $10

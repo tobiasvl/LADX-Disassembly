@@ -1,5 +1,5 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
-CrystealSwitchSpriteVariants::
+CrystalSwitchSpriteVariants::
 .variant0
     db $58, $03
     db $58, $23
@@ -12,7 +12,7 @@ CrystalSwitchEntityHandler::
     rla                                           ; $432D: $17
     and  OAMF_PAL1                                ; $432E: $E6 $10
     ldh  [hActiveEntityFlipAttribute], a          ; $4330: $E0 $ED
-    ld   de, CrystealSwitchSpriteVariants         ; $4332: $11 $20 $43
+    ld   de, CrystalSwitchSpriteVariants         ; $4332: $11 $20 $43
     call RenderActiveEntitySpritesPair            ; $4335: $CD $C0 $3B
     call ReturnIfNonInteractive_15                ; $4338: $CD $0D $7B
     call DecrementEntityIgnoreHitsCountdown       ; $433B: $CD $56 $0C
@@ -34,7 +34,7 @@ CrystalSwitchEntityHandler::
     ld   [wSwitchableObjectAnimationStage], a     ; $4358: $EA $F8 $D6
     call GetEntityTransitionCountdown             ; $435B: $CD $05 $0C
     ld   [hl], $18                                ; $435E: $36 $18
-    ld   a, WAVE_SFX_SWITCH_BUTTON                ; $4360: $3E $0E
+    ld   a, WAVE_SFX_FLOOR_SWITCH                 ; $4360: $3E $0E
     ldh  [hWaveSfx], a                            ; $4362: $E0 $F3
 
 .ret_4364

@@ -112,7 +112,7 @@ func_019_4E43::
     cp   $70                                      ; $4E58: $FE $70
     jr   nz, .ret_4E61                            ; $4E5A: $20 $05
 
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $4E5C: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $4E5C: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $4E5E: $EA $68 $D3
 
 .ret_4E61
@@ -343,7 +343,7 @@ func_019_500D::
     jr   nz, .jr_5027                             ; $501F: $20 $06
 
     inc  [hl]                                     ; $5021: $34
-    ld   a, MUSIC_CUCCO_HOUSE                     ; $5022: $3E $57
+    ld   a, MUSIC_HENHOUSE                        ; $5022: $3E $57
     ld   [wMusicTrackToPlay], a                   ; $5024: $EA $68 $D3
 
 .jr_5027
@@ -587,12 +587,12 @@ label_019_50C4::
     ld   [hl], a                                  ; $5191: $77
 
 .jr_5192
-    call entityLinkPositionXDifference            ; $5192: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $5192: $CD $0B $7E
     add  $12                                      ; $5195: $C6 $12
     cp   $24                                      ; $5197: $FE $24
     ret  nc                                       ; $5199: $D0
 
-    call entityLinkPositionYDifference            ; $519A: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $519A: $CD $1B $7E
     add  $10                                      ; $519D: $C6 $10
     cp   $20                                      ; $519F: $FE $20
     ret  nc                                       ; $51A1: $D0
@@ -636,12 +636,12 @@ FlyingRoosterState0Handler::
     cp   $02                                      ; $51E6: $FE $02
     ret  c                                        ; $51E8: $D8
 
-    call entityLinkPositionXDifference            ; $51E9: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $51E9: $CD $0B $7E
     add  $08                                      ; $51EC: $C6 $08
     cp   $10                                      ; $51EE: $FE $10
     jp   nc, label_019_52AB                       ; $51F0: $D2 $AB $52
 
-    call entityLinkPositionYDifference            ; $51F3: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $51F3: $CD $1B $7E
     add  $10                                      ; $51F6: $C6 $10
     cp   $20                                      ; $51F8: $FE $20
     jp   nc, label_019_52AB                       ; $51FA: $D2 $AB $52
@@ -744,7 +744,7 @@ FlyingRoosterState0Handler::
     ld   a, $4B                                   ; $529E: $3E $4B
     ld   [hl+], a                                 ; $52A0: $22
     ld   [hl], b                                  ; $52A1: $70
-    ld   a, NOISE_SFX_BLOCK_RUMBLE                ; $52A2: $3E $11
+    ld   a, NOISE_SFX_RUMBLE                      ; $52A2: $3E $11
     ldh  [hNoiseSfx], a                           ; $52A4: $E0 $F4
     call IncrementEntityState                     ; $52A6: $CD $12 $3B
     jr   FlyingRoosterState1Handler               ; $52A9: $18 $06

@@ -1,4 +1,5 @@
 section "WRAM Bank0", wram0[$c000]
+wram0Section::
 
 ; *******************************************************************
 ; *                                                                 *
@@ -13,9 +14,6 @@ section "WRAM Bank0", wram0[$c000]
 ; *           ds 1 ; address as 4 hex value                         *
 ; *                                                                 *
 ; *******************************************************************
-
-
-wram0Section EQU $C000
 
 ; Generic 40 tiles buffer for OAM data. Copied to OAM by DMA.
 ; During World gameplay, the OAM buffer is split between 12 OAM
@@ -1122,9 +1120,9 @@ wEntitiesPhysicsFlagsTable::
   ds $10 ; C340 - C34F
 
 ; Type of hitbox (plus maybe other flags):
-; bit 0-4: hitbox type (see HitboxPositions),
-; bit 5: TODO ???,
-; bit 6: TODO ???,
+; bit 0: TODO ???,
+; bit 1: TODO ???,
+; bit 2-6: hitbox type (see HitboxPositions),
 ; bit 7: force collision (for some entities only)
 wEntitiesHitboxFlagsTable::
   ds $10 ; C350 - C35F
@@ -1451,7 +1449,7 @@ wC5A5::
 wC5A6::
   ds 1 ; C5A6
 
-; When reaching zero, play the WAVE_SFX_BOSS_AGONY sound effect
+; When reaching zero, play the WAVE_SFX_BOSS_DEATH_CRY sound effect
 wBossAgonySFXCountdown::
   ds 1 ; C5A7
 
@@ -2940,7 +2938,7 @@ wSwitchableObjectAnimationStage::
   ds 1 ; D6F8
 
 ; Unlabeled
-wD6F9::
+wLinkStandingOnSwitchBlock::
   ds 1 ; D6F9
 
 ; Is there one or more switchable objects in the room
@@ -3759,8 +3757,11 @@ wPalettePartialCopyColorCount::
 wPaletteUnknownE::
   ds 1 ; DDD5
 
-; Unlabeled
-wDDD6::
+; Whether the palette should change during a room transition
+; - bit 7: Change from dark to light
+; - bit 6: Change from light to dark
+; - bits 5-0: What stage the transition is on
+wBGPaletteTransitionEffect::
   ds 1 ; DDD6
 
 ; Unlabeled

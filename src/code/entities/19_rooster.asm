@@ -95,12 +95,12 @@ jr_019_5A35:
     and  $01                                      ; $5A47: $E6 $01
     add  e                                        ; $5A49: $83
     call SetEntitySpriteVariant                   ; $5A4A: $CD $0C $3B
-    call entityLinkPositionXDifference            ; $5A4D: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $5A4D: $CD $0B $7E
     add  $12                                      ; $5A50: $C6 $12
     cp   $24                                      ; $5A52: $FE $24
     jr   nc, .jr_5A5F                             ; $5A54: $30 $09
 
-    call entityLinkPositionYDifference            ; $5A56: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $5A56: $CD $1B $7E
     add  $12                                      ; $5A59: $C6 $12
     cp   $24                                      ; $5A5B: $FE $24
     jr   c, jr_019_5A9F                           ; $5A5D: $38 $40
@@ -210,7 +210,7 @@ jr_019_5AC4:
     call GetEntityTransitionCountdown             ; $5AE1: $CD $05 $0C
     ld   [hl], $02                                ; $5AE4: $36 $02
     ld   hl, hWaveSfx                             ; $5AE6: $21 $F3 $FF
-    ld   [hl], WAVE_SFX_ZIP                       ; $5AE9: $36 $02
+    ld   [hl], WAVE_SFX_LIFT_UP                   ; $5AE9: $36 $02
     call IncrementEntityState                     ; $5AEB: $CD $12 $3B
     ld   [hl], $01                                ; $5AEE: $36 $01
     ld   a, $02                                   ; $5AF0: $3E $02

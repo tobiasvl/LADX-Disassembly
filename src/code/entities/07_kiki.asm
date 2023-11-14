@@ -109,12 +109,12 @@ func_007_58A8::
     and  a                                        ; $58B4: $A7
     jr   nz, .jr_58C9                             ; $58B5: $20 $12
 
-    call func_007_7E5D                            ; $58B7: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $58B7: $CD $5D $7E
     add  $18                                      ; $58BA: $C6 $18
     cp   $30                                      ; $58BC: $FE $30
     jr   nc, KikiOpenDialog.return                ; $58BE: $30 $1D
 
-    call func_007_7E6D                            ; $58C0: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $58C0: $CD $6D $7E
     add  $18                                      ; $58C3: $C6 $18
     cp   $30                                      ; $58C5: $FE $30
     jr   nc, KikiOpenDialog.return                ; $58C7: $30 $14
@@ -270,7 +270,7 @@ func_007_5997::
     ld   a, JINGLE_PUZZLE_SOLVED                  ; $59A3: $3E $02
     ldh  [hJingle], a                             ; $59A5: $E0 $F2
     ld   a, [wOverworldRoomStatus + $7B]          ; $59A7: $FA $7B $D8
-    or   $10                                      ; $59AA: $F6 $10
+    or   OW_ROOM_STATUS_CHANGED                   ; $59AA: $F6 $10
     ld   [wOverworldRoomStatus + $7B], a          ; $59AC: $EA $7B $D8
     ld   a, $01                                   ; $59AF: $3E $01
     ld   [wExchangingTradeSequenceItem], a        ; $59B1: $EA $7F $DB

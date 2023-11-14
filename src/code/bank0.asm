@@ -810,7 +810,7 @@ CopySirenInstrumentTiles::
 
 PlayBombExplosionSfx::
     ld   hl, hNoiseSfx                            ; $0C4B: $21 $F4 $FF
-    ld   [hl], NOISE_SFX_BOMB_EXPLOSION           ; $0C4E: $36 $0C
+    ld   [hl], NOISE_SFX_EXPLOSION                ; $0C4E: $36 $0C
 
 func_C50::
     ld   hl, wC502                                ; $0C50: $21 $02 $C5
@@ -1287,17 +1287,26 @@ ExecuteGameplayHandler::
     jr   nz, jumpToGameplayHandler                ; $0E44: $20 $3F
 
 presentSaveScreenIfNeeded::
-    ; If a indoor/outdoor transition is running
+    ; If a indoor/outdoor transition is running...
     ld   a, [wTransitionSequenceCounter]          ; $0E46: $FA $6B $C1
     cp   $04                                      ; $0E49: $FE $04
+    ; ...don't open the save screen.
     jr   nz, jumpToGameplayHandler                ; $0E4B: $20 $38
 
-    ; If a dialog is visible, or the screen is animating from one map to another
+    ; If a dialog is visible...
     ld   a, [wDialogState]                        ; $0E4D: $FA $9F $C1
+    ; ...or wC167 is non-zero...
     ld   hl, wC167                                ; $0E50: $21 $67 $C1
     or   [hl]                                     ; $0E53: $B6
+    ; ...or the screen is currently scrolling from one room to another...
+    ;
+    ; (POI: This last check was added in 1.1 of the non-DX version of the game,
+    ; and patches the screen warp glitch. However, removing this check doesn't
+    ; re-introduce the glitch into the DX version, perhaps because of another
+    ; check somewhere else.)
     ld   hl, wRoomTransitionState                 ; $0E54: $21 $24 $C1
     or   [hl]                                     ; $0E57: $B6
+    ; ...don't open the save screen.
     jr   nz, jumpToGameplayHandler                ; $0E58: $20 $2B
 
     ; If GameplayType > INVENTORY (i.e. photo album and pictures)
@@ -1721,7 +1730,7 @@ InitGotItemSequence::
     xor  a                                        ; $111F: $AF
     ld   [wInvincibilityCounter], a               ; $1120: $EA $C7 $DB
     ldh  [hLinkPhysicsModifier], a                ; $1123: $E0 $9C
-    ld   [wDDD6], a                               ; $1125: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $1125: $EA $D6 $DD
     ld   [wDDD7], a                               ; $1128: $EA $D7 $DD
     ld   [wD464], a                               ; $112B: $EA $64 $D4
     call label_27F2                               ; $112E: $CD $F2 $27
@@ -1993,7 +2002,7 @@ ShootArrow::
     jr   .setBombArrowCooldown                    ; $13FF: $18 $06
 
 .initBombArrowCooldown
-    ld   a, NOISE_SFX_SHOOT_ARROW                 ; $1401: $3E $0A
+    ld   a, NOISE_SFX_WHOOSH                      ; $1401: $3E $0A
     ldh  [hNoiseSfx], a                           ; $1403: $E0 $F4
     ld   a, BOMB_ARROW_COOLDOWN                   ; $1405: $3E $06
 
@@ -2188,7 +2197,7 @@ UseRocsFeather::
     ret                                           ; $1523: $C9
 
 SwordRandomSfxTable::
-    db   NOISE_SFX_SWORD_A, NOISE_SFX_SWORD_B, NOISE_SFX_SWORD_C, NOISE_SFX_SWORD_D ; $1524
+    db   NOISE_SFX_SWORD_SWING_A, NOISE_SFX_SWORD_SWING_B, NOISE_SFX_SWORD_SWING_C, NOISE_SFX_SWORD_SWING_D ; $1524
 
 UseSword::
     ld   a, [wC16D]                               ; $1528: $FA $6D $C1
@@ -2388,7 +2397,7 @@ label_1637::
     ld   [wC16D], a                               ; $1650: $EA $6D $C1
 
 label_1653::
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $1653: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $1653: $3E $05
     call SpawnPlayerProjectile                    ; $1655: $CD $2F $14
     jr   c, .dropRandomItem                       ; $1658: $38 $22
 
@@ -2502,7 +2511,7 @@ CheckItemsSwordCollision::
     ret                                           ; $16F7: $C9
 
 .label_16F8
-    ld   a, NOISE_SFX_UNKNOWN_17                  ; $16F8: $3E $17
+    ld   a, NOISE_SFX_CLINK                       ; $16F8: $3E $17
     ldh  [hNoiseSfx], a                           ; $16FA: $E0 $F4
     ret                                           ; $16FC: $C9
 
@@ -2611,7 +2620,7 @@ DisplayTransientVfxForLinkRunning::
 .shallowWater
     ldh  a, [hLinkPositionY]                      ; $1781: $F0 $99
     ldh  [hMultiPurpose1], a                      ; $1783: $E0 $D8
-    ld   a, JINGLE_WATER_DIVE                     ; $1785: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $1785: $3E $0E
     ldh  [hJingle], a                             ; $1787: $E0 $F2
     ld   a, TRANSCIENT_VFX_PEGASUS_SPLASH         ; $1789: $3E $0C
     jp   AddTranscientVfx                         ; $178B: $C3 $C7 $0C
@@ -2733,7 +2742,7 @@ LinkMotionMapFadeOutHandler::
     ldh  [hBaseScrollX], a                        ; $185B: $E0 $96
     ldh  [hBaseScrollY], a                        ; $185D: $E0 $97
     ldh  [hDungeonTitleMessageCountdown], a       ; $185F: $E0 $B4
-    ld   [wDDD6], a                               ; $1861: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $1861: $EA $D6 $DD
     ld   [wDDD7], a                               ; $1864: $EA $D7 $DD
 
     ld   e, $10                                   ; $1867: $1E $10
@@ -3414,7 +3423,7 @@ LinkDirectionToLinkAnimationState_2::
 .up:    db  LINK_ANIMATION_STATE_UNKNOWN_3A
 .down:  db  LINK_ANIMATION_STATE_UNKNOWN_3C                       ; $1F51
 
-data_1F55::
+LinkDirectionToLiftDirectionButton::
     db   2, 1, 8, 4                               ; $1F55
 
 data_1F59::
@@ -3719,7 +3728,7 @@ ENDC
     add  hl, de                                   ; $2100: $19
     ld   a, [hl]                                  ; $2101: $7E
     ldh  [hLinkAnimationState], a                 ; $2102: $E0 $9D
-    ld   hl, data_1F55                            ; $2104: $21 $55 $1F
+    ld   hl, LinkDirectionToLiftDirectionButton   ; $2104: $21 $55 $1F
     add  hl, de                                   ; $2107: $19
     ldh  a, [hPressedButtonsMask]                 ; $2108: $F0 $CB
     and  [hl]                                     ; $210A: $A6
@@ -3805,7 +3814,7 @@ func_014_5526_trampoline::
     jp   ReloadSavedBank                          ; $2180: $C3 $1D $08
 
 label_2183::
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $2183: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $2183: $3E $05
     call SpawnPlayerProjectile                    ; $2185: $CD $2F $14
 
 IF __OPTIMIZATIONS_1__
@@ -3814,7 +3823,7 @@ ELSE
     jr   c, .return                               ; $2188: $38 $1D
 ENDC
 
-    ld   a, WAVE_SFX_ZIP                          ; $218A: $3E $02
+    ld   a, WAVE_SFX_LIFT_UP                      ; $218A: $3E $02
     ldh  [hWaveSfx], a                            ; $218C: $E0 $F3
 
     ld   hl, wEntitiesStatusTable                 ; $218E: $21 $80 $C2
@@ -5061,9 +5070,9 @@ LoadIntroSequenceTiles::
 ; Copy title screen tiles to tiles memory
 LoadTitleScreenTiles::
     ; Load title logo
-    ld   a, BANK(TitleLogoTitles)                 ; $2DA7: $3E $0F
+    ld   a, BANK(TitleLogoTiles)                  ; $2DA7: $3E $0F
     call SwitchAdjustedBank                       ; $2DA9: $CD $13 $08
-    ld   hl, TitleLogoTitles                      ; $2DAC: $21 $00 $49
+    ld   hl, TitleLogoTiles                       ; $2DAC: $21 $00 $49
     ld   de, vTiles1                              ; $2DAF: $11 $00 $88
     ld   bc, TILE_SIZE * $70                      ; $2DB2: $01 $00 $07
     call CopyData                                 ; $2DB5: $CD $14 $29
@@ -5074,11 +5083,11 @@ LoadTitleScreenTiles::
 
     ldh  a, [hIsGBC]                              ; $2DBD: $F0 $FE
     and  a                                        ; $2DBF: $A7
-    jr   nz, .dxTilesDMG                          ; $2DC0: $20 $05
-    ld   hl, TitleDXTilesCGB                      ; $2DC2: $21 $00 $5C
+    jr   nz, .dxTilesCGB                          ; $2DC0: $20 $05
+    ld   hl, TitleDXTilesDMG                      ; $2DC2: $21 $00 $5C
     jr   .dxTilesEnd                              ; $2DC5: $18 $03
-.dxTilesDMG
-    ld   hl, TitleDXTilesDMG                      ; $2DC7: $21 $00 $58
+.dxTilesCGB
+    ld   hl, TitleDXTilesCGB                      ; $2DC7: $21 $00 $58
 .dxTilesEnd
 
     ld   de, vTiles0 + $400                       ; $2DCA: $11 $00 $84
@@ -5367,7 +5376,7 @@ LoadRoomSpecificTiles::
     jr   nz, .skipBGLoading                       ; $2F55: $20 $12
 .notColorDungeon
 
-    ld   hl, Dungeons2Tiles                       ; $2F57: $21 $00 $50
+    ld   hl, IndoorTiles                          ; $2F57: $21 $00 $50
     ldh  a, [hWorldTileset]                       ; $2F5A: $F0 $94
     cp   W_TILESET_NO_UPDATE                      ; $2F5C: $FE $FF
     jr   z, .skipBGLoading                        ; $2F5E: $28 $09

@@ -761,7 +761,7 @@ shallowWaterVfx:
     ldh  [hMultiPurpose1], a                      ; $45AF: $E0 $D8
     ldh  a, [hLinkPositionX]                      ; $45B1: $F0 $98
     ldh  [hMultiPurpose0], a                      ; $45B3: $E0 $D7
-    ld   a, JINGLE_WATER_DIVE                     ; $45B5: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $45B5: $3E $0E
     ldh  [hJingle], a                             ; $45B7: $E0 $F2
     ld   a, TRANSCIENT_VFX_PEGASUS_SPLASH         ; $45B9: $3E $0C
     jp   AddTranscientVfx                         ; $45BB: $C3 $C7 $0C
@@ -2217,7 +2217,7 @@ func_002_4EDD::
     ld   [wC167], a                               ; $4EE1: $EA $67 $C1
 
 IF !__PATCH_0__
-    ld   [wDDD6], a                               ; $4EE4: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $4EE4: $EA $D6 $DD
     ld   [wDDD7], a                               ; $4EE7: $EA $D7 $DD
 ENDC
 
@@ -2320,7 +2320,7 @@ label_002_4F6D:
     and  J_A                                      ; $4F94: $E6 $10
     jr   z, jr_002_4FA1                           ; $4F96: $28 $09
 
-    ld   a, JINGLE_WATER_SWIM                     ; $4F98: $3E $0F
+    ld   a, JINGLE_SWIM                           ; $4F98: $3E $0F
     ldh  [hJingle], a                             ; $4F9A: $E0 $F2
     ld   a, $20                                   ; $4F9C: $3E $20
     ld   [wC183], a                               ; $4F9E: $EA $83 $C1
@@ -3548,7 +3548,7 @@ RenderTranscientRumble::
     jr   nz, .jr_566D                             ; $5666: $20 $05
 
     ld   hl, hNoiseSfx                            ; $5668: $21 $F4 $FF
-    ld   [hl], NOISE_SFX_DOOR_RUMBLE              ; $566B: $36 $2A
+    ld   [hl], NOISE_SFX_OPEN_KEY_CAVERN          ; $566B: $36 $2A
 
 .jr_566D
     cp   $0A                                      ; $566D: $FE $0A
@@ -3969,7 +3969,7 @@ func_002_5928::
     ldh  [hMultiPurpose1], a                      ; $5928: $E0 $D8
     ldh  a, [hLinkPositionX]                      ; $592A: $F0 $98
     ldh  [hMultiPurpose0], a                      ; $592C: $E0 $D7
-    ld   a, JINGLE_WATER_DIVE                     ; $592E: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $592E: $3E $0E
     ldh  [hJingle], a                             ; $5930: $E0 $F2
     ld   a, TRANSCIENT_VFX_WATER_SPLASH           ; $5932: $3E $01
     jp   AddTranscientVfx                         ; $5934: $C3 $C7 $0C
@@ -5909,7 +5909,7 @@ jr_002_6BEB:
     and  DIRECTION_VERTICAL_MASK                  ; $6C23: $E6 $02
     sla  a                                        ; $6C25: $CB $27
     ld   [wC158], a                               ; $6C27: $EA $58 $C1
-    ld   a, JINGLE_HUGE_BUMP                      ; $6C2A: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $6C2A: $3E $0B
     ldh  [hJingle], a                             ; $6C2C: $E0 $F2
     ret                                           ; $6C2E: $C9
 
@@ -6273,7 +6273,7 @@ CheckPositionForMapTransition::
     ld   [wIsRunningWithPegasusBoots], a          ; $6DF4: $EA $4A $C1
     ld   [wC188], a                               ; $6DF7: $EA $88 $C1
 IF __PATCH_0__
-    ld   [wDDD6], a
+    ld   [wBGPaletteTransitionEffect], a
     ld   [wDDD7], a
 ENDC
 
@@ -6397,12 +6397,12 @@ CheckForLedgeJumpAndReturn::
     cp   LINK_MOTION_UNSTUCKING                   ; $6E9F: $FE $02
     jr   z, jr_002_6EDD                           ; $6EA1: $28 $3A
 
-    ld   a, JINGLE_JUMP_DOWN                      ; $6EA3: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $6EA3: $3E $08
     ldh  [hJingle], a                             ; $6EA5: $E0 $F2
     jr   jr_002_6EB5                              ; $6EA7: $18 $0C
 
 func_002_6EA9::
-    ld   a, JINGLE_JUMP_DOWN                      ; $6EA9: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $6EA9: $3E $08
     ldh  [hJingle], a                             ; $6EAB: $E0 $F2
 
 func_002_6EAD::
@@ -6574,7 +6574,7 @@ func_002_6F2C::
     jp   nz, label_002_703B                       ; $6FA6: $C2 $3B $70
 
     ldh  a, [hRoomStatus]                         ; $6FA9: $F0 $F8
-    bit  4, a                                     ; $6FAB: $CB $67
+    bit  OW_ROOM_STATUS_FLAG_CHANGED, a           ; $6FAB: $CB $67
     jp   nz, label_002_703B                       ; $6FAD: $C2 $3B $70
 
     ldh  a, [hMapRoom]                            ; $6FB0: $F0 $F6
@@ -6586,7 +6586,7 @@ func_002_6F2C::
     jr   jr_002_6FC6                              ; $6FBB: $18 $09
 
 .jr_6FBD
-    cp   $8C                                      ; $6FBD: $FE $8C
+    cp   ROOM_OW_FACE_SHRINE_ENTRANCE             ; $6FBD: $FE $8C
     jr   nz, jr_002_6FE3                          ; $6FBF: $20 $22
 
     ld   a, [wHasFaceKey]                         ; $6FC1: $FA $13 $DB
@@ -6616,7 +6616,7 @@ jr_002_6FD7:
     jr   jr_002_702C                              ; $6FE1: $18 $49
 
 jr_002_6FE3:
-    cp   $2B                                      ; $6FE3: $FE $2B
+    cp   ROOM_OW_ANGLERS_TUNNEL_ENTRANCE          ; $6FE3: $FE $2B
     jr   nz, .jr_6FFE                             ; $6FE5: $20 $17
 
     ld   a, [wHasAnglerKey]                       ; $6FE7: $FA $12 $DB
@@ -6635,7 +6635,7 @@ jr_002_6FE3:
     jr   jr_002_702C                              ; $6FFC: $18 $2E
 
 .jr_6FFE
-    cp   $B5                                      ; $6FFE: $FE $B5
+    cp   ROOM_OW_KEY_CAVERN_ENTRANCE              ; $6FFE: $FE $B5
     jr   nz, .jr_700D                             ; $7000: $20 $0B
 
     ld   a, [wGoldenLeavesCount]                  ; $7002: $FA $15 $DB
@@ -6777,7 +6777,7 @@ ENDC
     ld   [wIsLinkInTheAir], a                     ; $70CC: $EA $46 $C1
     ld   a, $01                                   ; $70CF: $3E $01
     ld   [wC10A], a                               ; $70D1: $EA $0A $C1
-    ld   a, JINGLE_JUMP_DOWN                      ; $70D4: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $70D4: $3E $08
     ldh  [hJingle], a                             ; $70D6: $E0 $F2
 
 label_002_70D8:
@@ -7019,21 +7019,21 @@ jr_002_722C:
     jp   ApplyMapFadeOutTransitionWithNoise       ; $723A: $C3 $7D $0C
 
 label_002_723D:
-    ld   a, [wD6F9]                               ; $723D: $FA $F9 $D6
+    ld   a, [wLinkStandingOnSwitchBlock]          ; $723D: $FA $F9 $D6
     and  a                                        ; $7240: $A7
     jp   nz, label_002_7461                       ; $7241: $C2 $61 $74
 
     ldh  a, [hObjectUnderEntity]                  ; $7244: $F0 $AF
-    cp   $DB                                      ; $7246: $FE $DB
+    cp   OBJECT_LOWERED_BLOCK                     ; $7246: $FE $DB
     jr   c, label_002_7277                        ; $7248: $38 $2D
 
-    cp   $DD                                      ; $724A: $FE $DD
+    cp   OBJECT_RAISED_BLOCK + 1                  ; $724A: $FE $DD
     jr   nc, label_002_7277                       ; $724C: $30 $29
 
-    sub  $DB                                      ; $724E: $D6 $DB
+    sub  OBJECT_LOWERED_BLOCK                     ; $724E: $D6 $DB
     ld   e, a                                     ; $7250: $5F
     ld   d, $00                                   ; $7251: $16 $00
-    ld   hl, Data_002_787B                        ; $7253: $21 $7B $78
+    ld   hl, SwitchBlocksStateTable               ; $7253: $21 $7B $78
     add  hl, de                                   ; $7256: $19
     ld   a, [wSwitchBlocksState]                  ; $7257: $FA $FB $D6
     xor  [hl]                                     ; $725A: $AE
@@ -7058,7 +7058,7 @@ label_002_726A:
 
 label_002_7277:
     ldh  a, [hObjectUnderEntity]                  ; $7277: $F0 $AF
-    cp   $69                                      ; $7279: $FE $69
+    cp   OBJECT_HURT_TILE                         ; $7279: $FE $69
     jr   nz, jr_002_728E                          ; $727B: $20 $11
 
     ld   hl, hMultiPurposeC                       ; $727D: $21 $E3 $FF
@@ -7077,69 +7077,74 @@ jr_002_728E:
     ld   hl, hMultiPurposeC                       ; $728E: $21 $E3 $FF
     ldh  a, [hLinkDirection]                      ; $7291: $F0 $9E
     cp   [hl]                                     ; $7293: $BE
-    jr   nz, jr_002_72FA                          ; $7294: $20 $64
+    jr   nz, .checkPegasusBoots                   ; $7294: $20 $64
 
     ld   a, [wIgnoreLinkCollisionsCountdown]      ; $7296: $FA $3E $C1
     ld   hl, wIsLinkInTheAir                      ; $7299: $21 $46 $C1
     or   [hl]                                     ; $729C: $B6
-    jr   nz, jr_002_72FA                          ; $729D: $20 $5B
+    jr   nz, .checkPegasusBoots                   ; $729D: $20 $5B
 
     ld   a, [wIsIndoor]                           ; $729F: $FA $A5 $DB
     and  a                                        ; $72A2: $A7
     ldh  a, [hObjectUnderEntity]                  ; $72A3: $F0 $AF
-    jr   z, jr_002_72D1                           ; $72A5: $28 $2A
+    jr   z, .checkOverworldObjects                ; $72A5: $28 $2A
 
     ld_dialog_low e, Dialog08A ; "This rock has many cracks" ; $72A7: $1E $8A
-    cp   $A9                                      ; $72A9: $FE $A9
-    jr   z, jr_002_72EC                           ; $72AB: $28 $3F
+    cp   OBJECT_BOMBABLE_BLOCK                    ; $72A9: $FE $A9
+    jr   z, .jr_002_72EC                          ; $72AB: $28 $3F
 
     ld_dialog_low e, Dialog08B ; "What a weird object" ; $72AD: $1E $8B
-    cp   $4F                                      ; $72AF: $FE $4F
+    cp   OBJECT_DASHABLE_ROCK_2                   ; $72AF: $FE $4F
     jr   z, .jr_72BB                              ; $72B1: $28 $08
 
-    cp   $4E                                      ; $72B3: $FE $4E
+    cp   OBJECT_DASHABLE_ROCK_1                   ; $72B3: $FE $4E
     jr   z, .jr_72BB                              ; $72B5: $28 $04
 
-    cp   $88                                      ; $72B7: $FE $88
-    jr   nz, jr_002_72C3                          ; $72B9: $20 $08
+    cp   OBJECT_DASHABLE_ROCK_3                   ; $72B7: $FE $88
+    jr   nz, .jr_002_72C3                         ; $72B9: $20 $08
 
 .jr_72BB
     ld   a, [wIsRunningWithPegasusBoots]          ; $72BB: $FA $4A $C1
     and  a                                        ; $72BE: $A7
-    jr   nz, jr_002_72FA                          ; $72BF: $20 $39
+    jr   nz, .checkPegasusBoots                   ; $72BF: $20 $39
 
-    jr   jr_002_72EC                              ; $72C1: $18 $29
+    jr   .jr_002_72EC                             ; $72C1: $18 $29
 
-jr_002_72C3:
-    cp   $DE                                      ; $72C3: $FE $DE
-    jr   nz, jr_002_72D1                          ; $72C5: $20 $0A
+.jr_002_72C3:
+    cp   OBJECT_KEYHOLE_BLOCK                     ; $72C3: $FE $DE
+    jr   nz, .checkOverworldObjects               ; $72C5: $20 $0A
 
     ld   a, [wSmallKeysCount]                     ; $72C7: $FA $D0 $DB
     and  a                                        ; $72CA: $A7
-    jr   nz, jr_002_72FA                          ; $72CB: $20 $2D
+    jr   nz, .checkPegasusBoots                   ; $72CB: $20 $2D
 
     ld_dialog_low e, Dialog08C ; "This rock has a key hole" ; $72CD: $1E $8C
-    jr   jr_002_72EC                              ; $72CF: $18 $1B
+    jr   .jr_002_72EC                             ; $72CF: $18 $1B
 
-jr_002_72D1:
+; Check whether Link is touching an object in the
+; overworld that should print an informational message
+.checkOverworldObjects
     ; INVENTORY_POWER_BRACELET
     cp   OBJECT_LIFTABLE_ROCK | OBJECT_LIFTABLE_POT ; $72D1: $FE $20
-    jr   nz, jr_002_72FA                          ; $72D3: $20 $25
+    jr   nz, .checkPegasusBoots                    ; $72D3: $20 $25
 
+    ; If you have the Power Bracelet, don't
+    ; show the "This looks pretty heavy" dialog when
+    ; touching an OBJECT_LIFTABLE_ROCK
     ld   a, [wPowerBraceletLevel]
     and  a
-    jr   nz, jr_002_72FA                           ; $72E1: $28 $17
+    jr   z, .checkPegasusBoots                     ; $72DA: $28 $1E
 
     ldh  a, [hPressedButtonsMask]                  ; $20E5: $F0 $CB
     and  J_A                                       ; $20E7: $E6 $10
-    jr   z, jr_002_72FA                            ; $72E8: $20 $10
+    jr   z, .checkPegasusBoots                     ; $72E8: $20 $10
 
     ld_dialog_low e, Dialog08D ; "This looks pretty heavy" ; $72EA: $1E $8D
 
-jr_002_72EC:
+.jr_002_72EC:
     ld   a, [wC5A6]                               ; $72EC: $FA $A6 $C5
     and  a                                        ; $72EF: $A7
-    jr   nz, jr_002_72FA                          ; $72F0: $20 $08
+    jr   nz, .checkPegasusBoots                   ; $72F0: $20 $08
 
     inc  a                                        ; $72F2: $3C
     ld   [wC5A6], a                               ; $72F3: $EA $A6 $C5
@@ -7147,7 +7152,10 @@ jr_002_72EC:
     ld   a, e                                     ; $72F6: $7B
     call OpenDialogInTable0AndClearIncrement      ; $72F7: $CD $FE $74
 
-jr_002_72FA:
+; Check whether Link is currently dashing with
+; the Pegasus Boots, in which case he should collide
+; and not interact
+.checkPegasusBoots
     ld   a, [wIsRunningWithPegasusBoots]          ; $72FA: $FA $4A $C1
     and  a                                        ; $72FD: $A7
     jr   nz, .jr_7330                             ; $72FE: $20 $30
@@ -7192,13 +7200,13 @@ jr_002_72FA:
     ldh  a, [hObjectUnderEntity]                  ; $733E: $F0 $AF
     jr   z, label_002_73AD                        ; $7340: $28 $6B
 
-    cp   $88                                      ; $7342: $FE $88
+    cp   OBJECT_DASHABLE_ROCK_3                   ; $7342: $FE $88
     jr   z, .jr_734F                              ; $7344: $28 $09
 
-    cp   $4E                                      ; $7346: $FE $4E
+    cp   OBJECT_DASHABLE_ROCK_1                   ; $7346: $FE $4E
     jr   z, .jr_734F                              ; $7348: $28 $05
 
-    cp   $4F                                      ; $734A: $FE $4F
+    cp   OBJECT_DASHABLE_ROCK_2                   ; $734A: $FE $4F
     jp   nz, label_002_73AD                       ; $734C: $C2 $AD $73
 
 .jr_734F
@@ -7217,7 +7225,7 @@ jr_002_72FA:
     ld   d, $00                                   ; $7365: $16 $00
     call func_014_5526_trampoline                 ; $7367: $CD $78 $21
 
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $736A: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $736A: $3E $05
     call SpawnNewEntity_trampoline                ; $736C: $CD $86 $3B
     jp   c, collisionEnd                          ; $736F: $DA $54 $74
 
@@ -7520,7 +7528,7 @@ label_002_74AD:
     and  $02                                      ; $74F0: $E6 $02
     sla  a                                        ; $74F2: $CB $27
     ld   [wC158], a                               ; $74F4: $EA $58 $C1
-    ld   a, JINGLE_HUGE_BUMP                      ; $74F7: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $74F7: $3E $0B
     ldh  [hJingle], a                             ; $74F9: $E0 $F2
     jp   func_1828                                ; $74FB: $C3 $28 $18
 
@@ -7602,7 +7610,7 @@ func_002_755B::
     jr   z, .jr_7582                              ; $7565: $28 $1B
 
     ld   c, $FC                                   ; $7567: $0E $FC
-    ld   a, [wD6F9]                               ; $7569: $FA $F9 $D6
+    ld   a, [wLinkStandingOnSwitchBlock]          ; $7569: $FA $F9 $D6
     and  a                                        ; $756C: $A7
     jr   nz, .jr_7582                             ; $756D: $20 $13
 
@@ -7865,7 +7873,7 @@ ApplyLinkGroundPhysics_part2::
     ld   a, [wLinkGroundVfx]                      ; $76B5: $FA $81 $C1
     ld   [wDBCB], a                               ; $76B8: $EA $CB $DB
 
-    ld   a, WAVE_SFX_LINK_FALLS                   ; $76BB: $3E $0C
+    ld   a, WAVE_SFX_LINK_FALL                    ; $76BB: $3E $0C
     ldh  [hWaveSfx], a                            ; $76BD: $E0 $F3
 
 .return
@@ -8039,7 +8047,7 @@ IF __PATCH_0__
     jr   z, .jr_779A
 ENDC
 
-    ld   a, JINGLE_WATER_DIVE                     ; $7796: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $7796: $3E $0E
     ldh  [hJingle], a                             ; $7798: $E0 $F2
 
 .jr_779A
@@ -8075,7 +8083,7 @@ ApplyLinkGroundPhysics_Default::
     sub  $DB                                      ; $77C3: $D6 $DB
     ld   e, a                                     ; $77C5: $5F
     ld   d, $00                                   ; $77C6: $16 $00
-    ld   hl, Data_002_787B                        ; $77C8: $21 $7B $78
+    ld   hl, SwitchBlocksStateTable               ; $77C8: $21 $7B $78
     add  hl, de                                   ; $77CB: $19
     ld   a, [wSwitchBlocksState]                  ; $77CC: $FA $FB $D6
     xor  [hl]                                     ; $77CF: $AE
@@ -8090,18 +8098,18 @@ ApplyLinkGroundPhysics_Default::
     add  [hl]                                     ; $77DF: $86
     ld   [wC13B], a                               ; $77E0: $EA $3B $C1
     ld   a, $01                                   ; $77E3: $3E $01
-    ld   [wD6F9], a                               ; $77E5: $EA $F9 $D6
+    ld   [wLinkStandingOnSwitchBlock], a          ; $77E5: $EA $F9 $D6
     ret                                           ; $77E8: $C9
 .grassVfxEnd
 
-    ld   a, [wD6F9]                               ; $77E9: $FA $F9 $D6
+    ld   a, [wLinkStandingOnSwitchBlock]          ; $77E9: $FA $F9 $D6
     and  a                                        ; $77EC: $A7
     jr   z, .jr_002_77F7                          ; $77ED: $28 $08
 
     ld   a, NOISE_SFX_FOOTSTEP                    ; $77EF: $3E $07
     ldh  [hNoiseSfx], a                           ; $77F1: $E0 $F4
     xor  a                                        ; $77F3: $AF
-    ld   [wD6F9], a                               ; $77F4: $EA $F9 $D6
+    ld   [wLinkStandingOnSwitchBlock], a          ; $77F4: $EA $F9 $D6
 
 .jr_002_77F7
     ld   a, [wIsIndoor]                           ; $77F7: $FA $A5 $DB
@@ -8133,7 +8141,7 @@ ApplyLinkGroundPhysics_Default::
     ld   a, $60                                   ; $781B: $3E $60
     ld   [wSwitchButtonPressed], a                ; $781D: $EA $CB $C1
 
-    ld   a, WAVE_SFX_SWITCH_BUTTON                ; $7820: $3E $0E
+    ld   a, WAVE_SFX_FLOOR_SWITCH                 ; $7820: $3E $0E
     ldh  [hWaveSfx], a                            ; $7822: $E0 $F3
 
     ld   a, REPLACE_TILES_BUTTON_PRESSED          ; $7824: $3E $03
@@ -8144,7 +8152,7 @@ ApplyLinkGroundPhysics_Default::
     cp   ROOM_INDOOR_B_KANALET_GATE_SWITCH        ; $782A: $FE $C3
     jr   nz, .kanaletGateEnd                      ; $782C: $20 $05
     ld   hl, wOverworldRoomStatus + ROOM_OW_KANALET_GATE ; $782E: $21 $79 $D8
-    set  4, [hl]                                  ; $7831: $CB $E6
+    set  OW_ROOM_STATUS_FLAG_CHANGED, [hl]        ; $7831: $CB $E6
 .kanaletGateEnd
 
     ld   a, [wC13B]                               ; $7833: $FA $3B $C1
@@ -8180,7 +8188,7 @@ ApplyLinkGroundPhysics_Default::
     cp   $28                                      ; $7861: $FE $28
     jr   c, .return                               ; $7863: $38 $09
 
-    ld   a, NOISE_SFX_ROCK_RUMBLE                 ; $7865: $3E $2B
+    ld   a, NOISE_SFX_RUMBLE2                     ; $7865: $3E $2B
     ldh  [hNoiseSfx], a                           ; $7867: $E0 $F4
     jp   label_002_4D97                           ; $7869: $C3 $97 $4D
 
@@ -8193,7 +8201,7 @@ ApplyLinkGroundPhysics_Default::
 Data_002_786F::
     db   $FC, $FF, $FF, $FE, $FE, $FE, $FD, $FD, $FD, $FC, $FC, $FC
 
-Data_002_787B::
+SwitchBlocksStateTable::
     db   $00, $02
 
 label_002_787D:

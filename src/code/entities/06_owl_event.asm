@@ -72,7 +72,7 @@ jr_006_6853:
     jp   nz, ClearEntityStatus_06                 ; $685E: $C2 $DB $65
 
     ld   a, [wOverworldRoomStatus + ROOM_OW_MARIN_BRIDGE] ; $6861: $FA $08 $D8
-    and  $10                                      ; $6864: $E6 $10
+    and  OW_ROOM_STATUS_CHANGED                   ; $6864: $E6 $10
     ret  z                                        ; $6866: $C8
 
     jr   jr_006_68A0                              ; $6867: $18 $37
@@ -89,7 +89,7 @@ jr_006_6853:
     jr   nz, .jr_687E                             ; $6874: $20 $08
 
     ld   a, [wOverworldRoomStatus + UNKNOWN_ROOM_06] ; $6876: $FA $06 $D8
-    and  $10                                      ; $6879: $E6 $10
+    and  OW_ROOM_STATUS_CHANGED                   ; $6879: $E6 $10
     ret  z                                        ; $687B: $C8
 
     jr   jr_006_68A0                              ; $687C: $18 $22
@@ -167,7 +167,7 @@ OwlState0Handler::
     cp   ROOM_OW_BEACH_WITH_SWORD
     jr   nz, .jr_68EF                             ; $68D9: $20 $14
 
-    ld   a, MUSIC_SWORD_SEARCH                    ; $68DB: $3E $1D
+    ld   a, MUSIC_OVERWORLD_SWORDLESS             ; $68DB: $3E $1D
     ldh  [hDefaultMusicTrack], a                  ; $68DD: $E0 $B0
     ldh  a, [hLinkPositionY]                      ; $68DF: $F0 $99
     cp   $44                                      ; $68E1: $FE $44
@@ -303,7 +303,7 @@ OwlState3Handler::
     ld   d, b                                     ; $69B5: $50
     ld   hl, wOverworldRoomStatus                 ; $69B6: $21 $00 $D8
     add  hl, de                                   ; $69B9: $19
-    set  5, [hl]                                  ; $69BA: $CB $EE
+    set  OW_ROOM_STATUS_FLAG_OWL_TALKED, [hl]     ; $69BA: $CB $EE
     ret                                           ; $69BC: $C9
 
 func_006_69BD::
