@@ -168,7 +168,7 @@ DropHeartContainer_04::
     add  hl, de                                   ; $5787: $19
     ld   [hl], a                                  ; $5788: $77
     ld   hl, hNoiseSfx                            ; $5789: $21 $F4 $FF
-    ld   [hl], $1A                                ; $578C: $36 $1A
+    ld   [hl], NOISE_SFX_BOSS_EXPLOSION           ; $578C: $36 $1A
     jp   ClearEntityStatusBank04                  ; $578E: $C3 $7A $6D
 
 MoldormEntityActiveHandler::
@@ -204,7 +204,7 @@ jr_004_57B8:
     jr   c, jr_004_57C6                           ; $57BF: $38 $05
 
     ld   [hl], b                                  ; $57C1: $70
-    ld   a, $1B                                   ; $57C2: $3E $1B
+    ld   a, NOISE_SFX_MOLDORM_ROAM                ; $57C2: $3E $1B
     ldh  [hNoiseSfx], a                           ; $57C4: $E0 $F4
 
 jr_004_57C6:
@@ -272,17 +272,17 @@ Data_004_57F2::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MoldormSpriteVariants:: ; $58F2
 .variant0
-    db $70, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $70, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $70, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $70, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $72, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $74, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $74, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $74, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $74, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $76, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 
 func_004_5902::
     ld   hl, wEntitiesPrivateState3Table          ; $5902: $21 $D0 $C2
@@ -293,7 +293,7 @@ func_004_5902::
 
     ld   hl, wEntitiesPhysicsFlagsTable           ; $590C: $21 $40 $C3
     add  hl, bc                                   ; $590F: $09
-    ld   [hl], $08                                ; $5910: $36 $08
+    ld   [hl], 8                                  ; $5910: $36 $08
     ld   hl, wEntitiesSpriteVariantTable          ; $5912: $21 $B0 $C3
     add  hl, bc                                   ; $5915: $09
     ld   a, [hl]                                  ; $5916: $7E
@@ -313,7 +313,7 @@ func_004_5902::
     call RenderActiveEntitySpritesRect            ; $5926: $CD $E6 $3C
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5929: $21 $40 $C3
     add  hl, bc                                   ; $592C: $09
-    ld   [hl], $02                                ; $592D: $36 $02
+    ld   [hl], 2                                  ; $592D: $36 $02
     ld   hl, wEntitiesInertiaTable                ; $592F: $21 $D0 $C3
     add  hl, bc                                   ; $5932: $09
     ld   a, [hl]                                  ; $5933: $7E
@@ -418,7 +418,7 @@ func_004_5902::
     ldh  a, [hFrameCounter]                       ; $59DC: $F0 $E7
     rla                                           ; $59DE: $17
     rla                                           ; $59DF: $17
-    and  OAM_DMG_PAL_1                            ; $59E0: $E6 $10
+    and  OAMF_PAL1                                ; $59E0: $E6 $10
     ld   hl, hActiveEntityFlipAttribute           ; $59E2: $21 $ED $FF
     xor  [hl]                                     ; $59E5: $AE
     ld   [hl], a                                  ; $59E6: $77
@@ -449,7 +449,7 @@ func_004_5A05::
     ldh  [hMultiPurpose1], a                      ; $5A0E: $E0 $D8
     ld   a, TRANSCIENT_VFX_POOF                   ; $5A10: $3E $02
     call AddTranscientVfx                         ; $5A12: $CD $C7 $0C
-    ld   a, $13                                   ; $5A15: $3E $13
+    ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $5A15: $3E $13
     ldh  [hNoiseSfx], a                           ; $5A17: $E0 $F4
     ret                                           ; $5A19: $C9
 

@@ -1,29 +1,29 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MadamMeowMeowSpriteVariants::
 .variant0
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant1
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $64, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $64, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant3
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $64, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $64, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant4
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant5
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant6
-    db $6A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant7
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 MadamMeowMeowEntityHandler::
     call GetEntityTransitionCountdown             ; $5B76: $CD $05 $0C
@@ -81,9 +81,9 @@ jr_006_5BC4:
     call ReturnIfNonInteractive_06                ; $5BC4: $CD $C6 $64
     ldh  a, [hActiveEntityPosY]                   ; $5BC7: $F0 $EF
     ldh  [hActiveEntityVisualPosY], a             ; $5BC9: $E0 $EC
-    call func_006_641A                            ; $5BCB: $CD $1A $64
+    call PushLinkOutOfEntity_06                   ; $5BCB: $CD $1A $64
     call CopyEntityPositionToActivePosition       ; $5BCE: $CD $8A $3D
-    call func_006_645D                            ; $5BD1: $CD $5D $64
+    call CheckLinkInteractionWithEntity_06        ; $5BD1: $CD $5D $64
     ret  nc                                       ; $5BD4: $D0
 
     ld_dialog_low e, Dialog130 ; "My BowWow is so proud" ; $5BD5: $1E $30
@@ -125,5 +125,5 @@ label_006_5C04:
     ld   a, e                                     ; $5C04: $7B
     call OpenDialogInTable1                       ; $5C05: $CD $73 $23
     ld   hl, wDialogState                         ; $5C08: $21 $9F $C1
-    set  7, [hl]                                  ; $5C0B: $CB $FE
+    set  DIALOG_BOX_BOTTOM_BIT, [hl]              ; $5C0B: $CB $FE
     ret                                           ; $5C0D: $C9

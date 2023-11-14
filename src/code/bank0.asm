@@ -9,20 +9,20 @@ include "code/home/interrupts.asm"
 ; Switch to the bank defined in a, and save the active bank
 SwitchBank::
     ld   [wCurrentBank], a                        ; $080C: $EA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $080F: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $080F: $EA $00 $21
     ret                                           ; $0812: $C9
 
 ; Switch to the bank defined in a, depending on GB or GBC mode
 SwitchAdjustedBank::
     call AdjustBankNumberForGBC                   ; $0813: $CD $0B $0B
     ld   [wCurrentBank], a                        ; $0816: $EA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $0819: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0819: $EA $00 $21
     ret                                           ; $081C: $C9
 
 ReloadSavedBank::
     push af                                       ; $081D: $F5
     ld   a, [wCurrentBank]                        ; $081E: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $0821: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0821: $EA $00 $21
     pop  af                                       ; $0824: $F1
     ret                                           ; $0825: $C9
 
@@ -34,7 +34,7 @@ LoadDungeonMinimapTiles::
     ; Select the bank containing the dungeon minimap tiles
     ld   a, BANK(DungeonMinimapTiles)             ; $0826: $3E $12
     call AdjustBankNumberForGBC                   ; $0828: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $082B: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $082B: $EA $00 $21
 
     ; If hBGTilesLoadingStage < 8, load the tiles
     ldh  a, [hBGTilesLoadingStage]                ; $082E: $F0 $92
@@ -152,7 +152,7 @@ func_020_6A30_trampoline::
 
 RestoreBankAndReturn::
     ld   a, [wCurrentBank]                        ; $08DF: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $08E2: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $08E2: $EA $00 $21
     ret                                           ; $08E5: $C9
 
 func_020_6AC1_trampoline::
@@ -178,7 +178,7 @@ CopyLinkTunicPalette_trampoline::
 
 LoadBank1AndReturn::
     ld   a, $01                                   ; $0917: $3E $01
-    ld   [MBC3SelectBank], a                      ; $0919: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0919: $EA $00 $21
     ret                                           ; $091C: $C9
 
 func_91D::
@@ -198,7 +198,7 @@ func_91D::
 .jp_92F
     callsb GetBGAttributesAddressForObject        ; $092F: $3E $1A $EA $00 $21 $CD $76 $65
     ldh  a, [hMultiPurpose8]                      ; $0937: $F0 $DF
-    ld   [MBC3SelectBank], a                      ; $0939: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0939: $EA $00 $21
     ld   hl, wDrawCommandAlt                      ; $093C: $21 $91 $DC
     ld   a, [wDrawCommandsAltSize]                ; $093F: $FA $90 $DC
     ld   e, a                                     ; $0942: $5F
@@ -242,7 +242,7 @@ func_91D::
 ; Restore bank saved on stack and return
 RestoreStackedBankAndReturn::
     pop  af                                       ; $0973: $F1
-    ld   [MBC3SelectBank], a                      ; $0974: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0974: $EA $00 $21
     ret                                           ; $0977: $C9
 
 func_020_6D0E_trampoline::
@@ -262,7 +262,7 @@ func_983::
 
     ; Switch to the bank containing this room's palettes
     ldh  a, [hMultiPurpose8]                      ; $098B: $F0 $DF
-    ld   [MBC3SelectBank], a                      ; $098D: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $098D: $EA $00 $21
 
     ; Read value from address [hMultiPurposeA hMultiPurpose9]
     ldh  a, [hMultiPurpose9]                      ; $0990: $F0 $E0
@@ -308,7 +308,7 @@ func_999::
     ldi  [hl], a                                  ; $09C5: $22
     jr   RestoreStackedBankAndReturn              ; $09C6: $18 $AB
 
-IF !__PATCH_0__
+IF !__OPTIMIZATIONS_1__
 CheckPushedTombStone_trampoline::
     push af                                       ; $09C8: $F5
     callsb CheckPushedTombStone                   ; $09C9: $3E $20 $EA $00 $21 $CD $85 $49
@@ -375,7 +375,7 @@ CopyDataToVRAM_noDMA::
 ;  h   bank to switch back after the transfer
 CopyDataToVRAM::
     ; Switch to bank in a
-    ld   [MBC3SelectBank], a                      ; $0A13: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0A13: $EA $00 $21
 
     ; If running on DMG, use a loop to copy the data
     ldh  a, [hIsGBC]                              ; $0A16: $F0 $FE
@@ -398,14 +398,14 @@ CopyDataToVRAM::
     ; Fallthrough to switch back to the bank in h
 .restoreBankAndReturn
     ld   a, h                                     ; $0A2D: $7C
-    ld   [MBC3SelectBank], a                      ; $0A2E: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0A2E: $EA $00 $21
     ret                                           ; $0A31: $C9
 
 ; Copy Color Dungeon tiles?
 CopyColorDungeonSymbols::
     push af                                       ; $0A32: $F5
     ld   a, BANK(ColorDungeonNpcTiles)            ; $0A33: $3E $35
-    ld   [MBC3SelectBank], a                      ; $0A35: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0A35: $EA $00 $21
     ld   hl, ColorDungeonNpcTiles + $F00          ; $0A38: $21 $00 $4F
     ld   de, wDCC0                                ; $0A3B: $11 $C0 $DC
     ld   bc, $20                                  ; $0A3E: $01 $20 $00
@@ -429,7 +429,7 @@ func_036_4F9B_trampoline::
 func_A5F::
     push af                                       ; $0A5F: $F5
     ld   a, $20                                   ; $0A60: $3E $20
-    ld   [MBC3SelectBank], a                      ; $0A62: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0A62: $EA $00 $21
     call RenderActiveEntitySpritesRect            ; $0A65: $CD $E6 $3C
     jp   RestoreStackedBankAndReturn              ; $0A68: $C3 $73 $09
 
@@ -469,9 +469,9 @@ RestoreStackedBank::
     call SwitchBank                               ; $0AB1: $CD $0C $08
     ret                                           ; $0AB4: $C9
 
-func_AB5::
+ChangeBGColumnPaletteAndExecuteDrawCommands::
     push af                                       ; $0AB5: $F5
-    callsb func_024_5C1A                          ; $0AB6: $3E $24 $EA $00 $21 $CD $1A $5C
+    callsb ChangeBGColumnPalette                  ; $0AB6: $3E $24 $EA $00 $21 $CD $1A $5C
     ld   de, wDrawCommand                         ; $0ABE: $11 $01 $D6
     call ExecuteDrawCommands                      ; $0AC1: $CD $27 $29
     jr   RestoreStackedBank                       ; $0AC4: $18 $EA
@@ -507,6 +507,7 @@ LoadPhotoBgMap_trampoline::
     ret                                           ; $0B0A: $C9
 
 IF __PATCH_3__
+; Unused code?
 func_036_72D5_trampoline::
     push af
     callsb func_036_72D5
@@ -540,7 +541,7 @@ AdjustBankNumberForGBC::
 ;   hl :        source address
 CopyObjectsAttributesToWRAM2::
     ldh  a, [hMultiPurpose0]                      ; $0B1A: $F0 $D7
-    ld   [MBC3SelectBank], a                      ; $0B1C: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0B1C: $EA $00 $21
     ld   a, $02                                   ; $0B1F: $3E $02
     ld   [rSVBK], a                               ; $0B21: $E0 $70
     call CopyData                                 ; $0B23: $CD $14 $29
@@ -548,14 +549,20 @@ CopyObjectsAttributesToWRAM2::
     ld   [rSVBK], a                               ; $0B27: $E0 $70
     ; Restore bank $20
     ld   a, $20                                   ; $0B29: $3E $20
-    ld   [MBC3SelectBank], a                      ; $0B2B: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0B2B: $EA $00 $21
     ret                                           ; $0B2E: $C9
 
-; On GBC, copy some overworld objects to ram bank 2
+; On GBC, copy the overworld object at [hl] to ram bank 2.
+;
+; This is used when the inventory menu is exited to restore the background objects
+; as they were modified (i.e. cut grass, holes dug with the shovel, etc.)
+;
+;
 ; Inputs:
-;   a  data bank?
-;   hl destination in RAM bank 2
-func_2BF::
+;   a  bit7: If not set, check if the object at address hl is in a specific ignore list.
+;      bit0-6: Bank number to return to after this function is finished.
+;   hl source in RAM bank 0 and destination in RAM bank 2
+BackupObjectInRAM2::
     ldh  [hMultiPurpose2], a                      ; $0B2F: $E0 $D9
     ldh  a, [hIsGBC]                              ; $0B31: $F0 $FE
     and  a                                        ; $0B33: $A7
@@ -569,7 +576,7 @@ func_2BF::
     ldh  a, [hMultiPurpose2]                      ; $0B3B: $F0 $D9
     and  $80                                      ; $0B3D: $E6 $80
     jr   nz, .else                                ; $0B3F: $20 $0A
-    callsb func_020_6E50                          ; $0B41: $3E $20 $EA $00 $21 $CD $50 $6E
+    callsb CheckOverworldObjectIgnoreList         ; $0B41: $3E $20 $EA $00 $21 $CD $50 $6E
     jr   c, .endIf                                ; $0B49: $38 $09
 .else
     ld   b, [hl]                                  ; $0B4B: $46
@@ -582,16 +589,16 @@ func_2BF::
 
     ldh  a, [hMultiPurpose2]                      ; $0B54: $F0 $D9
     and  $7F                                      ; $0B56: $E6 $7F
-    ld   [MBC3SelectBank], a                      ; $0B58: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0B58: $EA $00 $21
     pop  bc                                       ; $0B5B: $C1
     ret                                           ; $0B5C: $C9
 
 ; Copy data from bank in a, then switch back to bank $28
 CopyData_trampoline::
-    ld   [MBC3SelectBank], a                      ; $0B5D: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0B5D: $EA $00 $21
     call CopyData                                 ; $0B60: $CD $14 $29
     ld   a, $28                                   ; $0B63: $3E $28
-    ld   [MBC3SelectBank], a                      ; $0B65: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0B65: $EA $00 $21
     ret                                           ; $0B68: $C9
 
 ; Copy data to vBGMap0
@@ -601,7 +608,7 @@ CopyData_trampoline::
 ;   hhMultiPurposeF  return bank to restore
 CopyBGMapFromBank::
     push hl                                       ; $0B69: $E5
-    ld   [MBC3SelectBank], a                      ; $0B6A: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0B6A: $EA $00 $21
 
     ; If on GBC…
     ldh  a, [hIsGBC]                              ; $0B6D: $F0 $FE
@@ -610,11 +617,11 @@ CopyBGMapFromBank::
     ; hl += $168
     ld   de, $168                                 ; $0B72: $11 $68 $01
     add  hl, de                                   ; $0B75: $19
-    ; Switch to RAM bank 1
+    ; Switch to VRAM bank 1
     ld   a, $01                                   ; $0B76: $3E $01
     ld   [rVBK], a                                ; $0B78: $E0 $4F
     call CopyToBGMap0                             ; $0B7A: $CD $96 $0B
-    ; Switch back to RAM bank 0
+    ; Switch back to VRAM bank 0
     xor  a                                        ; $0B7D: $AF
     ld   [rVBK], a                                ; $0B7E: $E0 $4F
 .gbcEnd
@@ -631,7 +638,7 @@ CopyBGMapFromBank::
 .photoAlbumEnd
 
     ldh  a, [hMultiPurposeF]                      ; $0B90: $F0 $E6
-    ld   [MBC3SelectBank], a                      ; $0B92: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0B92: $EA $00 $21
     ret                                           ; $0B95: $C9
 
 CopyToBGMap0::
@@ -670,7 +677,7 @@ LoadBaseTiles_trampoline::
 
 func_BC5::
     ld   a, [w2_D16A]                             ; $0BC5: $FA $6A $D1
-    ld   [MBC3SelectBank], a                      ; $0BC8: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0BC8: $EA $00 $21
 .loop
     ld   a, [hli]                                 ; $0BCB: $2A
     ld   [de], a                                  ; $0BCC: $12
@@ -679,19 +686,19 @@ func_BC5::
     jr   nz, .loop                                ; $0BCF: $20 $FA
 
     ld   a, $28                                   ; $0BD1: $3E $28
-    ld   [MBC3SelectBank], a                      ; $0BD3: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0BD3: $EA $00 $21
     ret                                           ; $0BD6: $C9
 
 ; Generic trampoline, for calling a function into another bank.
 Farcall::
     ; Switch to bank wFarcallBank
     ld   a, [wFarcallBank]                        ; $0BD7: $FA $01 $DE
-    ld   [MBC3SelectBank], a                      ; $0BDA: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0BDA: $EA $00 $21
     ; Call the target function
     call Farcall_trampoline                       ; $0BDD: $CD $E7 $0B
     ; Switch back to bank wFarcallReturnBank
     ld   a, [wFarcallReturnBank]                  ; $0BE0: $FA $04 $DE
-    ld   [MBC3SelectBank], a                      ; $0BE3: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0BE3: $EA $00 $21
     ret                                           ; $0BE6: $C9
 
 ; Jump to address in wFarcallAdressHigh, wFarcallAdressLow
@@ -704,7 +711,7 @@ Farcall_trampoline::
 
 UpdateLinkWalkingAnimation_trampoline::
     ld   a, BANK(LinkAnimationsLists)             ; $0BF0: $3E $02
-    ld   [MBC3SelectBank], a                      ; $0BF2: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0BF2: $EA $00 $21
     call UpdateLinkWalkingAnimation               ; $0BF5: $CD $50 $1A
     jp   ReloadSavedBank                          ; $0BF8: $C3 $1D $08
 
@@ -774,18 +781,18 @@ PlayWrongAnswerJingle::
     ret                                           ; $0C24: $C9
 
 ReadTileValueFromAsciiTable::
-    ld   hl, AsciiToTileMap                       ; $0C25: $21 $41 $46
+    ld   hl, CodepointToTileMap                   ; $0C25: $21 $41 $46
     jr   ReadValueInDialogsBank                   ; $0C28: $18 $03
 
 ReadTileValueFromDiacriticsTable::
-    ld   hl, AsciiToDiacritic                     ; $0C2A: $21 $41 $47
+    ld   hl, CodepointToDiacritic                 ; $0C2A: $21 $41 $47
 
 ReadValueInDialogsBank::
-    ld   a, BANK(AsciiToTileMap) ; or BANK(DialogBankTable) ; $0C2D: $3E $1C
-    ld   [MBC3SelectBank], a                      ; $0C2F: $EA $00 $21
+    ld   a, BANK(CodepointToTileMap) ; or BANK(DialogBankTable) ; $0C2D: $3E $1C
+    ld   [rSelectROMBank], a                      ; $0C2F: $EA $00 $21
     add  hl, bc                                   ; $0C32: $09
     ld   a, [hl]                                  ; $0C33: $7E
-    ld   hl, MBC3SelectBank                       ; $0C34: $21 $00 $21
+    ld   hl, rSelectROMBank                       ; $0C34: $21 $00 $21
     ld   [hl], $01                                ; $0C37: $36 $01
     ret                                           ; $0C39: $C9
 
@@ -794,16 +801,16 @@ ReadValueInDialogsBank::
 ;   hl:  target address of the instrument tiles
 CopySirenInstrumentTiles::
     ld   a, BANK(SirenInstrumentsTiles)           ; $0C3A: $3E $0C
-    ld   [MBC3SelectBank], a                      ; $0C3C: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0C3C: $EA $00 $21
     ld   bc, $40                                  ; $0C3F: $01 $40 $00
     call CopyData                                 ; $0C42: $CD $14 $29
     ld   a, $01                                   ; $0C45: $3E $01
-    ld   [MBC3SelectBank], a                      ; $0C47: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0C47: $EA $00 $21
     ret                                           ; $0C4A: $C9
 
 PlayBombExplosionSfx::
     ld   hl, hNoiseSfx                            ; $0C4B: $21 $F4 $FF
-    ld   [hl], NOISE_SFX_BOMB_EXPLOSION           ; $0C4E: $36 $0C
+    ld   [hl], NOISE_SFX_EXPLOSION                ; $0C4E: $36 $0C
 
 func_C50::
     ld   hl, wC502                                ; $0C50: $21 $02 $C5
@@ -986,7 +993,7 @@ label_D15::
 ; Actual loading will be done during the next vblank period.
 SelectRoomTilesets::
     ld   a, BANK(TilesetTables)                   ; $0D1E: $3E $20
-    ld   [MBC3SelectBank], a                      ; $0D20: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0D20: $EA $00 $21
 
     ; ------------------------------------------------------------
     ;
@@ -1280,17 +1287,26 @@ ExecuteGameplayHandler::
     jr   nz, jumpToGameplayHandler                ; $0E44: $20 $3F
 
 presentSaveScreenIfNeeded::
-    ; If a indoor/outdoor transition is running
+    ; If a indoor/outdoor transition is running...
     ld   a, [wTransitionSequenceCounter]          ; $0E46: $FA $6B $C1
     cp   $04                                      ; $0E49: $FE $04
+    ; ...don't open the save screen.
     jr   nz, jumpToGameplayHandler                ; $0E4B: $20 $38
 
-    ; If a dialog is visible, or the screen is animating from one map to another
+    ; If a dialog is visible...
     ld   a, [wDialogState]                        ; $0E4D: $FA $9F $C1
+    ; ...or wC167 is non-zero...
     ld   hl, wC167                                ; $0E50: $21 $67 $C1
     or   [hl]                                     ; $0E53: $B6
+    ; ...or the screen is currently scrolling from one room to another...
+    ;
+    ; (POI: This last check was added in 1.1 of the non-DX version of the game,
+    ; and patches the screen warp glitch. However, removing this check doesn't
+    ; re-introduce the glitch into the DX version, perhaps because of another
+    ; check somewhere else.)
     ld   hl, wRoomTransitionState                 ; $0E54: $21 $24 $C1
     or   [hl]                                     ; $0E57: $B6
+    ; ...don't open the save screen.
     jr   nz, jumpToGameplayHandler                ; $0E58: $20 $2B
 
     ; If GameplayType > INVENTORY (i.e. photo album and pictures)
@@ -1362,7 +1378,7 @@ PeachPictureHandler::
     jp   returnFromGameplayHandler                ; $0EC8: $C3 $1A $10
 
 MarinBeachHandler::
-    call MarinBeachEntryPoint                    ; $0ECB: $CD $03 $62
+    call MarinBeachEntryPoint                     ; $0ECB: $CD $03 $62
     jp   returnFromGameplayHandler                ; $0ECE: $C3 $1A $10
 
 WorldMapHandler::
@@ -1381,7 +1397,7 @@ EndCreditsHandler::
 
 AnimateEntitiesAndRestoreBank17::
     ld   a, $03                                   ; $0EED: $3E $03
-    ld   [MBC3SelectBank], a                      ; $0EEF: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0EEF: $EA $00 $21
     ld   a, $17                                   ; $0EF2: $3E $17
 
 ; Call AnimateEntities, then restore bank in a
@@ -1393,13 +1409,13 @@ AnimateEntitiesAndRestoreBank::
 
 AnimateEntitiesAndRestoreBank01::
     ld   a, $03                                   ; $0EFC: $3E $03
-    ld   [MBC3SelectBank], a                      ; $0EFE: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0EFE: $EA $00 $21
     ld   a, $01                                   ; $0F01: $3E $01
     jr   AnimateEntitiesAndRestoreBank            ; $0F03: $18 $EF
 
 AnimateEntitiesAndRestoreBank02::
     ld   a, $03                                   ; $0F05: $3E $03
-    ld   [MBC3SelectBank], a                      ; $0F07: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $0F07: $EA $00 $21
     ld   a, $02                                   ; $0F0A: $3E $02
     jr   AnimateEntitiesAndRestoreBank            ; $0F0C: $18 $E6
 
@@ -1546,7 +1562,7 @@ WorldInteractiveHandler::
     dec  e                                        ; $1009: $1D
 
 .label_100A
-    callsb func_020_5C9C                          ; $100A: $3E $20 $EA $00 $21 $CD $9C $5C
+    callsb DrawInventorySlots                     ; $100A: $3E $20 $EA $00 $21 $CD $9C $5C
 
 label_1012::
     callsw func_014_54F8                          ; $1012: $3E $14 $CD $0C $08 $CD $F8 $54
@@ -1626,10 +1642,10 @@ ApplyGotItem::
 
 InitGotItemSequence::
     ldh  a, [hPressedButtonsMask]                 ; $107F: $F0 $CB
-    and  $B0                                      ; $1081: $E6 $B0
+    and  J_A | J_B | J_START                      ; $1081: $E6 $B0
     jr   nz, .jp_10DB                             ; $1083: $20 $56
     ldh  a, [hPressedButtonsMask]                 ; $1085: $F0 $CB
-    and  $40                                      ; $1087: $E6 $40
+    and  J_SELECT                                 ; $1087: $E6 $40
     jr   z, .jp_10DB                              ; $1089: $28 $50
     ld   a, [wD45F]                               ; $108B: $FA $5F $D4
     inc  a                                        ; $108E: $3C
@@ -1714,7 +1730,7 @@ InitGotItemSequence::
     xor  a                                        ; $111F: $AF
     ld   [wInvincibilityCounter], a               ; $1120: $EA $C7 $DB
     ldh  [hLinkPhysicsModifier], a                ; $1123: $E0 $9C
-    ld   [wDDD6], a                               ; $1125: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $1125: $EA $D6 $DD
     ld   [wDDD7], a                               ; $1128: $EA $D7 $DD
     ld   [wD464], a                               ; $112B: $EA $64 $D4
     call label_27F2                               ; $112E: $CD $F2 $27
@@ -1754,202 +1770,7 @@ LinkMotionDefaultHandler::
 
     jpsw LinkMotionDefault                        ; $116F: $3E $02 $CD $0C $08 $C3 $87 $42
 
-; Check if one of the inventory item should be used
-CheckItemsToUse::
-    ld   a, [wBlockItemUsage]                     ; $1177: $FA $0A $C5
-    ld   hl, wC167                                ; $117A: $21 $67 $C1
-    or   [hl]                                     ; $117D: $B6
-    ld   hl, wC1A4                                ; $117E: $21 $A4 $C1
-    or   [hl]                                     ; $1181: $B6
-    ret  nz                                       ; $1182: $C0
-
-    ;
-    ; Configure the sword and shield
-    ;
-
-    ld   a, [wIsRunningWithPegasusBoots]          ; $1183: $FA $4A $C1
-    and  a                                        ; $1186: $A7
-    jr   z, .notRunning                           ; $1187: $28 $33
-
-    ld   a, [wAButtonSlot]                        ; $1189: $FA $01 $DB
-    cp   INVENTORY_SWORD                          ; $118C: $FE $01
-    jr   z, .swordEquipped                        ; $118E: $28 $1A
-    ld   a, [wBButtonSlot]                        ; $1190: $FA $00 $DB
-    cp   INVENTORY_SWORD                          ; $1193: $FE $01
-    jr   z, .swordEquipped                        ; $1195: $28 $13
-    ld   a, [wAButtonSlot]                        ; $1197: $FA $01 $DB
-    cp   INVENTORY_SHIELD                         ; $119A: $FE $04
-    jr   z, .shieldEquipped                       ; $119C: $28 $07
-    ld   a, [wBButtonSlot]                        ; $119E: $FA $00 $DB
-    cp   INVENTORY_SHIELD                         ; $11A1: $FE $04
-    jr   nz, .shieldEnd                           ; $11A3: $20 $15
-
-.shieldEquipped
-    call SetShieldVals                            ; $11A5: $CD $40 $13
-    jr   .shieldEnd                               ; $11A8: $18 $10
-
-.swordEquipped
-    ld   a, [wSwordAnimationState]                ; $11AA: $FA $37 $C1
-    dec  a                                        ; $11AD: $3D
-    cp   SWORD_ANIMATION_STATE_SWING_END          ; $11AE: $FE $04
-    jr   c, .shieldEnd                            ; $11B0: $38 $08
-    ld   a, SWORD_ANIMATION_STATE_HOLDING         ; $11B2: $3E $05
-    ld   [wSwordAnimationState], a                ; $11B4: $EA $37 $C1
-    ld   [wC16A], a                               ; $11B7: $EA $6A $C1
-
-.shieldEnd
-    jr   .swordShieldEnd                          ; $11BA: $18 $07
-
-.notRunning
-    xor  a                                        ; $11BC: $AF
-    ld   [wIsUsingShield], a                      ; $11BD: $EA $5B $C1
-    ld   [wHasMirrorShield], a                    ; $11C0: $EA $5A $C1
-
-.swordShieldEnd
-
-    ld   a, [wC117]                               ; $11C3: $FA $17 $C1
-    and  a                                        ; $11C6: $A7
-    jp   nz, UseItem.return                       ; $11C7: $C2 $ED $12
-    ; if Link does carry something, exit
-    ld   a, [wIsCarryingLiftedObject]             ; $11CA: $FA $5C $C1
-    and  a                                        ; $11CD: $A7
-    jp   nz, UseItem.return                       ; $11CE: $C2 $ED $12
-    ; if in sword animation check if motion is possible
-    ld   a, [wSwordAnimationState]                ; $11D1: $FA $37 $C1
-    and  a                                        ; $11D4: $A7
-    jr   z, .checkMotionBlocked                   ; $11D5: $28 $0B
-    cp   SWORD_ANIMATION_STATE_SWING_MIDDLE       ; $11D7: $FE $03
-    jr   nz, .checkMotionBlocked                  ; $11D9: $20 $07
-    ld   a, [wC138]                               ; $11DB: $FA $38 $C1
-    cp   $03                                      ; $11DE: $FE $03
-    jr   nc, .pegasusBootsB                       ; $11E0: $30 $06
-
-.checkMotionBlocked
-    ldh  a, [hLinkInteractiveMotionBlocked]       ; $11E2: $F0 $A1
-    and  a                                        ; $11E4: $A7
-    jp   nz, UseItem.return                       ; $11E5: $C2 $ED $12
-
-.pegasusBootsB
-    ; if Pegasus boots are not equipped in slot B check slot A
-    ld   a, [wBButtonSlot]                        ; $11E8: $FA $00 $DB
-    cp   INVENTORY_PEGASUS_BOOTS                  ; $11EB: $FE $08
-    jr   nz, .pegasusBootsA                       ; $11ED: $20 $0F
-    ; reset boots if button not longer pressed down
-    ldh  a, [hPressedButtonsMask]                 ; $11EF: $F0 $CB
-    and  J_B                                      ; $11F1: $E6 $20
-    jr   z, .resetPegasusBootsChargeMeterB        ; $11F3: $28 $05
-    ; use the boots and check for slot A
-    call UsePegasusBoots                          ; $11F5: $CD $05 $17
-    jr   .pegasusBootsA                           ; $11F8: $18 $04
-
-.resetPegasusBootsChargeMeterB
-    ; $wPegasusBootsChargeMeter = 0
-    xor  a                                        ; $11FA: $AF
-    ld   [wPegasusBootsChargeMeter], a            ; $11FB: $EA $4B $C1
-
-.pegasusBootsA
-    ; if Pegasus boots are not equipped in slot A check slot A for shield
-    ld   a, [wAButtonSlot]                        ; $11FE: $FA $01 $DB
-    cp   INVENTORY_PEGASUS_BOOTS                  ; $1201: $FE $08
-    jr   nz, .shieldA                             ; $1203: $20 $0F
-    ; reset boots if button not longer pressed down
-    ldh  a, [hPressedButtonsMask]                 ; $1205: $F0 $CB
-    and  J_A                                      ; $1207: $E6 $10
-    ; use the boots and check for slot A for shield
-    jr   z, .resetPegasusBootsChargeMeterA        ; $1209: $28 $05
-    call UsePegasusBoots                          ; $120B: $CD $05 $17
-    jr   .shieldA                                 ; $120E: $18 $04
-
-.resetPegasusBootsChargeMeterA
-    ; $wPegasusBootsChargeMeter = 0
-    xor  a                                        ; $1210: $AF
-    ld   [wPegasusBootsChargeMeter], a            ; $1211: $EA $4B $C1
-
-.shieldA
-    ; if shield is not equipped in slot A
-    ld   a, [wAButtonSlot]                        ; $1214: $FA $01 $DB
-    cp   INVENTORY_SHIELD                         ; $1217: $FE $04
-    jr   nz, .shieldB                             ; $1219: $20 $1A
-    ; update shield status
-    ld   a, [wShieldLevel]                        ; $121B: $FA $44 $DB
-    ld   [wHasMirrorShield], a                    ; $121E: $EA $5A $C1
-    ; reset shield if button no longer pressed down
-    ldh  a, [hPressedButtonsMask]                 ; $1221: $F0 $CB
-    and  J_A                                      ; $1223: $E6 $10
-    jr   z, .shieldB                              ; $1225: $28 $0E
-    ; TODO: comment here
-    ld   a, [wC1AD]                               ; $1227: $FA $AD $C1
-    cp   $01                                      ; $122A: $FE $01
-    jr   z, .shieldB                              ; $122C: $28 $07
-    ; TODO: comment here
-    cp   $02                                      ; $122E: $FE $02
-    jr   z, .shieldB                              ; $1230: $28 $03
-    ; use the shield
-    call SetShieldVals                            ; $1232: $CD $40 $13
-
-.shieldB
-    ; if shield is not equipped in slot B
-    ld   a, [wBButtonSlot]                        ; $1235: $FA $00 $DB
-    cp   INVENTORY_SHIELD                         ; $1238: $FE $04
-    jr   nz, .nextItemB                           ; $123A: $20 $0F
-    ; update shield status
-    ld   a, [wShieldLevel]                        ; $123C: $FA $44 $DB
-    ld   [wHasMirrorShield], a                    ; $123F: $EA $5A $C1
-    ; reset shield if button not longer pressed down
-    ldh  a, [hPressedButtonsMask]                 ; $1242: $F0 $CB
-    and  J_B                                      ; $1244: $E6 $20
-    jr   z, .nextItemB                            ; $1246: $28 $03
-    ; the two checks from A does not apear here == bug?
-    ; use the shield
-    call SetShieldVals                            ; $1248: $CD $40 $13
-
-.nextItemB
-    ldh  a, [hJoypadState]                        ; $124B: $F0 $CC
-    and  J_B                                      ; $124D: $E6 $20
-    jr   z, .jr_125E                              ; $124F: $28 $0D
-    ld   a, [wC1AD]                               ; $1251: $FA $AD $C1
-    cp   $02                                      ; $1254: $FE $02
-    jr   z, .jr_125E                              ; $1256: $28 $06
-
-    ; Use item in B slot
-    ld   a, [wBButtonSlot]                        ; $1258: $FA $00 $DB
-    call UseItem                                  ; $125B: $CD $9C $12
-
-.jr_125E
-    ldh  a, [hJoypadState]                        ; $125E: $F0 $CC
-    and  J_A                                      ; $1260: $E6 $10
-    jr   z, .swordB                               ; $1262: $28 $11
-    ld   a, [wC1AD]                               ; $1264: $FA $AD $C1
-    cp   $01                                      ; $1267: $FE $01
-    jr   z, .swordB                               ; $1269: $28 $0A
-    cp   $02                                      ; $126B: $FE $02
-    jr   z, .swordB                               ; $126D: $28 $06
-
-    ; Use item in A slot
-    ld   a, [wAButtonSlot]                        ; $126F: $FA $01 $DB
-    call UseItem                                  ; $1272: $CD $9C $12
-
-.swordB
-    ; skip if button is not pressed
-    ldh  a, [hPressedButtonsMask]                 ; $1275: $F0 $CB
-    and  J_B                                      ; $1277: $E6 $20
-    jr   z, .jr_1281                              ; $1279: $28 $06
-    ld   a, [wBButtonSlot]                        ; $127B: $FA $00 $DB
-    call label_1321                               ; $127E: $CD $21 $13
-
-.jr_1281
-    ldh  a, [hPressedButtonsMask]                 ; $1281: $F0 $CB
-    and  J_A                                      ; $1283: $E6 $10
-    jr   z, .jr_128D                              ; $1285: $28 $06
-    ld   a, [wAButtonSlot]                        ; $1287: $FA $01 $DB
-    call label_1321                               ; $128A: $CD $21 $13
-
-.jr_128D
-    ; Special code for the Color Dungeon
-    callsb func_020_48CA                          ; $128D: $3E $20 $EA $00 $21 $CD $CA $48
-    ld   a, [wCurrentBank]                        ; $1295: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $1298: $EA $00 $21
-    ret                                           ; $129B: $C9
+include "code/home/check_items_to_use.asm"
 
 ; Use an inventory item.
 ;
@@ -2008,7 +1829,7 @@ UseShield::
     ret                                           ; $12F7: $C9
 
 UseShovel::
-    ld   a, [wC1C7]                               ; $12F8: $FA $C7 $C1
+    ld   a, [wLinkUsingShovel]                    ; $12F8: $FA $C7 $C1
     ld   hl, wIsLinkInTheAir                      ; $12FB: $21 $46 $C1
     or   [hl]                                     ; $12FE: $B6
     ret  nz                                       ; $12FF: $C0
@@ -2021,7 +1842,7 @@ UseShovel::
     jr   .endIf                                   ; $1309: $18 $04
 
 .notPoking
-    ld   a, NOISE_SFX_SHOWEL_DIG                  ; $130B: $3E $0E
+    ld   a, NOISE_SFX_SHOVEL_DIG                  ; $130B: $3E $0E
     ldh  [hNoiseSfx], a                           ; $130D: $E0 $F4
 .endIf
 
@@ -2030,9 +1851,9 @@ IF __PATCH_0__
 ENDC
 
     ld   a, $01                                   ; $130F: $3E $01
-    ld   [wC1C7], a                               ; $1311: $EA $C7 $C1
+    ld   [wLinkUsingShovel], a                    ; $1311: $EA $C7 $C1
     xor  a                                        ; $1314: $AF
-    ld   [wC1C8], a                               ; $1315: $EA $C8 $C1
+    ld   [wLinkUsingShovelTimer], a               ; $1315: $EA $C8 $C1
     ret                                           ; $1318: $C9
 
 UseHookshot::
@@ -2049,8 +1870,8 @@ label_1321::
     ret  nz                                       ; $1323: $C0
     ; normal attack
     ld   hl, wSwordAnimationState                 ; $1324: $21 $37 $C1
-    ld   a, [wC1AD]                               ; $1327: $FA $AD $C1
-    and  $03                                      ; $132A: $E6 $03
+    ld   a, [wItemUsageContext]                   ; $1327: $FA $AD $C1
+    and  ITEM_USAGE_NEAR_NPC | ITEM_USAGE_READING_TEXT ; $132A: $E6 $03
     or   [hl]                                     ; $132C: $B6
     ret  nz                                       ; $132D: $C0
     ; sword held
@@ -2076,7 +1897,7 @@ SetShieldVals::
 func_020_4B4A_trampoline::
     callsb func_020_4B4A                          ; $134B: $3E $20 $EA $00 $21 $CD $4A $4B
     ld   a, [wCurrentBank]                        ; $1353: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $1356: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1356: $EA $00 $21
     ret                                           ; $1359: $C9
 
 PlaceBomb::
@@ -2097,7 +1918,7 @@ PlaceBomb::
 
     callsb ConvertToBombArrowIfNeeded             ; $1373: $3E $20 $EA $00 $21 $CD $81 $4B
     ld   a, [wCurrentBank]                        ; $137B: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $137E: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $137E: $EA $00 $21
     ret                                           ; $1381: $C9
 
 UsePowerBracelet::
@@ -2114,7 +1935,7 @@ UseBoomerang::
 
     callsb func_020_4BFF                          ; $138E: $3E $20 $EA $00 $21 $CD $FF $4B
     ld   a, [wCurrentBank]                        ; $1396: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $1399: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1399: $EA $00 $21
     ret                                           ; $139C: $C9
 
 data_139D::
@@ -2181,7 +2002,7 @@ ShootArrow::
     jr   .setBombArrowCooldown                    ; $13FF: $18 $06
 
 .initBombArrowCooldown
-    ld   a, NOISE_SFX_SHOOT_ARROW                 ; $1401: $3E $0A
+    ld   a, NOISE_SFX_WHOOSH                      ; $1401: $3E $0A
     ldh  [hNoiseSfx], a                           ; $1403: $E0 $F4
     ld   a, BOMB_ARROW_COOLDOWN                   ; $1405: $3E $06
 
@@ -2309,7 +2130,7 @@ UseMagicPowder::
     ret  c                                        ; $14B3: $D8
     callsb SprinkleMagicPowder                    ; $14B4: $3E $20 $EA $00 $21 $CD $47 $4C
     ld   a, [wCurrentBank]                        ; $14BC: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $14BF: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $14BF: $EA $00 $21
     ret                                           ; $14C2: $C9
 
 ; Horizontal speed boost when jumping while using Pegasus Boots
@@ -2376,7 +2197,7 @@ UseRocsFeather::
     ret                                           ; $1523: $C9
 
 SwordRandomSfxTable::
-    db   NOISE_SFX_SWORD_A, NOISE_SFX_SWORD_B, NOISE_SFX_SWORD_C, NOISE_SFX_SWORD_D ; $1524
+    db   NOISE_SFX_SWORD_SWING_A, NOISE_SFX_SWORD_SWING_B, NOISE_SFX_SWORD_SWING_C, NOISE_SFX_SWORD_SWING_D ; $1524
 
 UseSword::
     ld   a, [wC16D]                               ; $1528: $FA $6D $C1
@@ -2576,7 +2397,7 @@ label_1637::
     ld   [wC16D], a                               ; $1650: $EA $6D $C1
 
 label_1653::
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $1653: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $1653: $3E $05
     call SpawnPlayerProjectile                    ; $1655: $CD $2F $14
     jr   c, .dropRandomItem                       ; $1658: $38 $22
 
@@ -2690,7 +2511,7 @@ CheckItemsSwordCollision::
     ret                                           ; $16F7: $C9
 
 .label_16F8
-    ld   a, $17                                   ; $16F8: $3E $17
+    ld   a, NOISE_SFX_CLINK                       ; $16F8: $3E $17
     ldh  [hNoiseSfx], a                           ; $16FA: $E0 $F4
     ret                                           ; $16FC: $C9
 
@@ -2799,7 +2620,7 @@ DisplayTransientVfxForLinkRunning::
 .shallowWater
     ldh  a, [hLinkPositionY]                      ; $1781: $F0 $99
     ldh  [hMultiPurpose1], a                      ; $1783: $E0 $D8
-    ld   a, JINGLE_WATER_DIVE                     ; $1785: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $1785: $3E $0E
     ldh  [hJingle], a                             ; $1787: $E0 $F2
     ld   a, TRANSCIENT_VFX_PEGASUS_SPLASH         ; $1789: $3E $0C
     jp   AddTranscientVfx                         ; $178B: $C3 $C7 $0C
@@ -2890,13 +2711,13 @@ ApplyLinkMotionState::
 func_1819::
     callsb func_020_4AB3                          ; $1819: $3E $20 $EA $00 $21 $CD $B3 $4A
     ld   a, [wCurrentBank]                        ; $1821: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $1824: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1824: $EA $00 $21
     ret                                           ; $1827: $C9
 
 func_1828::
     callsb func_020_49BA                          ; $1828: $3E $20 $EA $00 $21 $CD $BA $49
     ld   a, [wCurrentBank]                        ; $1830: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $1833: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1833: $EA $00 $21
     ret                                           ; $1836: $C9
 
 LinkMotionMapFadeOutHandler::
@@ -2921,7 +2742,7 @@ LinkMotionMapFadeOutHandler::
     ldh  [hBaseScrollX], a                        ; $185B: $E0 $96
     ldh  [hBaseScrollY], a                        ; $185D: $E0 $97
     ldh  [hDungeonTitleMessageCountdown], a       ; $185F: $E0 $B4
-    ld   [wDDD6], a                               ; $1861: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $1861: $EA $D6 $DD
     ld   [wDDD7], a                               ; $1864: $EA $D7 $DD
 
     ld   e, $10                                   ; $1867: $1E $10
@@ -3080,7 +2901,7 @@ LinkMotionMapFadeOutHandler::
     ld   a, $30                                   ; $1963: $3E $30
     ldh  [hDungeonTitleMessageCountdown], a       ; $1965: $E0 $B4
     xor  a                                        ; $1967: $AF
-    ld   [hSwitchBlocksState], a                  ; $1968: $EA $FB $D6
+    ld   [wSwitchBlocksState], a                  ; $1968: $EA $FB $D6
     ld   [wSwitchableObjectAnimationStage], a     ; $196B: $EA $F8 $D6
 
 .label_196E
@@ -3121,7 +2942,7 @@ LinkMotionMapFadeOutHandler::
 
 .label_19A4
     ld   a, $14                                   ; $19A4: $3E $14
-    ld   [MBC3SelectBank], a                      ; $19A6: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $19A6: $EA $00 $21
     call SetSpawnLocation                         ; $19A9: $CD $C2 $19
     push de                                       ; $19AC: $D5
     ldh  a, [hMapId]                              ; $19AD: $F0 $F7
@@ -3146,7 +2967,7 @@ LinkMotionMapFadeOutHandler::
 ; or starting after a game over.
 SetSpawnLocation::
     ; Initialize counter
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     xor  a
 ELSE
     ld   a, $00                                   ; $19C2: $3E $00
@@ -3196,7 +3017,7 @@ LinkMotionMapFadeInHandler::
     call func_1A39                                ; $19FC: $CD $39 $1A
     ld   a, [wTransitionSequenceCounter]          ; $19FF: $FA $6B $C1
     cp   $04                                      ; $1A02: $FE $04
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jr   nz, .return                              ; $1A04: $20 $1B
@@ -3212,7 +3033,7 @@ ENDC
     ld   [wLinkMotionState], a                    ; $1A0F: $EA $1C $C1
     ld   a, [wDidStealItem]                       ; $1A12: $FA $7E $D4
     and  a                                        ; $1A15: $A7
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  z
 ELSE
     jr   z, .return                               ; $1A16: $28 $09
@@ -3221,7 +3042,7 @@ ENDC
     ld   [wDidStealItem], a                       ; $1A19: $EA $7E $D4
     jp_open_dialog Dialog036                      ; $1A1C: $3E $36 $C3 $85 $23
 
-IF !__PATCH_0__
+IF !__OPTIMIZATIONS_1__
 .return
     ret                                           ; $1A21: $C9
 ENDC
@@ -3229,16 +3050,18 @@ ENDC
 
 func_1A22::
     callsb func_020_6C4F                          ; $1A22: $3E $20 $EA $00 $21 $CD $4F $6C
-    callsb func_020_55CA                          ; $1A2A: $3E $20 $EA $00 $21 $CD $CA $55
+    callsb FadeOutMusic                           ; $1A2A: $3E $20 $EA $00 $21 $CD $CA $55
+    ; Return to previous ROM bank callsite
     ld   a, [wCurrentBank]                        ; $1A32: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $1A35: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1A35: $EA $00 $21
     ret                                           ; $1A38: $C9
 
 func_1A39::
     callsb func_020_6C7A                          ; $1A39: $3E $20 $EA $00 $21 $CD $7A $6C
     callsb func_020_563B                          ; $1A41: $3E $20 $EA $00 $21 $CD $3B $56
+    ; Return to previous ROM bank callsite
     ld   a, [wCurrentBank]                        ; $1A49: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $1A4C: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1A4C: $EA $00 $21
     ret                                           ; $1A4F: $C9
 
 ; Update hLinkAnimationState with the correct walking animation id.
@@ -3352,7 +3175,7 @@ ReplaceMagicPowderTilesByToadstool::
 ReplaceDialogTilesByInstruments::
     ld   a, BANK(Npc2Tiles)                       ; $1E33: $3E $11
     call AdjustBankNumberForGBC                   ; $1E35: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $1E38: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1E38: $EA $00 $21
 
     ld   a, [wCreditsScratch0]                    ; $1E3B: $FA $00 $D0
     swap a                                        ; $1E3E: $CB $37
@@ -3380,13 +3203,13 @@ ReplaceEndCreditsTiles::
 
     ld   a, $0C                                   ; $1E60: $3E $0C
     call AdjustBankNumberForGBC                   ; $1E62: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $1E65: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1E65: $EA $00 $21
     ret                                           ; $1E68: $C9
 
 ReplaceTiles_08::
     ld   a, BANK(EndingTiles)                     ; $1E69: $3E $13
     call AdjustBankNumberForGBC                   ; $1E6B: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $1E6E: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1E6E: $EA $00 $21
 
     ld   a, [wCreditsScratch0]                    ; $1E71: $FA $00 $D0
     swap a                                        ; $1E74: $CB $37
@@ -3408,7 +3231,7 @@ ReplaceToadstoolTilesByMagicPowder::
     ld   de, $88E0                                ; $1E90: $11 $E0 $88
     ld   a, BANK(InventoryEquipmentItemsTiles)    ; $1E93: $3E $0C
     call AdjustBankNumberForGBC                   ; $1E95: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $1E98: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1E98: $EA $00 $21
     ld   bc, TILE_SIZE * 2                        ; $1E9B: $01 $20 $00
     jp   CopyDataAndDrawLinkSprite                ; $1E9E: $C3 $3B $1F
 
@@ -3426,7 +3249,7 @@ ReplaceSlimeKeyTilesByGoldenLeaf::
 ReplaceTilesPairAndDrawLinkSprite::
     ld   a, BANK(LinkCharacter2Tiles)             ; $1EA7: $3E $0C
     call AdjustBankNumberForGBC                   ; $1EA9: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $1EAC: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1EAC: $EA $00 $21
     ld   bc, TILE_SIZE * $2                       ; $1EAF: $01 $20 $00
     jp   CopyDataAndDrawLinkSprite                ; $1EB2: $C3 $3B $1F
 
@@ -3445,7 +3268,7 @@ ReplaceTiles_04::
 
 .replaceTiles
     call AdjustBankNumberForGBC                   ; $1EC1: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $1EC4: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1EC4: $EA $00 $21
     ld   de, vTiles2 + $140                       ; $1EC7: $11 $40 $91
     jp   Copy4TilesAndDrawLinkSprite              ; $1ECA: $C3 $38 $1F
 
@@ -3489,15 +3312,15 @@ UpdateSwitchBlockTiles::
     push af                                       ; $1ED7: $F5
     ld   a, BANK(SwitchBlockTiles)                ; $1ED8: $3E $0C
     call AdjustBankNumberForGBC                   ; $1EDA: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $1EDD: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1EDD: $EA $00 $21
     pop  af                                       ; $1EE0: $F1
 
     ; Mark Link as not interactive during the animation
     ld   hl, hLinkInteractiveMotionBlocked        ; $1EE1: $21 $A1 $FF
     ld   [hl], $01                                ; $1EE4: $36 $01
 
-    ; de = [hSwitchBlocksState]
-    ld   hl, hSwitchBlocksState                   ; $1EE6: $21 $FB $D6
+    ; de = [wSwitchBlocksState]
+    ld   hl, wSwitchBlocksState                   ; $1EE6: $21 $FB $D6
     ld   e, [hl]                                  ; $1EE9: $5E
     ld   d, $00                                   ; $1EEA: $16 $00
     inc  a                                        ; $1EEC: $3C
@@ -3505,11 +3328,11 @@ UpdateSwitchBlockTiles::
     ; On stage 3…
     cp   03                                       ; $1EED: $FE $03
     jr   nz, .stage3End                           ; $1EEF: $20 $0A
-    ; Invert second bit of hSwitchBlocksState (toggle between 0 and 2)
+    ; Invert second bit of wSwitchBlocksState (toggle between 0 and 2)
     push af                                       ; $1EF1: $F5
-    ld   a, [hSwitchBlocksState]                  ; $1EF2: $FA $FB $D6
+    ld   a, [wSwitchBlocksState]                  ; $1EF2: $FA $FB $D6
     xor  $02                                      ; $1EF5: $EE $02
-    ld   [hSwitchBlocksState], a                  ; $1EF7: $EA $FB $D6
+    ld   [wSwitchBlocksState], a                  ; $1EF7: $EA $FB $D6
     pop  af                                       ; $1EFA: $F1
 .stage3End
 
@@ -3576,7 +3399,7 @@ CopyDataAndDrawLinkSprite::
     xor  a                                        ; $1F3E: $AF
     ldh  [hReplaceTiles], a                       ; $1F3F: $E0 $A5
     ld   a, BANK(LinkCharacterTiles)              ; $1F41: $3E $0C
-    ld   [MBC3SelectBank], a                      ; $1F43: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $1F43: $EA $00 $21
     jp   DrawLinkSpriteAndReturn                  ; $1F46: $C3 $2E $1D
 
 ; Number of horizontal pixels the sword reaches in Link's direction when drawing the sword
@@ -3600,7 +3423,7 @@ LinkDirectionToLinkAnimationState_2::
 .up:    db  LINK_ANIMATION_STATE_UNKNOWN_3A
 .down:  db  LINK_ANIMATION_STATE_UNKNOWN_3C                       ; $1F51
 
-data_1F55::
+LinkDirectionToLiftDirectionButton::
     db   2, 1, 8, 4                               ; $1F55
 
 data_1F59::
@@ -3627,7 +3450,7 @@ label_1F69::
     or   [hl]                                     ; $1F73: $B6
     ld   hl, wLinkMotionState                     ; $1F74: $21 $1C $C1
     or   [hl]                                     ; $1F77: $B6
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jp   nz, func_2165.return                     ; $1F78: $C2 $77 $21
@@ -3730,9 +3553,8 @@ ENDC
     ldh  a, [hLinkDirection]                      ; $1FFF: $F0 $9E
     cp   DIRECTION_UP                             ; $2001: $FE $02
     jp   nz, .specialCasesEnd                     ; $2003: $C2 $CF $20
-    ; Set [wC1AD] = 2
-    ld   a, $02                                   ; $2006: $3E $02
-    ld   [wC1AD], a                               ; $2008: $EA $AD $C1
+    ld   a, ITEM_USAGE_READING_TEXT               ; $2006: $3E $02
+    ld   [wItemUsageContext], a                   ; $2008: $EA $AD $C1
 
     ; If A or B is pressed…
     ldh  a, [hJoypadState]                        ; $200B: $F0 $CC
@@ -3786,7 +3608,7 @@ ENDC
     ld   e, a                                     ; $204B: $5F
     ld   d, $00                                   ; $204C: $16 $00
     ld   a, BANK(SignpostDialogTable)             ; $204E: $3E $14
-    ld   [MBC3SelectBank], a                      ; $2050: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2050: $EA $00 $21
     ld   hl, SignpostDialogTable                  ; $2053: $21 $18 $51
     add  hl, de                                   ; $2056: $19
     ld   a, [wOcarinaSongFlags]                   ; $2057: $FA $49 $DB
@@ -3847,7 +3669,7 @@ ENDC
     ldh  a, [hLinkDirection]                      ; $20A5: $F0 $9E
     cp   DIRECTION_UP                             ; $20A7: $FE $02
     jr   nz, .specialCasesEnd                     ; $20A9: $20 $24
-    ld   [wC1AD], a                               ; $20AB: $EA $AD $C1
+    ld   [wItemUsageContext], a                   ; $20AB: $EA $AD $C1
     ldh  a, [hJoypadState]                        ; $20AE: $F0 $CC
     and  J_A | J_B                                ; $20B0: $E6 $30
     jr   z, .specialCasesEnd                      ; $20B2: $28 $1B
@@ -3864,7 +3686,7 @@ ENDC
 
 .specialCasesEnd
 
-    ld   a, [wBButtonSlot]                        ; $20CF: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $20CF: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $20D2: $FE $03
     jr   nz, .jr_20DD                             ; $20D4: $20 $07
     ldh  a, [hPressedButtonsMask]                 ; $20D6: $F0 $CB
@@ -3873,16 +3695,16 @@ ENDC
     ret                                           ; $20DC: $C9
 
 .jr_20DD
-    ld   a, [wAButtonSlot]                        ; $20DD: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $20DD: $FA $01 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $20E0: $FE $03
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jp   nz, func_2165.return                     ; $20E2: $C2 $77 $21
 ENDC
     ldh  a, [hPressedButtonsMask]                 ; $20E5: $F0 $CB
     and  J_A                                      ; $20E7: $E6 $10
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  z
 ELSE
     jp   z, func_2165.return                      ; $20E9: $CA $77 $21
@@ -3900,7 +3722,7 @@ ENDC
     add  hl, de                                   ; $2100: $19
     ld   a, [hl]                                  ; $2101: $7E
     ldh  [hLinkAnimationState], a                 ; $2102: $E0 $9D
-    ld   hl, data_1F55                            ; $2104: $21 $55 $1F
+    ld   hl, LinkDirectionToLiftDirectionButton   ; $2104: $21 $55 $1F
     add  hl, de                                   ; $2107: $19
     ldh  a, [hPressedButtonsMask]                 ; $2108: $F0 $CB
     and  [hl]                                     ; $210A: $A6
@@ -3926,7 +3748,7 @@ ENDC
     inc  [hl]                                     ; $212F: $34
     ld   a, [hl]                                  ; $2130: $7E
     cp   e                                        ; $2131: $BB
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  c
 ELSE
     jr   c, .return                               ; $2132: $38 $19
@@ -3940,7 +3762,7 @@ ENDC
     jr   z, .jr_2153                              ; $213F: $28 $12
     ld   a, [wIsIndoor]                           ; $2141: $FA $A5 $DB
     and  a                                        ; $2144: $A7
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jr   nz, .return                              ; $2145: $20 $06
@@ -3976,7 +3798,7 @@ func_2165::
     ld   [wC15D], a                               ; $2171: $EA $5D $C1
     jp   label_2183                               ; $2174: $C3 $83 $21
 
-IF !__PATCH_0__
+IF !__OPTIMIZATIONS_1__
 .return
     ret                                           ; $2177: $C9
 ENDC
@@ -3986,16 +3808,16 @@ func_014_5526_trampoline::
     jp   ReloadSavedBank                          ; $2180: $C3 $1D $08
 
 label_2183::
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $2183: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $2183: $3E $05
     call SpawnPlayerProjectile                    ; $2185: $CD $2F $14
 
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  c
 ELSE
-    jr   c, label_21A7                            ; $2188: $38 $1D
+    jr   c, .return                               ; $2188: $38 $1D
 ENDC
 
-    ld   a, WAVE_SFX_ZIP                          ; $218A: $3E $02
+    ld   a, WAVE_SFX_LIFT_UP                      ; $218A: $3E $02
     ldh  [hWaveSfx], a                            ; $218C: $E0 $F3
 
     ld   hl, wEntitiesStatusTable                 ; $218E: $21 $80 $C2
@@ -4010,8 +3832,8 @@ ENDC
     ld   e, $01                                   ; $219D: $1E $01
     jpsw func_003_5795                            ; $219F: $3E $03 $CD $0C $08 $C3 $95 $57
 
-IF !__PATCH_0__
-label_21A7::
+IF !__OPTIMIZATIONS_1__
+.return
     ret                                           ; $21A7: $C9
 ENDC
 
@@ -4111,7 +3933,7 @@ BGRegionIncrement::
 UpdateBGRegion::
     ; Switch to Map Data bank
     ld   a, $08                                   ; $2209: $3E $08
-    ld   [MBC3SelectBank], a                      ; $220B: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $220B: $EA $00 $21
     call DoUpdateBGRegion                         ; $220E: $CD $34 $22
     ; Reload saved bank and return
     jp   ReloadSavedBank                          ; $2211: $C3 $1D $08
@@ -4194,7 +4016,7 @@ DoUpdateBGRegion::
 
     ; Switch back to the objects tilemap bank
     ld   a, $08                                   ; $223C: $3E $08
-    ld   [MBC3SelectBank], a                      ; $223E: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $223E: $EA $00 $21
 
 .loop
     push bc                                       ; $2241: $C5
@@ -4210,18 +4032,18 @@ DoUpdateBGRegion::
     ld   b, $00                                   ; $224C: $06 $00
     ld   c, [hl]                                  ; $224E: $4E
 
-    ; If running on GBC…
+    ; When on the GBC Overworld, read the object value from WRAM2 instead
+    ; (See BackupObjectInRAM2)
     ldh  a, [hIsGBC]                              ; $224F: $F0 $FE
     and  a                                        ; $2251: $A7
     jr   z, .ramSwitchEnd                         ; $2252: $28 $0E
-    ; … and is indoor…
     ld   a, [wIsIndoor]                           ; $2254: $FA $A5 $DB
     and  a                                        ; $2257: $A7
     jr   nz, .ramSwitchEnd                        ; $2258: $20 $08
-    ; … switch to RAM Bank 2,
+    ; Switch to RAM Bank 2,
     ld   a, $02                                   ; $225A: $3E $02
     ld   [rSVBK], a                               ; $225C: $E0 $70
-    ; read hl,
+    ; read the object value,
     ld   c, [hl]                                  ; $225E: $4E
     ; switch back to RAM Bank 0.
     xor  a                                        ; $225F: $AF
@@ -4303,7 +4125,7 @@ DoUpdateBGRegion::
 
     ; Select object attributes bank
     ldh  a, [hMultiPurpose8]                      ; $22B8: $F0 $DF
-    ld   [MBC3SelectBank], a                      ; $22BA: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $22BA: $EA $00 $21
     ; Copy a row of the object attributes
     call CopyObjectRowToBGMap                     ; $22BD: $CD $14 $22
     ld   a, b                                     ; $22C0: $78
@@ -4336,7 +4158,7 @@ DoUpdateBGRegion::
     callsb func_020_49D9                          ; $22DD: $3E $20 $EA $00 $21 $CD $D9 $49
     ; Select BG attributes bank
     ldh  a, [hMultiPurpose8]                      ; $22E5: $F0 $DF
-    ld   [MBC3SelectBank], a                      ; $22E7: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $22E7: $EA $00 $21
     ; Copy a column of the object attributes
     call CopyObjectColumnToBGMap                  ; $22EA: $CD $24 $22
     ld   a, b                                     ; $22ED: $78
@@ -4393,19 +4215,19 @@ SetWorldMusicTrack::
     ldh  [hMusicFadeOutTimer], a                  ; $27CD: $E0 $A8
     ret                                           ; $27CF: $C9
 
-EnableExternalRAMWriting::
+EnableSRAM::
     push hl                                       ; $27D0: $E5
-    ld   hl, MBC3SRamBank                         ; $27D1: $21 $00 $40
+    ld   hl, rRAMB                                ; $27D1: $21 $00 $40
     ld   [hl], $00 ; Switch to RAM bank 0         ; $27D4: $36 $00
-    ld   hl, MBC3SRamEnable                       ; $27D6: $21 $00 $00
-    ld   [hl], SRAM_ENABLE ; Enable external RAM writing ; $27D9: $36 $0A
+    ld   hl, rRAMG                                ; $27D6: $21 $00 $00
+    ld   [hl], CART_SRAM_ENABLE ; Enable external RAM ; $27D9: $36 $0A
     pop  hl                                       ; $27DB: $E1
     ret                                           ; $27DC: $C9
 
 ; Load soudtrack after map or gameplay transition
 label_27DD::
     ld   a, BANK(SelectMusicTrackAfterTransition) ; $27DD: $3E $02
-    ld   [MBC3SelectBank], a                      ; $27DF: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $27DF: $EA $00 $21
     push bc                                       ; $27E2: $C5
     call SelectMusicTrackAfterTransition          ; $27E3: $CD $46 $41
     pop  bc                                       ; $27E6: $C1
@@ -4484,14 +4306,14 @@ ReadJoypadState::
     ret                                           ; $2851: $C9
 
 .readState
-    ld   a, $20                                   ; $2852: $3E $20
+    ld   a, J_BUTTONS                             ; $2852: $3E $20
     ld   [rP1], a                                 ; $2854: $E0 $00
     ld   a, [rP1]                                 ; $2856: $F0 $00
     ld   a, [rP1]                                 ; $2858: $F0 $00
     cpl                                           ; $285A: $2F
     and  $0F                                      ; $285B: $E6 $0F
     ld   b, a                                     ; $285D: $47
-    ld   a, $10                                   ; $285E: $3E $10
+    ld   a, J_DPAD                                ; $285E: $3E $10
     ld   [rP1], a                                 ; $2860: $E0 $00
     ld   a, [rP1]                                 ; $2862: $F0 $00
     ld   a, [rP1]                                 ; $2864: $F0 $00
@@ -4512,7 +4334,7 @@ ReadJoypadState::
     ldh  [hJoypadState], a                        ; $287D: $E0 $CC
     ld   a, c                                     ; $287F: $79
     ldh  [hPressedButtonsMask], a                 ; $2880: $E0 $CB
-    ld   a, $30                                   ; $2882: $3E $30
+    ld   a, J_BUTTONS | J_DPAD                    ; $2882: $3E $30
     ld   [rP1], a                                 ; $2884: $E0 $00
 
 .return
@@ -4595,19 +4417,19 @@ LCDOff::
     ; Save interrupts configuration
     ld   a, [rIE]                                 ; $28CF: $F0 $FF
     ldh  [hInterrupts], a                         ; $28D1: $E0 $D2
-    ; Disable all interrupts
-    res  0, a                                     ; $28D3: $CB $87
+    ; Disable VBlank interrupt
+    res  IEB_VBLANK, a                            ; $28D3: $CB $87
     ld   [rIE], a                                 ; $28D5: $E0 $FF
 
     ; Wait for row 145
 .waitForEndOfLine
     ld   a, [rLY]                                 ; $28D7: $F0 $44
-    cp   145                                      ; $28D9: $FE $91
+    cp   SCRN_Y + 1                               ; $28D9: $FE $91
     jr   nz, .waitForEndOfLine                    ; $28DB: $20 $FA
 
     ; Switch off LCD screen
     ld   a, [rLCDC]                               ; $28DD: $F0 $40
-    and  $7F                                      ; $28DF: $E6 $7F
+    and  ~LCDCF_ON                                ; $28DF: $E6 $7F
     ld   [rLCDC], a                               ; $28E1: $E0 $40
 
     ; Restore interrupts configuration
@@ -4621,7 +4443,7 @@ LoadTileset0F_trampoline::
 
 ; Fill the Background Map with black tiles
 FillBGMapBlack::
-    ld   a, $7E    ; value                        ; $28F0: $3E $7E
+    ld   a, DIALOG_BG_TILE_DARK   ; value         ; $28F0: $3E $7E
     ld   bc, $400 ; count                         ; $28F2: $01 $00 $04
     jr   FillBGMap                                ; $28F5: $18 $05
 
@@ -4659,7 +4481,7 @@ GetChestsStatusForRoom_trampoline::
 PlayBoomerangSfx_trampoline::
     callsb PlayBoomerangSfx                       ; $29F8: $3E $20 $EA $00 $21 $CD $98 $4C
     ld   a, [wCurrentBank]                        ; $2A00: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $2A03: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2A03: $EA $00 $21
     ret                                           ; $2A06: $C9
 
 label_2A07::
@@ -4674,7 +4496,7 @@ label_2A07::
 ;   a    physics flags for the object
 GetObjectPhysicsFlags::
     ld   a, BANK(OverworldObjectPhysicFlags)      ; $2A12: $3E $08
-    ld   [MBC3SelectBank], a                      ; $2A14: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2A14: $EA $00 $21
     ld   hl, OverworldObjectPhysicFlags           ; $2A17: $21 $D4 $4A
     ldh  a, [hMapId]                              ; $2A1A: $F0 $F7
     cp   MAP_COLOR_DUNGEON                        ; $2A1C: $FE $FF
@@ -4693,14 +4515,14 @@ GetObjectPhysicsFlagsAndRestoreBank3::
     call GetObjectPhysicsFlags                    ; $2A2C: $CD $12 $2A
     push af                                       ; $2A2F: $F5
     ld   a, $03                                   ; $2A30: $3E $03
-    ld   [MBC3SelectBank], a                      ; $2A32: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2A32: $EA $00 $21
     pop  af                                       ; $2A35: $F1
     ret                                           ; $2A36: $C9
 
 LoadCreditsKoholintDisappearingTiles::
     ld   a, BANK(EndingTiles)                     ; $2A37: $3E $13
     call AdjustBankNumberForGBC                   ; $2A39: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2A3C: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2A3C: $EA $00 $21
 
     ld   hl, EndingTiles + $2800                  ; $2A3F: $21 $00 $68
     ld   de, vTiles2                              ; $2A42: $11 $00 $90
@@ -4724,7 +4546,7 @@ LoadCreditsStairsTiles::
 LoadTileset15::
     ld   a, BANK(EndingTiles)                     ; $2A66: $3E $13
     call AdjustBankNumberForGBC                   ; $2A68: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2A6B: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2A6B: $EA $00 $21
 
     ld   hl, EndingTiles                          ; $2A6E: $21 $00 $40
     ld   de, vTiles0                              ; $2A71: $11 $00 $80
@@ -4733,7 +4555,7 @@ LoadTileset15::
 
     ld   a, BANK(Overworld1Tiles)                 ; $2A7A: $3E $0C
     call AdjustBankNumberForGBC                   ; $2A7C: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2A7F: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2A7F: $EA $00 $21
     ld   hl, Overworld1Tiles + $8E0 ; filler color ; $2A82: $21 $E0 $57
     ld   de, vTiles2 + $7F0                       ; $2A85: $11 $F0 $97
     ld   bc, TILE_SIZE                            ; $2A88: $01 $10 $00
@@ -4741,7 +4563,7 @@ LoadTileset15::
 
     ld   a, BANK(Npc4Tiles)                       ; $2A8E: $3E $12
     call AdjustBankNumberForGBC                   ; $2A90: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2A93: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2A93: $EA $00 $21
     ld   hl, Npc4Tiles + $100                     ; $2A96: $21 $00 $75
     ld   de, vTiles0                              ; $2A99: $11 $00 $80
     ld   bc, TILE_SIZE * 4                        ; $2A9C: $01 $40 $00
@@ -4757,7 +4579,7 @@ LoadTileset15::
 LoadCreditsKoholintViewsTiles::
     ld   a, BANK(Overworld1Tiles)                 ; $2AAE: $3E $0C
     call AdjustBankNumberForGBC                   ; $2AB0: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2AB3: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2AB3: $EA $00 $21
     ld   hl, Overworld1Tiles + $100               ; $2AB6: $21 $00 $50
     ld   de, vTiles2                              ; $2AB9: $11 $00 $90
     ld   bc, TILE_SIZE * $80                      ; $2ABC: $01 $00 $08
@@ -4765,7 +4587,7 @@ LoadCreditsKoholintViewsTiles::
 
     ld   a, BANK(Npc3Tiles)                       ; $2AC2: $3E $12
     call AdjustBankNumberForGBC                   ; $2AC4: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2AC7: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2AC7: $EA $00 $21
     ld   hl, Npc3Tiles + $2000                    ; $2ACA: $21 $00 $60
     ld   de, vTiles0                              ; $2ACD: $11 $00 $80
     ld   bc, TILE_SIZE * $80                      ; $2AD0: $01 $00 $08
@@ -4773,7 +4595,7 @@ LoadCreditsKoholintViewsTiles::
 
     ld   a, BANK(Overworld2Tiles)                 ; $2AD6: $3E $0F
     call AdjustBankNumberForGBC                   ; $2AD8: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2ADB: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2ADB: $EA $00 $21
     ld   hl, Overworld2Tiles + $600               ; $2ADE: $21 $00 $60
     ld   de, vTiles1                              ; $2AE1: $11 $00 $88
     ld   bc, TILE_SIZE * $80                      ; $2AE4: $01 $00 $08
@@ -4800,14 +4622,14 @@ label_2B01::
     call AdjustBankNumberForGBC                   ; $2B03: $CD $0B $0B
 
 label_2B06::
-    ld   [MBC3SelectBank], a                      ; $2B06: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2B06: $EA $00 $21
     ld   de, vTiles0                              ; $2B09: $11 $00 $80
     ld   bc, TILE_SIZE * $80                      ; $2B0C: $01 $00 $08
     call CopyData                                 ; $2B0F: $CD $14 $29
 
     ld   a, BANK(EndingTiles)                     ; $2B12: $3E $13
     call AdjustBankNumberForGBC                   ; $2B14: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2B17: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2B17: $EA $00 $21
     ld   hl, EndingTiles + $1800                  ; $2B1A: $21 $00 $58
     ld   de, vTiles0 + TILE_SIZE * $80            ; $2B1D: $11 $00 $88
     ld   bc, TILE_SIZE * $100                     ; $2B20: $01 $00 $10
@@ -4824,7 +4646,7 @@ LoadCreditsRollTiles::
 
     ld   a, BANK(Npc3Tiles)                       ; $2B34: $3E $12
     call AdjustBankNumberForGBC                   ; $2B36: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2B39: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2B39: $EA $00 $21
     ld   hl, Npc3Tiles + $2600                    ; $2B3C: $21 $00 $66
     ld   de, vTiles0                              ; $2B3F: $11 $00 $80
     ld   bc, TILE_SIZE * $8                       ; $2B42: $01 $80 $00
@@ -4834,7 +4656,7 @@ LoadCreditsRollTiles::
 
 IF __PATCH_1__
     ld   a, BANK(CharacterVfxTiles)
-    ld   [MBC3SelectBank], a
+    ld   [rSelectROMBank], a
     ld   hl, CharacterVfxTiles + TILE_SIZE * $2
     ld   de, $8080
     ld   bc, TILE_SIZE * $2
@@ -4856,13 +4678,13 @@ IF __PATCH_1__
     ld   hl, CreditsRollTiles + $100
 
 .both
-    ld   [MBC3SelectBank], a
+    ld   [rSelectROMBank], a
     ld   de, vTiles0 + $100
     ld   bc, TILE_SIZE * $70
     call CopyData
 
     ld   a, BANK(CreditsRollTiles)
-    ld   [MBC3SelectBank], a
+    ld   [rSelectROMBank], a
     ld   hl, CreditsRollTiles + $0c0
     ld   de, vTiles0 + $C0
     ld   bc, TILE_SIZE * $4
@@ -4870,7 +4692,7 @@ IF __PATCH_1__
 ELSE
 .dmgOnly
     ld   a, BANK(FontLargeTiles)                  ; $2B50: $3E $10
-    ld   [MBC3SelectBank], a                      ; $2B52: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2B52: $EA $00 $21
     ld   hl, FontLargeTiles + $200                ; $2B55: $21 $00 $69
     ld   de, vTiles0 + $100                       ; $2B58: $11 $00 $81
     ld   bc, TILE_SIZE * $70                      ; $2B5B: $01 $00 $07
@@ -4878,7 +4700,7 @@ ELSE
 
 .cgbOnly
     ld   a, BANK(CreditsRollTiles)                ; $2B61: $3E $38
-    ld   [MBC3SelectBank], a                      ; $2B63: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2B63: $EA $00 $21
     ld   hl, CreditsRollTiles                     ; $2B66: $21 $00 $50
     ld   de, vTiles0                              ; $2B69: $11 $00 $80
     ld   bc, TILE_SIZE * $80                      ; $2B6C: $01 $00 $08
@@ -4910,14 +4732,14 @@ func_2B92::
     call AdjustBankNumberForGBC                   ; $2B92: $CD $0B $0B
 
 label_2B95::
-    ld   [MBC3SelectBank], a                      ; $2B95: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2B95: $EA $00 $21
     ld   de, vTiles0                              ; $2B98: $11 $00 $80
     ld   bc, TILE_SIZE * $80                      ; $2B9B: $01 $00 $08
     call CopyData                                 ; $2B9E: $CD $14 $29
 
     ld   a, BANK(EndingTiles)                     ; $2BA1: $3E $13
     call AdjustBankNumberForGBC                   ; $2BA3: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2BA6: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2BA6: $EA $00 $21
     ld   hl, EndingTiles + $3000                  ; $2BA9: $21 $00 $70
     ld   de, vTiles1                              ; $2BAC: $11 $00 $88
     ld   bc, TILE_SIZE * $80                      ; $2BAF: $01 $00 $08
@@ -5007,7 +4829,7 @@ LoadIndoorTiles::
     jr   nz, .notColorDungeon                     ; $2C37: $20 $1A
 
     ld   a, BANK(ColorDungeonTiles)               ; $2C39: $3E $35
-    ld   [MBC3SelectBank], a                      ; $2C3B: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2C3B: $EA $00 $21
     ld   hl, ColorDungeonTiles + $200             ; $2C3E: $21 $00 $62
     ld   de, vTiles2                              ; $2C41: $11 $00 $90
     ld   bc, TILE_SIZE * $10                      ; $2C44: $01 $00 $01
@@ -5049,7 +4871,7 @@ LoadIndoorTiles::
     ;
 
     ld   a, BANK(DungeonWallsTilesPointers)       ; $2C77: $3E $20
-    ld   [MBC3SelectBank], a                      ; $2C79: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2C79: $EA $00 $21
     pop  de                                       ; $2C7C: $D1
     push de                                       ; $2C7D: $D5
     ld   hl, DungeonWallsTilesPointers            ; $2C7E: $21 $A9 $45
@@ -5069,7 +4891,7 @@ LoadIndoorTiles::
 
     ld   a, BANK(Items1Tiles)                     ; $2C9A: $3E $0C
     call AdjustBankNumberForGBC                   ; $2C9C: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2C9F: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2C9F: $EA $00 $21
     ld   hl, Items1Tiles + $3C0                   ; $2CA2: $21 $C0 $47
     ld   de, wDCC0                                ; $2CA5: $11 $C0 $DC
     ld   bc, TILE_SIZE * $4                       ; $2CA8: $01 $40 $00
@@ -5083,7 +4905,7 @@ LoadIndoorTiles::
 
     ; Read the pointer to the objects tiles for this hMapId
     ld   a, BANK(DungeonItemsTilesPointers)       ; $2CB1: $3E $20
-    ld   [MBC3SelectBank], a                      ; $2CB3: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2CB3: $EA $00 $21
     pop  de                                       ; $2CB6: $D1
     ld   hl, DungeonItemsTilesPointers            ; $2CB7: $21 $CA $45
     add  hl, de                                   ; $2CBA: $19
@@ -5098,7 +4920,7 @@ LoadIndoorTiles::
     jr   nz, .colorDungeonEnd2                    ; $2CC7: $20 $08
     ld   hl, ColorDungeonTiles + $100             ; $2CC9: $21 $00 $61
     ld   a, BANK(ColorDungeonTiles)               ; $2CCC: $3E $35
-    ld   [MBC3SelectBank], a                      ; $2CCE: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2CCE: $EA $00 $21
 .colorDungeonEnd2
 
     ld   de, vTiles1 + $700                       ; $2CD1: $11 $00 $8F
@@ -5110,7 +4932,7 @@ LoadIndoorTiles::
     ;
 
     ld   a, [wCurrentBank]                        ; $2CDA: $FA $AF $DB
-    ld   [MBC3SelectBank], a                      ; $2CDD: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2CDD: $EA $00 $21
     ld   hl, InventoryIndoorItemsTiles            ; $2CE0: $21 $00 $7D
 
     ; If indoor, but not in a dungeon…
@@ -5202,7 +5024,7 @@ func_2D50::
 
     ld   a, BANK(InventoryEquipmentItemsTiles)    ; $2D58: $3E $0C
     call AdjustBankNumberForGBC                   ; $2D5A: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2D5D: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2D5D: $EA $00 $21
 
     ld   hl, InventoryEquipmentItemsTiles         ; $2D60: $21 $00 $48
     ld   de, vTiles1                              ; $2D63: $11 $00 $88
@@ -5242,9 +5064,9 @@ LoadIntroSequenceTiles::
 ; Copy title screen tiles to tiles memory
 LoadTitleScreenTiles::
     ; Load title logo
-    ld   a, BANK(TitleLogoTitles)                 ; $2DA7: $3E $0F
+    ld   a, BANK(TitleLogoTiles)                  ; $2DA7: $3E $0F
     call SwitchAdjustedBank                       ; $2DA9: $CD $13 $08
-    ld   hl, TitleLogoTitles                      ; $2DAC: $21 $00 $49
+    ld   hl, TitleLogoTiles                       ; $2DAC: $21 $00 $49
     ld   de, vTiles1                              ; $2DAF: $11 $00 $88
     ld   bc, TILE_SIZE * $70                      ; $2DB2: $01 $00 $07
     call CopyData                                 ; $2DB5: $CD $14 $29
@@ -5255,11 +5077,11 @@ LoadTitleScreenTiles::
 
     ldh  a, [hIsGBC]                              ; $2DBD: $F0 $FE
     and  a                                        ; $2DBF: $A7
-    jr   nz, .dxTilesDMG                          ; $2DC0: $20 $05
-    ld   hl, TitleDXTilesCGB                      ; $2DC2: $21 $00 $5C
+    jr   nz, .dxTilesCGB                          ; $2DC0: $20 $05
+    ld   hl, TitleDXTilesDMG                      ; $2DC2: $21 $00 $5C
     jr   .dxTilesEnd                              ; $2DC5: $18 $03
-.dxTilesDMG
-    ld   hl, TitleDXTilesDMG                      ; $2DC7: $21 $00 $58
+.dxTilesCGB
+    ld   hl, TitleDXTilesCGB                      ; $2DC7: $21 $00 $58
 .dxTilesEnd
 
     ld   de, vTiles0 + $400                       ; $2DCA: $11 $00 $84
@@ -5326,7 +5148,7 @@ LoadStaticPictureTiles::
 LoadEaglesTowerTopTiles::
     ld   a, BANK(EaglesTowerTop1Tiles)            ; $2E21: $3E $13
     call AdjustBankNumberForGBC                   ; $2E23: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2E26: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2E26: $EA $00 $21
     ld   hl, EaglesTowerTop2Tiles                 ; $2E29: $21 $00 $7C
     ld   de, vTiles1 + $400                       ; $2E2C: $11 $00 $8C
     ld   bc, TILE_SIZE * $40                      ; $2E2F: $01 $00 $04
@@ -5467,7 +5289,7 @@ LoadRoomSpecificTiles::
 .bankAdjustmentEnd
 
     ; Do the actual copy to OAM tiles
-    ld   [MBC3SelectBank], a                      ; $2EF2: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2EF2: $EA $00 $21
     ldh  a, [hMultiPurpose0]                      ; $2EF5: $F0 $D7
     ld   d, a                                     ; $2EF7: $57
     ld   e, $00                                   ; $2EF8: $1E $00
@@ -5502,7 +5324,7 @@ LoadRoomSpecificTiles::
 
     ld   a, BANK(DungeonsTiles)                   ; $2F1C: $3E $0D
     call AdjustBankNumberForGBC                   ; $2F1E: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2F21: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2F21: $EA $00 $21
 
     ldh  a, [hIsSideScrolling]                    ; $2F24: $F0 $F9
     and  a                                        ; $2F26: $A7
@@ -5548,7 +5370,7 @@ LoadRoomSpecificTiles::
     jr   nz, .skipBGLoading                       ; $2F55: $20 $12
 .notColorDungeon
 
-    ld   hl, Dungeons2Tiles                       ; $2F57: $21 $00 $50
+    ld   hl, IndoorTiles                          ; $2F57: $21 $00 $50
     ldh  a, [hWorldTileset]                       ; $2F5A: $F0 $94
     cp   W_TILESET_NO_UPDATE                      ; $2F5C: $FE $FF
     jr   z, .skipBGLoading                        ; $2F5E: $28 $09
@@ -5567,7 +5389,7 @@ LoadRoomSpecificTiles::
     cp   ROOM_INDOOR_B_CAMERA_SHOP                ; $2F71: $FE $B5
     jr   nz, .cameraShopEnd                       ; $2F73: $20 $12
     ld   a, BANK(CameraShopIndoorTiles)           ; $2F75: $3E $35
-    ld   [MBC3SelectBank], a                      ; $2F77: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2F77: $EA $00 $21
     ld   hl, CameraShopIndoorTiles                ; $2F7A: $21 $00 $66
     ld   de, vTiles1 + $700                       ; $2F7D: $11 $00 $8F
     ld   bc, TILE_SIZE * $20                      ; $2F80: $01 $00 $02
@@ -5587,7 +5409,7 @@ LoadRoomSpecificTiles::
     ret  nz                                       ; $2F8E: $C0
 
     ld   a, BANK(PhotoAlbumTiles)                 ; $2F8F: $3E $35
-    ld   [MBC3SelectBank], a                      ; $2F91: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2F91: $EA $00 $21
     ld   hl, PhotoAlbumTiles + $600               ; $2F94: $21 $00 $6E
     ld   de, vTiles2 + $690                       ; $2F97: $11 $90 $96
     ld   bc, TILE_SIZE                            ; $2F9A: $01 $10 $00
@@ -5605,7 +5427,7 @@ LoadRoomSpecificTiles::
     ;
     ld   a, BANK(Overworld2Tiles)                 ; $2FAD: $3E $0F
     call AdjustBankNumberForGBC                   ; $2FAF: $CD $0B $0B
-    ld   [MBC3SelectBank], a                      ; $2FB2: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $2FB2: $EA $00 $21
 
     ; If the tileset is W_TILESET_KEEP, do nothing.
     ldh  a, [hWorldTileset]                       ; $2FB5: $F0 $94
@@ -5786,7 +5608,7 @@ doCopyObjectToBG:
     ; Copy tile attributes to BG map for tiles on the upper row
     push hl                                       ; $3055: $E5
     ldh  a, [hMultiPurpose8]                      ; $3056: $F0 $DF
-    ld   [MBC3SelectBank], a                      ; $3058: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3058: $EA $00 $21
     ldh  a, [hMultiPurpose9]                      ; $305B: $F0 $E0
     ld   h, a                                     ; $305D: $67
     ldh  a, [hMultiPurposeA]                      ; $305E: $F0 $E1
@@ -5822,7 +5644,7 @@ doCopyObjectToBG:
 
     ; Copy palettes from WRAM1 for tiles on the lower row
     ldh  a, [hMultiPurpose8]                      ; $3082: $F0 $DF
-    ld   [MBC3SelectBank], a                      ; $3084: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3084: $EA $00 $21
     ldh  a, [hMultiPurpose9]                      ; $3087: $F0 $E0
     ld   h, a                                     ; $3089: $67
     ldh  a, [hMultiPurposeA]                      ; $308A: $F0 $E1
@@ -5904,7 +5726,7 @@ ASSERT LOW(wRoomObjectsArea) & $0F == 0, "wRoomObjectsArea must be aligned on $1
     ld   e, a                                     ; $30D8: $5F
     ; When the end of a tiles line is reached, move to the next one.
     and  $1F                                      ; $30D9: $E6 $1F
-    cp   (DISPLAY_WIDTH / TILE_WIDTH)             ; $30DB: $FE $14
+    cp   (SCRN_X / TILE_WIDTH)                    ; $30DB: $FE $14
     jr   nz, .eEnd                                ; $30DD: $20 $0A
     ld   a, e                                     ; $30DF: $7B
     and  $E0                                      ; $30E0: $E6 $E0
@@ -5924,7 +5746,7 @@ ASSERT LOW(wRoomObjectsArea) & $0F == 0, "wRoomObjectsArea must be aligned on $1
 ; Load room objects
 LoadRoom::
     ; Disable all interrupts except VBlank
-    ld   a, $01                                   ; $30F4: $3E $01
+    ld   a, IEF_VBLANK                            ; $30F4: $3E $01
     ld   [rIE], a                                 ; $30F6: $E0 $FF
 
     ; Increment wD47F
@@ -5948,14 +5770,14 @@ LoadRoom::
     ;
 
     ld   a, BANK(OverworldRoomPointers)           ; $3119: $3E $09
-    ld   [MBC3SelectBank], a                      ; $311B: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $311B: $EA $00 $21
     ; If loading an indoor room…
     ld   a, [wIsIndoor]                           ; $311E: $FA $A5 $DB
     and  a                                        ; $3121: $A7
     jr   z, .indoorSpecialCodeEnd                 ; $3122: $28 $16
     ; Do some stuff
     ld   a, BANK(func_014_5897)                   ; $3124: $3E $14
-    ld   [MBC3SelectBank], a                      ; $3126: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3126: $EA $00 $21
     ldh  [hRoomBank], a                           ; $3129: $E0 $E8
     call func_014_5897                            ; $312B: $CD $97 $58
     ; Reset wKillCount and wKillOrder array
@@ -6035,7 +5857,7 @@ LoadRoom::
 
     ; …by default use the bank for IndoorsA map
     ld   a, BANK(IndoorsARoomPointers)            ; $317C: $3E $0A
-    ld   [MBC3SelectBank], a                      ; $317E: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $317E: $EA $00 $21
     ldh  [hRoomBank], a                           ; $3181: $E0 $E8
 
     ; If the room is in the Color Dungeon…
@@ -6054,7 +5876,7 @@ LoadRoom::
     cp   ROOM_INDOOR_A_GORIYA                     ; $3195: $FE $F5
     jr   nz, .goriyaRoomEnd                       ; $3197: $20 $0D
     ld   a, [wTradeSequenceItem]                  ; $3199: $FA $0E $DB
-    cp   INVENTORY_MAGNIFYING_GLASS               ; $319C: $FE $0E
+    cp   TRADING_ITEM_MAGNIFYING_LENS             ; $319C: $FE $0E
     jr   nz, .goriyaRoomEnd                       ; $319E: $20 $06
     ld   bc, IndoorsAF5Alt                        ; $31A0: $01 $55 $78
     jp   .parseRoomHeader                         ; $31A3: $C3 $3A $32
@@ -6069,7 +5891,7 @@ LoadRoom::
     jr   c, .fetchRoomAddress                     ; $31B1: $38 $71
     ; …use the bank for IndoorB map.
     ld   a, BANK(IndoorsBRoomPointers)            ; $31B3: $3E $0B
-    ld   [MBC3SelectBank], a                      ; $31B5: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $31B5: $EA $00 $21
     ldh  [hRoomBank], a                           ; $31B8: $E0 $E8
     ld   hl, IndoorsBRoomPointers                 ; $31BA: $21 $00 $40
     jr   .fetchRoomAddress                        ; $31BD: $18 $65
@@ -6171,7 +5993,7 @@ LoadRoom::
     jr   c, .parseRoomHeader                      ; $3233: $38 $05
     ; … select bank for second half of Overworld rooms
     ld   a, BANK(OverworldRoomsSecondHalf)        ; $3235: $3E $1A
-    ld   [MBC3SelectBank], a                      ; $3237: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3237: $EA $00 $21
 
     ;
     ; Parse room header
@@ -6896,7 +6718,7 @@ label_3527::
     ld   a, $1A                                   ; $3527: $3E $1A
 
 label_3529::
-    call func_2BF                                 ; $3529: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $3529: $CD $2F $0B
     ret                                           ; $352C: $C9
 
 ; Copy an object from the room data to the active room
@@ -6933,7 +6755,7 @@ SetBankForRoom::
 
 .inside
     ; Load the bank $09 or $1A
-    ld   [MBC3SelectBank], a                      ; $3547: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3547: $EA $00 $21
     ret                                           ; $354A: $C9
 
 ; Load object or objects?
@@ -7060,7 +6882,7 @@ label_35CB::
 
 label_35E8::
     ld   a, $24                                   ; $35E8: $3E $24
-    call func_2BF                                 ; $35EA: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $35EA: $CD $2F $0B
     ret                                           ; $35ED: $C9
 
 label_35EE::
@@ -7429,7 +7251,7 @@ LoadRoomEntities::
     callsb UpdateRecentRoomsList                  ; $37FE: $3E $01 $EA $00 $21 $CD $02 $5F
 
     ld   a, BANK(OverworldEntitiesPointersTable)  ; $3806: $3E $16
-    ld   [MBC3SelectBank], a                      ; $3808: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3808: $EA $00 $21
 
     ; Reset the entities load order
     xor  a                                        ; $380B: $AF
@@ -7622,7 +7444,7 @@ LoadEntityFromDefinition::
     callsb PrepareEntityPositionForRoomTransition ; $38DC: $3E $01 $EA $00 $21 $CD $AB $5E
     ; Restore bank for entities placement data
     ld   a, BANK(OverworldEntitiesPointersTable)  ; $38E4: $3E $16
-    ld   [MBC3SelectBank], a                      ; $38E6: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $38E6: $EA $00 $21
     ret                                           ; $38E9: $C9
 
 ; Load the template for an indoor room
@@ -7631,7 +7453,7 @@ LoadRoomTemplate_trampoline::
     ; Load bank for LoadRoomTemplate
     ld   e, a                                     ; $38EA: $5F
     ld   a, BANK(LoadRoomTemplate)                ; $38EB: $3E $14
-    ld   [MBC3SelectBank], a                      ; $38ED: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $38ED: $EA $00 $21
     ld   a, e                                     ; $38F0: $7B
 
     ; Call function
@@ -7641,7 +7463,7 @@ LoadRoomTemplate_trampoline::
 
     ; Restore previous bank
     ldh  a, [hRoomBank]                           ; $38F6: $F0 $E8
-    ld   [MBC3SelectBank], a                      ; $38F8: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $38F8: $EA $00 $21
     ret                                           ; $38FB: $C9
 
 LoadWorldMapBGMap_trampoline::
@@ -7659,7 +7481,7 @@ SwitchToObjectsTilemapBank::
     ld   a, BANK(IndoorObjectsTilemapDMG)         ; $390F: $3E $08
 .end
     ; Switch to map bank
-    ld   [MBC3SelectBank], a                      ; $3911: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3911: $EA $00 $21
     ret                                           ; $3914: $C9
 
 LoadCreditsMarinPortraitTiles_trampoline::
@@ -7672,7 +7494,7 @@ include "code/home/entities.asm"
 
 ReplaceEvilEagleRiderVisibleTiles::
     ld   a, BANK(EvilEagleRiderVisibleTiles)      ; $3F93: $3E $05
-    ld   [MBC3SelectBank], a                      ; $3F95: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3F95: $EA $00 $21
     ld   hl, EvilEagleRiderVisibleTiles           ; $3F98: $21 $DE $59
     ld   de, vTiles0 + $460                       ; $3F9B: $11 $60 $84
     ld   bc, TILE_SIZE * 1                        ; $3F9E: $01 $10 $00
@@ -7682,7 +7504,7 @@ ReplaceEvilEagleRiderVisibleTiles::
 
 ReplaceEvilEagleRiderHiddenTiles::
     ld   a, BANK(EvilEagleRiderHiddenTiles)       ; $3FA9: $3E $05
-    ld   [MBC3SelectBank], a                      ; $3FAB: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3FAB: $EA $00 $21
     ld   hl, EvilEagleRiderHiddenTiles            ; $3FAE: $21 $FE $59
     ld   de, vTiles0 + $460                       ; $3FB1: $11 $60 $84
     ld   bc, TILE_SIZE * 1                        ; $3FB4: $01 $10 $00
@@ -7698,7 +7520,7 @@ ReplaceEvilEagleRiderHiddenTiles::
     ldh  [hReplaceTiles], a                       ; $3FC7: $E0 $A5
 
     ld   a, BANK(LinkCharacterTiles)              ; $3FC9: $3E $0C
-    ld   [MBC3SelectBank], a                      ; $3FCB: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3FCB: $EA $00 $21
     jp   DrawLinkSpriteAndReturn                  ; $3FCE: $C3 $2E $1D
 
 ; Copy data to second half of tiles memory
@@ -7713,12 +7535,12 @@ ReloadColorDungeonNpcTiles::
 
     ; Switch to bank $34 or $35
     ld   a, b                                     ; $3FD9: $78
-    ld   [MBC3SelectBank], a                      ; $3FDA: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3FDA: $EA $00 $21
 
     ld   hl, ColorDungeonNpcTiles                 ; $3FDD: $21 $00 $40
     ld   de, vTiles0 + $400                       ; $3FE0: $11 $00 $84
     ld   bc, TILE_SIZE * $40                      ; $3FE3: $01 $00 $04
     call CopyData                                 ; $3FE6: $CD $14 $29
     ld   a, BANK(InventoryEntryPoint)             ; $3FE9: $3E $20
-    ld   [MBC3SelectBank], a                      ; $3FEB: $EA $00 $21
+    ld   [rSelectROMBank], a                      ; $3FEB: $EA $00 $21
     ret                                           ; $3FEE: $C9

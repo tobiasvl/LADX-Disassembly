@@ -1,11 +1,11 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 HoleFillerSpriteVariants::
 .variant0
-    db $40, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $40, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $40, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $40, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $42, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $42, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $42, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $42, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 HoleFillerEntityHandler::
     ld   de, HoleFillerSpriteVariants             ; $510C: $11 $04 $51
@@ -30,7 +30,7 @@ Data_007_512B::
     db   $00, $00, $F8, $08
 
 func_007_512F::
-    call func_007_7CF0                            ; $512F: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $512F: $CD $F0 $7C
     jr   nc, jr_007_516E                          ; $5132: $30 $3A
 
     ldh  a, [hPressedButtonsMask]                 ; $5134: $F0 $CB

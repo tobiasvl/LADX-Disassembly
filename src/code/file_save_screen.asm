@@ -168,7 +168,7 @@ label_40D6::
 
 jr_001_40F9::
     call label_27F2                               ; $40F9: $CD $F2 $27
-    call func_001_5DE6                            ; $40FC: $CD $E6 $5D
+    call SaveGameToFile                           ; $40FC: $CD $E6 $5D
     call ClearWRAMAndLowerHRAM                    ; $40FF: $CD $CB $29
     xor  a                                        ; $4102: $AF
     ldh  [hActiveEntityTilesOffset], a            ; $4103: $E0 $F5
@@ -191,7 +191,7 @@ LCDOn::
     ;   Bit 2: Sprite size 8x16
     ;   Bit 1: Sprite displayed enabled
     ;   Bit 0: Background display enabled
-    ld   a, %11000111                             ; $410D: $3E $C7
+    ld   a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; $410D: $3E $C7
     ld   [rLCDC], a                               ; $410F: $E0 $40
     ld   [wLCDControl], a                         ; $4111: $EA $FD $D6
 
@@ -199,12 +199,12 @@ LCDOn::
     ld   a, $07                                   ; $4114: $3E $07
     ld   [rWX], a                                 ; $4116: $E0 $4B
 
-    ; Set Windows Y position
+    ; Set Window Y position (inventory status bar)
     ld   a, $80                                   ; $4118: $3E $80
     ld   [wWindowY], a                            ; $411A: $EA $9A $DB
     ld   [rWY], a                                 ; $411D: $E0 $4A
 
-    ; Configure Window
+    ; Configure volume
     ld   a, $07                                   ; $411F: $3E $07
     ldh  [hVolumeRight], a                        ; $4121: $E0 $A9
     ld   a, $70                                   ; $4123: $3E $70
@@ -220,7 +220,7 @@ Data_001_4128::
 ; Called by FileSaveInteractive
 func_001_412A::
     ld   hl, wC13F                                ; $412A: $21 $3F $C1
-    call func_001_6BA8                            ; $412D: $CD $A8 $6B
+    call MoveSelect                               ; $412D: $CD $A8 $6B
     ldh  a, [hJoypadState]                        ; $4130: $F0 $CC
     and  J_UP | J_DOWN                            ; $4132: $E6 $0C
     jr   z, .jr_413B                              ; $4134: $28 $05

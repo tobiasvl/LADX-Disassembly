@@ -1,11 +1,11 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 ArmosStatueSpriteVariants::
 .variant0
-    db $60, OAM_GBC_PAL_7 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_7 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_7 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_7 | OAMF_PAL0
 .variant1
-    db $64, OAM_GBC_PAL_7 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_7 | OAM_DMG_PAL_0
+    db $64, OAM_GBC_PAL_7 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_7 | OAMF_PAL0
 
 ArmosStatueEntityHandler::
     ld   de, ArmosStatueSpriteVariants            ; $744E: $11 $46 $74
@@ -57,7 +57,7 @@ ArmosStatueState1Handler::
     call IncrementEntityState                     ; $749A: $CD $12 $3B
     ld   hl, wEntitiesPhysicsFlagsTable           ; $749D: $21 $40 $C3
     add  hl, bc                                   ; $74A0: $09
-    res  7, [hl]                                  ; $74A1: $CB $BE
+    res  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $74A1: $CB $BE
     ld   hl, wEntitiesHitboxFlagsTable            ; $74A3: $21 $50 $C3
     add  hl, bc                                   ; $74A6: $09
     res  7, [hl]                                  ; $74A7: $CB $BE

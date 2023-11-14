@@ -1,29 +1,29 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 RichardSpriteVariants::
 .variant0
-    db $50, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $52, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $50, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $52, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant1
-    db $54, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $56, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $54, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $56, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant2
-    db $50, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $52, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $50, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $52, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant3
-    db $54, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $56, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $54, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $56, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant4
-    db $58, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $5A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $58, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $5A, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant5
-    db $5C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $5E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $5C, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $5E, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant6
-    db $5A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $58, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5A, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $58, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant7
-    db $5E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $5C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5E, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $5C, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 
 RichardEntityHandler::
     ld   a, $21                                   ; $4020: $3E $21
@@ -48,7 +48,7 @@ RichardEntityHandler::
     and  a                                        ; $4043: $A7
     jr   nz, .jr_4049                             ; $4044: $20 $03
 
-    call func_006_641A                            ; $4046: $CD $1A $64
+    call PushLinkOutOfEntity_06                   ; $4046: $CD $1A $64
 
 .jr_4049
     ldh  a, [hActiveEntityState]                  ; $4049: $F0 $F0
@@ -72,7 +72,7 @@ RichardState0Handler::
     ret                                           ; $4067: $C9
 
 RichardState1Handler::
-    call func_006_645D                            ; $4068: $CD $5D $64
+    call CheckLinkInteractionWithEntity_06        ; $4068: $CD $5D $64
     ret  nc                                       ; $406B: $D0
 
     ld   a, [wIsBowWowFollowingLink]              ; $406C: $FA $56 $DB
@@ -157,7 +157,7 @@ RichardState3Handler::
     jp   AddEntitySpeedToPos_06                   ; $40E6: $C3 $4E $65
 
 RichardState4Handler::
-    call func_006_645D                            ; $40E9: $CD $5D $64
+    call CheckLinkInteractionWithEntity_06        ; $40E9: $CD $5D $64
     jr   nc, jr_006_40FC                          ; $40EC: $30 $0E
 
     ld   a, [wGoldenLeavesCount]                  ; $40EE: $FA $15 $DB

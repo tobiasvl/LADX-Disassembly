@@ -1,4 +1,5 @@
 section "WRAM Bank0", wram0[$c000]
+wram0Section::
 
 ; *******************************************************************
 ; *                                                                 *
@@ -13,9 +14,6 @@ section "WRAM Bank0", wram0[$c000]
 ; *           ds 1 ; address as 4 hex value                         *
 ; *                                                                 *
 ; *******************************************************************
-
-
-wram0Section EQU $C000
 
 ; Generic 40 tiles buffer for OAM data. Copied to OAM by DMA.
 ; During World gameplay, the OAM buffer is split between 12 OAM
@@ -138,7 +136,7 @@ wDialogIndexHi:
 wEnemyWasKilled:
   ds 1 ; C113
 
-; Delay for repeatin the NOISE_SFX_SEA_WAVES sound effect
+; Delay for repeating the NOISE_SFX_SEA_WAVES sound effect
 ; Plays when reaching $A0
 wNoiseSfxSeaWavesCounter::
   ds 1 ; C114
@@ -261,11 +259,11 @@ wRoomTransitionTargetScrollX::
 wRoomTransitionTargetScrollY::
   ds 1 ; C12D
 
-; Position of the first visible background tile (high byte)
+; Position of the first visible background tile (high byte) (Y = 00 or 02)
 wBGOriginHigh::
   ds 1 ; C12E
 
-; Position of the first visible background tile (low byte)
+; Position of the first visible background tile (low byte) (X = 00 or 14)
 wBGOriginLow::
   ds 1 ; C12F
 
@@ -369,7 +367,7 @@ wIsLinkPushing:: ; C144
 wC145::
   ds 1 ; C145
 
-; Is Link in the air (jumping with the feather, flying with roaster, etc)?
+; Is Link in the air (jumping with the feather, flying with rooster, etc)?
 ; Possible values:
 ; 0 = not in the air
 ; 1 = ?
@@ -409,16 +407,34 @@ wActiveProjectileCount::
 wHasPlacedBomb::
   ds 1 ; C14E
 
-; TODO comment
+; Whether the inventory screen (window) is currently in the process
+; of appearing. (In the original DMG version, this is set to 1 when
+; the window is scrolling either in or out, but in the DX version it's
+; only 1 when the inventory screen is fading in, not out.)
+;
+; Possible values:
+; 0 = Regular interactive handling
+; 1 = Inventory screen is appearing (DMG only: or disappearing)
 wInventoryAppearing::
   ds 1 ; C14F
 
-; Unlabeled
-wC150::
+; Inventory screen (window) scroll direction and scroll increment
+; (remnant from the original DMG game, as the inventory screen
+; doesn't scroll in DX)
+;
+; Contains a signed byte saying how much to increment wWindowY by
+; when wInventoryAppearing is true. Or you could think of it as
+; bit 7 (the sign bit) saying whether it should scroll up (1) or down (0),
+; and the remaining bits containing the increment value.
+;
+; Possible values:
+; $F8 = Scroll up by 8 pixels each frame
+; $08 = Scroll down by 8 pixels each frame
+wSubscreenScrollIncrement::
   ds 1 ; C150
 
 ; Unlabeled
-wC151::
+wInventoryShouldScroll::
   ds 1 ; C151
 
 ; Unlabeled
@@ -497,7 +513,8 @@ wC162:
 wIsOnLowHeath::
   ds 1 ; C163
 
-; TODO comment
+; High byte of index of character in a dialog text
+; (See also wDialogCharacterIndex)
 wDialogCharacterIndexHi:
   ds 1 ; C164
 
@@ -549,7 +566,8 @@ wC16E:
 wDialogOpenCloseAnimationFrame:
   ds 1 ; C16F
 
-; TODO comment
+; Low byte of index of character in a dialog text
+; (See also wDialogCharacterIndexHi)
 wDialogCharacterIndex:
   ds 1 ; C170
 
@@ -786,8 +804,10 @@ wC1AB::
 wC1AC::
   ds 1 ; C1AC
 
-; Whether the A button should do something other than using an item?
-wC1AD::
+; Whether pressing the A or B button will do something other than using the current item
+; read a sign/interact with a drawer
+; See ITEM_USAGE_* constants for possible values.
+wItemUsageContext::
   ds 1 ; C1AD
 
 ; Unlabeled
@@ -892,12 +912,21 @@ ds 1 ; C1C5
 wC1C6::
   ds 1 ; C1C6
 
-; Unlabeled
-wC1C7::
+; Whether Link is shoveling.
+;
+; 0: not using the shovel
+; 1: digging
+; 2: hole opened in the ground
+;
+; If the ground under Link cannot be excavated (whether solid ground or
+; hole already dug), this variable goes from 0 to 1, but never through stage 2.
+wLinkUsingShovel::
   ds 1 ; C1C7
 
-; Unlabeled
-wC1C8::
+; Counter when the shovel animation is playing.
+; $00 -> $10: digging
+; $11 -> $18: throwing dirt away
+wLinkUsingShovelTimer::
   ds 1 ; C1C8
 
 ; Unlabeled
@@ -1080,19 +1109,20 @@ wEntitiesSpeedZTable::
 wEntitiesSpeedZAccTable::
   ds $10 ; C330 - C33F
 
-; Physics attribute flags:
-; bits 0-3: of number allocated sprites in OAM memory,
-; bit 4: display shadow on posZ > 0 if set,
-; bit 5: item is pickable,
-; bit 6: doesn't react to projectiles if set (arrow, hookshot, etc.),
-; bit 7: doesn't hurt Link on collision if set
+; Physics attribute flags. See ENTITY_PHYSICS_* for possible values.
+;
+; bits 0-3: number of allocated sprites in OAM memory,
+; bit 4: display shadow on posZ > 0 if set (ENTITY_PHYSICS_SHADOW),
+; bit 5: item can be picked up (ENTITY_PHYSICS_GRABBABLE),
+; bit 6: doesn't react to projectiles if set (arrow, hookshot, etc.) (ENTITY_PHYSICS_PROJECTILE_NOCLIP),
+; bit 7: doesn't hurt Link on collision if set (ENTITY_PHYSICS_HARMLESS)
 wEntitiesPhysicsFlagsTable::
   ds $10 ; C340 - C34F
 
 ; Type of hitbox (plus maybe other flags):
-; bit 0-4: hitbox type (see HitboxPositions),
-; bit 5: TODO ???,
-; bit 6: TODO ???,
+; bit 0: TODO ???,
+; bit 1: TODO ???,
+; bit 2-6: hitbox type (see HitboxPositions),
 ; bit 7: force collision (for some entities only)
 wEntitiesHitboxFlagsTable::
   ds $10 ; C350 - C35F
@@ -1124,7 +1154,7 @@ wEntitiesTypeTable::
 
 ; Index of an entity sprite variant, depending for instance on the direction,
 ; the tail waving, etc.
-; A sprite variant may use entirerly different tiles, or change only some of them.
+; A sprite variant may use entirely different tiles, or change only some of them.
 wEntitiesSpriteVariantTable::
   ds $10 ; C3B0 - C3BF
 
@@ -1137,7 +1167,7 @@ wC3C1::
   ds 2 ; C3C1 - C3C2
 
 ; Unlabeled
-wC3C3::
+wDialogNextChar::
   ds 1 ; C3C3
 
 ; Unlabeled
@@ -1419,7 +1449,7 @@ wC5A5::
 wC5A6::
   ds 1 ; C5A6
 
-; When reaching zero, play the WAVE_SFX_BOSS_AGONY sound effect
+; When reaching zero, play the WAVE_SFX_BOSS_DEATH_CRY sound effect
 wBossAgonySFXCountdown::
   ds 1 ; C5A7
 
@@ -2056,7 +2086,8 @@ ENDU
 wD200::
   ds 1 ; D200
 
-; Unlabeled
+; Used by various NPC scripts. Including:
+;  Horse heads, to indicate the entity index of the 2nd head.
 wD201::
   ds 1 ; D201
 
@@ -2878,8 +2909,8 @@ wDrawCommand::
 .destinationLow
   ds 1 ; D602
 ; Request data length and mode.
-; bits 0-6: data length,
-; bits 7-8: copy mode (see DC_* constants)
+; bits 0-5: data length,
+; bits 6-7: copy mode (see DC_* constants)
 .length
   ds 1 ; D603
 ; Request data
@@ -2907,7 +2938,7 @@ wSwitchableObjectAnimationStage::
   ds 1 ; D6F8
 
 ; Unlabeled
-wD6F9::
+wLinkStandingOnSwitchBlock::
   ds 1 ; D6F9
 
 ; Is there one or more switchable objects in the room
@@ -2920,7 +2951,7 @@ wRoomSwitchableObject::
 ; Values:
 ;  0  blocks of kind A lowered, blocks of kind B raised
 ;  2  blocks of kind A raised, blocks of kind B lowered
-hSwitchBlocksState::
+wSwitchBlocksState::
   ds 1 ; D6FB
 
 ; TODO comment
@@ -2947,7 +2978,7 @@ wBGMapToLoad::
 ; When loading a new room, room data is read and decoded into this
 ; area.
 ;
-; Notes on wram hiftability:
+; Notes on wram shiftability:
 ; - This area is also used in RAM bank 2, where it contains the object attributes.
 ; - wRoomObjectsArea must be $10-bytes aligned (otherwise various copy loops break)
 ;
@@ -2973,15 +3004,16 @@ wIndoorBRoomStatus::
   ds $100 ; DA00
 
 ; TODO comment
-wBButtonSlot::
+wInventoryItems::
+.BButtonSlot::
   ds 1 ; DB00
 
 ; TODO comment
-wAButtonSlot::
+.AButtonSlot::
   ds 1 ; DB01
 
 ; TODO comment
-wInventoryItems::
+.subscreen
   ds INVENTORY_SLOT_COUNT - 2 ; DB02-DB0B
 
 ; TODO comment
@@ -3028,7 +3060,7 @@ wGoldenLeavesCount::
   ds 1 ; DB15
 
 ; Beginning of dungeon item flags.
-; 5 bytes fo each dungeon.
+; 5 bytes for each dungeon.
 ; For each dungeon:
 ; byte 0 = has map?,
 ; byte 1 = has compass?
@@ -3092,7 +3124,8 @@ wBombCount::
 wSwordLevel::
   ds 1 ; DB4E
 
-; default value is 5
+; The player's name
+; Name is padded with $00 (spaces) to the max length (default length is 5) 
 wName::
   ds NAME_LENGTH ; DB4F - DB53
 
@@ -3119,12 +3152,12 @@ wIsBowWowFollowingLink::
 wDeathCount::
   ds 3 ; DB57 DB58 DB59
 
-; Number of hearts ($08 = 1 heart)
+; Amount of health ($08 = 1 heart)
 wHealth::
   ds 1 ; DB5A
 
 ; Maximum number of hearts
-wMaxHealth::
+wMaxHearts::
   ds 1 ; DB5B
 
 ; TODO comment
@@ -3262,8 +3295,8 @@ wIsMarinFollowingLink::
 wIsMarinInAnimalVillage::
   ds 1 ; DB74
 
-; Total number of medecine ever purchased from Crazy Tracy
-wPurchasedMedecineCount::
+; Total number of medicine ever purchased from Crazy Tracy
+wPurchasedMedicineCount::
   ds 1 ; DB75
 
 ; TODO comment
@@ -3410,25 +3443,40 @@ wDBA4::
 wIsIndoor::
   ds 1 ; DBA5
 
-; TODO comment
+; The currently selected save slot, or file menu item
+;
+; 0 = The first save file
+; 1 = The second save file
+; 2 = The third save file
+; 3 = The COPY/ERASE file menu item
+;     (see wIsFileSelectionArrowShifted)
 wSaveSlot::
   ds 1 ; DBA6
 
-; TODO comment
+; Bitfield that indicates which save files have been
+; initialized/created, ie. the following values OR-ed together:
+;
+; 1 = The first save file has been initialized
+; 2 = The second save file has been initialized
+; 4 = The third save file has been initialized
 wSaveFilesCount::
   ds 1 ; DBA7
 
-; Unlabeled
+; Unused
 wDBA8::
   ds 1 ; DBA8
 
-; Unlabeled
-wDBA9::
+; The currently selected character in the name entry menu
+wNameEntryCurrentChar::
   ds 1 ; DBA9
 
-; Unlabeled
-wDBAA::
-  ds 2 ; DBAA - DBAB
+; The current character in the save slot name
+wSaveSlotNameCharIndex::
+  ds 1 ; DBAA
+
+; Unused
+wDBAB::
+  ds 1 ; DBAB
 
 ; Unlabeled
 wDBAC::
@@ -3553,28 +3601,28 @@ wFile3DeathCountHigh::
 wFile3DeathCountLow::
   ds 1 ; DC05
 
-; Amount of health for file 1, needs to be wFile1MaxHealth * 8 or the game crashes while drawing the file selection menu
+; Amount of health for file 1, needs to be wFile1MaxHearts * 8 or the game crashes while drawing the file selection menu
 wFile1Health::
   ds 1 ; DC06
 
-; Amount of health for file 2, needs to be wFile2MaxHealth * 8 or the game crashes while drawing the file selection menu
+; Amount of health for file 2, needs to be wFile2MaxHearts * 8 or the game crashes while drawing the file selection menu
 wFile2Health::
   ds 1 ; DC07
 
-; Amount of health for file 3, needs to be wFile3MaxHealth * 8 or the game crashes while drawing the file selection menu
+; Amount of health for file 3, needs to be wFile3MaxHearts * 8 or the game crashes while drawing the file selection menu
 wFile3Health::
   ds 1 ; DC08
 
-; Amount of maximum health for file 1, used to draw the hearts on the file selection menu
-wFile1MaxHealth::
+; Amount of maximum hearts for file 1, used to draw the hearts on the file selection menu
+wFile1MaxHearts::
   ds 1 ; DC09
 
-; Amount of maximum health for file 2, used to draw the hearts on the file selection menu
-wFile2MaxHealth::
+; Amount of maximum hearts for file 2, used to draw the hearts on the file selection menu
+wFile2MaxHearts::
   ds 1 ; DC0A
 
-; Amount of maximum health for file 3, used to draw the hearts on the file selection menu
-wFile3MaxHealth::
+; Amount of maximum hearts for file 3, used to draw the hearts on the file selection menu
+wFile3MaxHearts::
   ds 1 ; DC0B
 
 ; Photos 1-8 (bitfield)
@@ -3709,8 +3757,11 @@ wPalettePartialCopyColorCount::
 wPaletteUnknownE::
   ds 1 ; DDD5
 
-; Unlabeled
-wDDD6::
+; Whether the palette should change during a room transition
+; - bit 7: Change from dark to light
+; - bit 6: Change from light to dark
+; - bits 5-0: What stage the transition is on
+wBGPaletteTransitionEffect::
   ds 1 ; DDD6
 
 ; Unlabeled
@@ -3795,7 +3846,7 @@ wDE0A:
 
 ; introduced in __PATCH_0__
 ; related to evil eagle boss fight
-; maybe flag to play diffenrent music in dialog before fight.
+; maybe flag to play different music in dialog before fight.
 wDE0B:
   ds 1 ; DE0B
 

@@ -14,7 +14,7 @@ MovingBlockMoverEntityHandler::
     sub  [hl]                                     ; $53E7: $96
     jr   c, .jr_53ED                              ; $53E8: $38 $03
 
-    call func_018_7D3B                            ; $53EA: $CD $3B $7D
+    call PushLinkOutOfEntity_18.forcePush         ; $53EA: $CD $3B $7D
 
 .jr_53ED
     ld   hl, hLinkPositionX                       ; $53ED: $21 $98 $FF
@@ -31,13 +31,13 @@ MovingBlockMoverEntityHandler::
     cp   $04                                      ; $5401: $FE $04
     jr   nc, jr_018_5466                          ; $5403: $30 $61
 
-    ld   e, $20                                   ; $5405: $1E $20
-    ld   a, [wBButtonSlot]                        ; $5407: $FA $00 $DB
+    ld   e, J_B                                   ; $5405: $1E $20
+    ld   a, [wInventoryItems.BButtonSlot]         ; $5407: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $540A: $FE $03
     jr   z, .jr_5417                              ; $540C: $28 $09
 
-    ld   e, $10                                   ; $540E: $1E $10
-    ld   a, [wAButtonSlot]                        ; $5410: $FA $01 $DB
+    ld   e, J_A                                   ; $540E: $1E $10
+    ld   a, [wInventoryItems.AButtonSlot]         ; $5410: $FA $01 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $5413: $FE $03
     jr   nz, jr_018_5466                          ; $5415: $20 $4F
 
@@ -126,20 +126,20 @@ ENDC
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MovingBlockMover1SpriteVariants::
 .variant0
-    db $44, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $44, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $44, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $44, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $74, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $74, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $74, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $74, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MovingBlockMover2SpriteVariants::
 .variant0
-    db $46, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $46, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $46, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $46, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $76, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 func_018_548A::
     ldh  a, [hMapId]                              ; $548A: $F0 $F7

@@ -12,14 +12,14 @@ Data_007_4BAB::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Bear1SpriteVariants::
 .variant0
-    db $7A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $7C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $7A, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $7C, OAM_GBC_PAL_1 | OAMF_PAL0
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Bear2SpriteVariants::
 .variant0
-    db $7C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $7A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7C, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $7A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 BearEntityHandler::
     xor  a                                        ; $4BB5: $AF
@@ -67,7 +67,7 @@ BearEntityHandler::
     ldh  a, [hFrameCounter]                       ; $4C03: $F0 $E7
     and  $20                                      ; $4C05: $E6 $20
     call SetEntitySpriteVariant                   ; $4C07: $CD $0C $3B
-    call func_007_7CF0                            ; $4C0A: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $4C0A: $CD $F0 $7C
     ldh  a, [hActiveEntityState]                  ; $4C0D: $F0 $F0
     JP_TABLE                                      ; $4C0F
 ._00 dw func_007_4C16                             ; $4C10
@@ -80,7 +80,7 @@ func_007_4C16::
 
     ld_dialog_low e, Dialog1D3                    ; $4C1A: $1E $D3
     ld   a, [wOverworldRoomStatus + $FD]          ; $4C1C: $FA $FD $D8
-    and  $30                                      ; $4C1F: $E6 $30
+    and  OW_ROOM_STATUS_CHANGED | OW_ROOM_STATUS_OWL_TALKED ; $4C1F: $E6 $30
     jr   nz, func_007_4C43.openDialog             ; $4C21: $20 $22
 
     ld   a, [wTradeSequenceItem]                  ; $4C23: $FA $0E $DB

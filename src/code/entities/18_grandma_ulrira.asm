@@ -1,32 +1,32 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 GrandmaUlrira1SpriteVariants::
 .variant0
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $64, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $64, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 GrandmaUlrira2SpriteVariants::
 .variant0
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant1
-    db $6A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 GrandmaUlrira3SpriteVariants::
 .variant0
-    db $9A, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_4 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_4 | OAMF_PAL1
 
 GrandmaUlriraEntityHandler::
     ld   hl, wEntitiesPrivateState4Table          ; $4D17: $21 $40 $C4
@@ -81,7 +81,7 @@ jr_018_4D58:
     rra                                           ; $4D63: $1F
     and  $01                                      ; $4D64: $E6 $01
     call SetEntitySpriteVariant                   ; $4D66: $CD $0C $3B
-    call func_018_7D36                            ; $4D69: $CD $36 $7D
+    call PushLinkOutOfEntity_18                   ; $4D69: $CD $36 $7D
     ldh  a, [hActiveEntityState]                  ; $4D6C: $F0 $F0
     JP_TABLE                                      ; $4D6E
 ._00 dw GrandmaUlriraState0Handler

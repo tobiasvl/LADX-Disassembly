@@ -173,7 +173,7 @@ GetColorDungeonTilesAddress::
     jr   nz, jr_020_4640                          ; $461E: $20 $20
 
 .jr_4620
-    ld   a, [hSwitchBlocksState]                  ; $4620: $FA $FB $D6
+    ld   a, [wSwitchBlocksState]                  ; $4620: $FA $FB $D6
     and  a                                        ; $4623: $A7
     jr   z, jr_020_4640                           ; $4624: $28 $1A
 
@@ -188,7 +188,7 @@ GetColorDungeonTilesAddress::
     xor  $C0                                      ; $462F: $EE $C0
     ld   l, a                                     ; $4631: $6F
     ld   h, $5E                                   ; $4632: $26 $5E
-    ld   a, [hSwitchBlocksState]                  ; $4634: $FA $FB $D6
+    ld   a, [wSwitchBlocksState]                  ; $4634: $FA $FB $D6
     ldh  [hSwitchBlockNeedingUpdate], a           ; $4637: $E0 $BB
     ld   [wRoomSwitchableObject], a               ; $4639: $EA $FA $D6
     pop  de                                       ; $463C: $D1
@@ -1174,11 +1174,11 @@ IF __PATCH_0__
     ;
     ; But as both conditions will never be true, it results in bomb arrows
     ;  not working when firing the arrow first and place the bomb second.
-    ld   a, [wAButtonSlot]
+    ld   a, [wInventoryItems.AButtonSlot]
     cp   INVENTORY_BOW
     ret  nz
 
-    ld   a, [wBButtonSlot]
+    ld   a, [wInventoryItems.BButtonSlot]
     cp   INVENTORY_BOW
     ret  nz
 ENDC
@@ -1335,7 +1335,7 @@ SprinkleMagicPowder::
     ; if powder is left update entities positions
     jr   nz, .updateEntitiesPositions             ; $4C59: $20 $12
     ; powder is empty, so empty button slot
-    ld   hl, wBButtonSlot                         ; $4C5B: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $4C5B: $21 $00 $DB
     ld   a, [hl]                                  ; $4C5E: $7E
     cp   INVENTORY_MAGIC_POWDER                   ; $4C5F: $FE $0C
     ; powder not in B slot, so check A slot
@@ -1344,7 +1344,7 @@ SprinkleMagicPowder::
     ld   [hl], INVENTORY_EMPTY                    ; $4C63: $36 $00
 
 .checkAButtonSlot:
-    ; hl = wAButtonSlot
+    ; hl = wInventoryItems.AButtonSlot
     inc  hl                                       ; $4C65: $23
     ld   a, [hl]                                  ; $4C66: $7E
     cp   INVENTORY_MAGIC_POWDER                   ; $4C67: $FE $0C
@@ -1386,7 +1386,7 @@ PlayBoomerangSfx::
     and  a                                        ; $4C9B: $A7
     jr   nz, PlayBoomerangSfx.return              ; $4C9C: $20 $04
 
-    ld   a, $2D                                   ; $4C9E: $3E $2D
+    ld   a, NOISE_SFX_BOOMERANG                   ; $4C9E: $3E $2D
     ldh  [hNoiseSfx], a                           ; $4CA0: $E0 $F4
 
 PlayBoomerangSfx.return::
@@ -1676,7 +1676,7 @@ jr_020_527C:
 
 jr_020_5296:
     ldh  a, [rSTAT]                               ; $5296: $F0 $41
-    and  $03                                      ; $5298: $E6 $03
+    and  STATF_LCD                                ; $5298: $E6 $03
     jr   nz, jr_020_5296                          ; $529A: $20 $FA
 
     ld   hl, hMultiPurpose1                       ; $529C: $21 $D8 $FF
@@ -1736,7 +1736,7 @@ jr_020_52DC:
 
 .loop_52E8
     ldh  a, [rSTAT]                               ; $52E8: $F0 $41
-    and  $03                                      ; $52EA: $E6 $03
+    and  STATF_LCD                                ; $52EA: $E6 $03
     jr   nz, .loop_52E8                           ; $52EC: $20 $FA
 
     ldh  a, [hBaseScrollY]                        ; $52EE: $F0 $97
@@ -2063,7 +2063,7 @@ UpdateBGRegionOrigin::
     ld   [wRoomTransitionState], a                ; $55C6: $EA $24 $C1
     ret                                           ; $55C9: $C9
 
-func_020_55CA::
+FadeOutMusic::
     ldh  a, [hMusicFadeOutTimer]                  ; $55CA: $F0 $A8
     and  a                                        ; $55CC: $A7
     jr   z, .jr_55F0                              ; $55CD: $28 $21
@@ -2212,79 +2212,50 @@ jr_020_5664:
 ret_020_568A:
     ret                                           ; $568A: $C9
 
-Data_20_568B::
-    db   $27, $6A, $6C, $21, $22, $23, $24, $25
-    db   $26, $6A, $FF, $6C, $6A, $6C, $6A, $6C
-    db   $65, $65, $66, $31, $32, $33, $34, $35
-    db   $36, $67, $68, $64, $67, $69, $65, $66
-    db   $40, $40, $41, $42, $43, $44, $FA, $FA
-    db   $63, $40, $40, $40, $40, $40, $40, $60
-    db   $FF, $FA, $48, $49, $4A, $FA, $FA, $FF
-    db   $62, $6D, $6D, $6D, $6D, $6D, $6D, $FF
-    db   $00, $01, $00, $01, $FA, $FF, $5E, $5F
-    db   $04, $05, $06, $07, $28, $29, $29, $2A
-    db   $10, $11, $10, $11, $FA, $FA, $6E, $6F
-    db   $14, $15, $16, $17, $38, $20, $20, $3A
-    db   $00, $01, $00, $01, $FB, $FF, $FE, $FE
-    db   $08, $09, $0A, $0B, $38, $20, $20, $3A
-    db   $10, $11, $10, $11, $FB, $FB, $FE, $FE
-    db   $18, $19, $1A, $1B, $48, $49, $49, $4A
-    db   $FB, $FF, $0C, $0D, $40, $40, $40, $40
-    db   $FA, $FA, $FF, $58, $0E, $0F, $FA, $FA
-    db   $FB, $FB, $1C, $1D, $FA, $FA, $FA, $FA
-    db   $FA, $FA, $FA, $5D, $1E, $1F, $FA, $FA
-    db   $0C, $0D, $0C, $0D, $FB, $FB, $28, $2A
-    db   $FA, $FA, $FA, $58, $2D, $2E, $2E, $2F
-    db   $1C, $1D, $1C, $1D, $FB, $56, $61, $4A
-    db   $FA, $FA, $59, $5A, $3D, $3E, $3E, $3F
-    db   $FD, $FD, $FD, $FD, $FB, $FB, $FB, $FB
-    db   $28, $29, $5B, $FA, $FF, $FF, $54, $54
-    db   $FD, $FD, $FD, $FD, $FB, $FB, $FF, $FB
-    db   $38, $30, $3A, $FA, $FF, $FF, $54, $54
-    db   $FD, $FD, $FD, $FF, $FD, $FD, $FB, $FB
-    db   $48, $FE, $4A, $FA, $56, $57, $54, $54
-    db   $03, $12, $13, $12, $13, $02, $FF, $FB
-    db   $5C, $2B, $FA, $FA, $FA, $FA, $54, $54
+; The tiles to draw for the visited locations (see OW_ROOM_STATUS_VISITED) on the overworld
+; map, within the outer border defined in WorldMapTilemap
+InnerWorldMapTilemap::
+    db   $27, $6A, $6C, $21, $22, $23, $24, $25, $26, $6A, $FF, $6C, $6A, $6C, $6A, $6C
+    db   $65, $65, $66, $31, $32, $33, $34, $35, $36, $67, $68, $64, $67, $69, $65, $66
+    db   $40, $40, $41, $42, $43, $44, $FA, $FA, $63, $40, $40, $40, $40, $40, $40, $60
+    db   $FF, $FA, $48, $49, $4A, $FA, $FA, $FF, $62, $6D, $6D, $6D, $6D, $6D, $6D, $FF
+    db   $00, $01, $00, $01, $FA, $FF, $5E, $5F, $04, $05, $06, $07, $28, $29, $29, $2A
+    db   $10, $11, $10, $11, $FA, $FA, $6E, $6F, $14, $15, $16, $17, $38, $20, $20, $3A
+    db   $00, $01, $00, $01, $FB, $FF, $FE, $FE, $08, $09, $0A, $0B, $38, $20, $20, $3A
+    db   $10, $11, $10, $11, $FB, $FB, $FE, $FE, $18, $19, $1A, $1B, $48, $49, $49, $4A
+    db   $FB, $FF, $0C, $0D, $40, $40, $40, $40, $FA, $FA, $FF, $58, $0E, $0F, $FA, $FA
+    db   $FB, $FB, $1C, $1D, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $5D, $1E, $1F, $FA, $FA
+    db   $0C, $0D, $0C, $0D, $FB, $FB, $28, $2A, $FA, $FA, $FA, $58, $2D, $2E, $2E, $2F
+    db   $1C, $1D, $1C, $1D, $FB, $56, $61, $4A, $FA, $FA, $59, $5A, $3D, $3E, $3E, $3F
+    db   $FD, $FD, $FD, $FD, $FB, $FB, $FB, $FB, $28, $29, $5B, $FA, $FF, $FF, $54, $54
+    db   $FD, $FD, $FD, $FD, $FB, $FB, $FF, $FB, $38, $30, $3A, $FA, $FF, $FF, $54, $54
+    db   $FD, $FD, $FD, $FF, $FD, $FD, $FB, $FB, $48, $FE, $4A, $FA, $56, $57, $54, $54
+    db   $03, $12, $13, $12, $13, $02, $FF, $FB, $5C, $2B, $FA, $FA, $FA, $FA, $54, $54
 
-Data_020_578B::
-    db   $03, $03, $03, $03, $03, $03, $02, $03   ; $578B
-    db   $03, $03, $00, $03, $03, $03, $03, $03   ; $5793
-    db   $03, $03, $03, $03, $03, $03, $03, $03   ; $579B
-    db   $03, $03, $03, $03, $03, $03, $03, $03   ; $57A3
-    db   $03, $03, $04, $04, $04, $04, $00, $00   ; $57AB
-    db   $04, $03, $03, $03, $03, $03, $03, $03   ; $57B3
-    db   $01, $00, $04, $04, $04, $04, $00, $01   ; $57BB
-    db   $04, $04, $04, $04, $04, $04, $04, $01   ; $57C3
-    db   $00, $00, $00, $00, $00, $02, $01, $01   ; $57CB
-    db   $04, $04, $04, $04, $04, $04, $04, $04   ; $57D3
-    db   $00, $00, $00, $00, $00, $00, $01, $01   ; $57DB
-    db   $04, $06, $04, $04, $04, $07, $07, $04   ; $57E3
-    db   $00, $00, $00, $00, $00, $01, $01, $01   ; $57EB
-    db   $04, $06, $04, $04, $04, $07, $07, $04   ; $57F3
-    db   $00, $00, $00, $00, $00, $00, $01, $01   ; $57FB
-    db   $04, $04, $04, $04, $04, $04, $04, $04   ; $5803
-    db   $00, $01, $02, $02, $03, $03, $03, $03   ; $580B
-    db   $00, $00, $00, $04, $02, $07, $00, $00   ; $5813
-    db   $00, $00, $02, $02, $00, $00, $00, $00   ; $581B
-    db   $00, $00, $00, $04, $07, $07, $00, $00   ; $5823
-    db   $07, $07, $01, $01, $00, $00, $04, $04   ; $582B
-    db   $00, $00, $00, $04, $05, $03, $03, $03   ; $5833
-    db   $07, $07, $01, $01, $00, $04, $04, $04   ; $583B
-    db   $00, $00, $04, $04, $03, $03, $03, $03   ; $5843
-    db   $03, $03, $03, $03, $00, $00, $00, $00   ; $584B
-    db   $04, $04, $04, $00, $07, $01, $03, $03   ; $5853
-    db   $03, $03, $03, $03, $00, $00, $02, $00   ; $585B
-    db   $04, $04, $04, $00, $00, $02, $03, $03   ; $5863
-    db   $03, $03, $03, $07, $03, $03, $00, $00   ; $586B
-    db   $04, $04, $04, $00, $04, $04, $03, $03   ; $5873
-    db   $04, $04, $04, $04, $04, $04, $07, $00   ; $587B
-    db   $04, $04, $00, $00, $00, $00, $03, $03   ; $5883
+; The tile attributes (in practice, palettes) to use for InnerWorldMapTilemap
+InnerWorldMapAttrmap::
+    db   $03, $03, $03, $03, $03, $03, $02, $03, $03, $03, $00, $03, $03, $03, $03, $03
+    db   $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03
+    db   $03, $03, $04, $04, $04, $04, $00, $00, $04, $03, $03, $03, $03, $03, $03, $03
+    db   $01, $00, $04, $04, $04, $04, $00, $01, $04, $04, $04, $04, $04, $04, $04, $01
+    db   $00, $00, $00, $00, $00, $02, $01, $01, $04, $04, $04, $04, $04, $04, $04, $04
+    db   $00, $00, $00, $00, $00, $00, $01, $01, $04, $06, $04, $04, $04, $07, $07, $04
+    db   $00, $00, $00, $00, $00, $01, $01, $01, $04, $06, $04, $04, $04, $07, $07, $04
+    db   $00, $00, $00, $00, $00, $00, $01, $01, $04, $04, $04, $04, $04, $04, $04, $04
+    db   $00, $01, $02, $02, $03, $03, $03, $03, $00, $00, $00, $04, $02, $07, $00, $00
+    db   $00, $00, $02, $02, $00, $00, $00, $00, $00, $00, $00, $04, $07, $07, $00, $00
+    db   $07, $07, $01, $01, $00, $00, $04, $04, $00, $00, $00, $04, $05, $03, $03, $03
+    db   $07, $07, $01, $01, $00, $04, $04, $04, $00, $00, $04, $04, $03, $03, $03, $03
+    db   $03, $03, $03, $03, $00, $00, $00, $00, $04, $04, $04, $00, $07, $01, $03, $03
+    db   $03, $03, $03, $03, $00, $00, $02, $00, $04, $04, $04, $00, $00, $02, $03, $03
+    db   $03, $03, $03, $07, $03, $03, $00, $00, $04, $04, $04, $00, $04, $04, $03, $03
+    db   $04, $04, $04, $04, $04, $04, $07, $00, $04, $04, $00, $00, $00, $00, $03, $03
 
 ; Copy the World Map tilemap to BG memory
 LoadWorldMapBGMap::
-    ld   a, LOW(Data_20_568B)                     ; $588B: $3E $8B
+    ld   a, LOW(InnerWorldMapTilemap)             ; $588B: $3E $8B
     ldh  [hMultiPurposeA], a                      ; $588D: $E0 $E1
-    ld   a, HIGH(Data_20_568B)                    ; $588F: $3E $56
+    ld   a, HIGH(InnerWorldMapTilemap)            ; $588F: $3E $56
     ldh  [hMultiPurposeB], a                      ; $5891: $E0 $E2
 
     xor  a                                        ; $5893: $AF
@@ -2294,9 +2265,9 @@ LoadWorldMapBGMap::
     and  a                                        ; $589B: $A7
     ret  z                                        ; $589C: $C8
 
-    ld   a, LOW(Data_020_578B)                    ; $589D: $3E $8B
+    ld   a, LOW(InnerWorldMapAttrmap)             ; $589D: $3E $8B
     ldh  [hMultiPurposeA], a                      ; $589F: $E0 $E1
-    ld   a, HIGH(Data_020_578B)                   ; $58A1: $3E $57
+    ld   a, HIGH(InnerWorldMapAttrmap)            ; $58A1: $3E $57
     ldh  [hMultiPurposeB], a                      ; $58A3: $E0 $E2
     ld   hl, hMultiPurposeC                       ; $58A5: $21 $E3 $FF
     inc  [hl]                                     ; $58A8: $34
@@ -2319,8 +2290,8 @@ jr_020_58B3:
     ld   hl, wOverworldRoomStatus                 ; $58C0: $21 $00 $D8
     add  hl, bc                                   ; $58C3: $09
     ld   a, [hl]                                  ; $58C4: $7E
-    and  $80                                      ; $58C5: $E6 $80
-    ld   a, $2C                                   ; $58C7: $3E $2C
+    and  OW_ROOM_STATUS_VISITED                   ; $58C5: $E6 $80
+    ld   a, $2C ; Unvisited location tile         ; $58C7: $3E $2C
     jr   z, jr_020_58D3                           ; $58C9: $28 $08
 
 .jr_58CB
@@ -2357,7 +2328,7 @@ jr_020_58EA:
 
 jr_020_58EC:
     inc  c                                        ; $58EC: $0C
-    jr   z, ret_020_5903                          ; $58ED: $28 $14
+    jr   z, .return                               ; $58ED: $28 $14
 
     inc  e                                        ; $58EF: $1C
     ld   a, e                                     ; $58F0: $7B
@@ -2376,56 +2347,68 @@ jr_020_58EC:
 .jr_5901
     jr   jr_020_58B3                              ; $5901: $18 $B0
 
-ret_020_5903:
+.return:
     ret                                           ; $5903: $C9
 
 InventoryEntryPoint::
     ld   a, [wGameplaySubtype]                    ; $5904: $FA $96 $DB
     JP_TABLE                                      ; $5907
-._00 dw InventoryInitialHandler
-._01 dw InventoryMapFadeOutHandler
-._02 dw InventoryLoad1Handler
-._03 dw InventoryLoad2Handler
-._04 dw InventoryLoad3Handler
-._05 dw InventoryLoad4Handler
-._06 dw InventoryLoad5Handler
-._07 dw InventoryFadeInHandler
-._08 dw InventoryInteractiveHandler
-._09 dw InventoryStatusInHandler
-._0A dw InventoryStatusHandler
-._0B dw InventoryStatusOutHandler
-._0C dw InventoryFadeOutHandler
+._00 dw InventoryInitialHandler     ; GAMEPLAY_INVENTORY_INITIAL
+._01 dw InventoryMapFadeOutHandler  ; GAMEPLAY_INVENTORY_MAP_FADE_OUT 
+._02 dw InventoryLoad1Handler       ; GAMEPLAY_INVENTORY_DELAY1
+._03 dw InventoryLoad2Handler       ; GAMEPLAY_INVENTORY_DELAY2
+._04 dw InventoryLoad3Handler       ; GAMEPLAY_INVENTORY_DELAY3
+._05 dw InventoryLoad4Handler       ; GAMEPLAY_INVENTORY_DELAY4
+._06 dw InventoryLoad5Handler       ; GAMEPLAY_INVENTORY_DELAY5
+._07 dw InventoryFadeInHandler      ; GAMEPLAY_INVENTORY_FADE_IN
+._08 dw InventoryInteractiveHandler ; GAMEPLAY_INVENTORY_INTERACTIVE
+._09 dw InventoryStatusInHandler    ; GAMEPLAY_INVENTORY_STATUS_IN
+._0A dw InventoryStatusHandler      ; GAMEPLAY_INVENTORY_STATUS
+._0B dw InventoryStatusOutHandler   ; GAMEPLAY_INVENTORY_STATUS_OUT
+._0C dw InventoryFadeOutHandler     ; GAMEPLAY_INVENTORY_FADE_OUT
 
 InventoryInitialHandler::
     ldh  a, [hIsGBC]
     and  a
-    jr   z, jr_020_5940                           ; $5925: $28 $19
+    jr   z, .notGBC                               ; $5925: $28 $19
 
+    ; If GBC, store current background and OAM
+    ; palettes in WRAM bank 3
     ld   hl, wBGPal1                              ; $5927: $21 $10 $DC
-    ld   c, $80                                   ; $592A: $0E $80
+    ld   c, $80 ; counter, copy 128 palette bytes ; $592A: $0E $80
+    ; Disable interrupts
     di                                            ; $592C: $F3
 
-.loop_592D
+.copyPalettes
+    ; Select WRAM bank 1
     xor  a                                        ; $592D: $AF
     ldh  [rSVBK], a                               ; $592E: $E0 $70
+    ; Load palette into b
     ld   b, [hl]                                  ; $5930: $46
-    ld   a, $03                                   ; $5931: $3E $03
+    ; Select WRAM bank 3
+    ld   a, 3                                     ; $5931: $3E $03
     ldh  [rSVBK], a                               ; $5933: $E0 $70
+    ; Store palette in WRAM bank 3
     ld   [hl], b                                  ; $5935: $70
+    ; Select next palette and decrease counter
     inc  hl                                       ; $5936: $23
     dec  c                                        ; $5937: $0D
     ld   a, c                                     ; $5938: $79
     and  a                                        ; $5939: $A7
-    jr   nz, .loop_592D                           ; $593A: $20 $F1
+    jr   nz, .copyPalettes                        ; $593A: $20 $F1
 
+    ; Select WRAM bank 1 and enable interrupts
     xor  a                                        ; $593C: $AF
     ldh  [rSVBK], a                               ; $593D: $E0 $70
     ei                                            ; $593F: $FB
 
-jr_020_5940:
+.notGBC:
     call IncrementGameplaySubtype_20              ; $5940: $CD $83 $66
+    ; Fall through and handle next gameplay
+    ; subtype directly this frame
 
 InventoryMapFadeOutHandler::
+    ; Fade to white and fade out music
     call func_1A22                                ; $5943: $CD $22 $1A
     ld   a, [wTransitionSequenceCounter]          ; $5946: $FA $6B $C1
     cp   $04                                      ; $5949: $FE $04
@@ -2434,6 +2417,7 @@ InventoryMapFadeOutHandler::
 
     xor  a                                        ; $594D: $AF
     ld   [wInventoryAppearing], a                 ; $594E: $EA $4F $C1
+    ; Set volume for "inventory appearing" sfx?
     ld   a, $03                                   ; $5951: $3E $03
     ldh  [hVolumeRight], a                        ; $5953: $E0 $A9
     ld   a, $30                                   ; $5955: $3E $30
@@ -2473,7 +2457,7 @@ data_020_5994::
     db   $00
 
 data_020_59C7::
-    ; These are actually indexes in the precious table of bytes that need to be set to 7F to hide items.
+    ; These are actually indexes in the previous table of bytes that need to be set to 7F to hide items.
     ; It uses this offset to write 2x7F byte when an item is not available
     db   $03, $0A, $11, $22, $05, $0C, $13, $1D, $27 ; $59CF
 
@@ -2494,7 +2478,7 @@ InventoryLoad1Handler::
 
     ldh  a, [hIsGBC]                              ; $59DE: $F0 $FE
     and  a                                        ; $59E0: $A7
-    jr   z, inventoryDisplayEntryPoint            ; $59E1: $28 $40
+    jr   z, .inventoryDisplayEntryPoint           ; $59E1: $28 $40
 
 ; GBC Exclusive code
 ; Load 32 bytes from 596A into DC91
@@ -2516,7 +2500,7 @@ InventoryLoad1Handler::
     ld   a, [wIsIndoor]                           ; $59F6: $FA $A5 $DB
     and  a                                        ; $59F9: $A7
     ; start building the inventory
-    jr   z, inventoryDisplayEntryPoint            ; $59FA: $28 $27
+    jr   z, .inventoryDisplayEntryPoint           ; $59FA: $28 $27
 
     ;
     ; Dungeon inventory
@@ -2529,7 +2513,7 @@ InventoryLoad1Handler::
 
     ; Jump ahead if map is greater than MAP_CAVE_B
     cp   MAP_CAVE_B                               ; $5A02: $FE $0A
-    jr   nc, inventoryDisplayEntryPoint           ; $5A04: $30 $1D
+    jr   nc, .inventoryDisplayEntryPoint          ; $5A04: $30 $1D
 .colorDungeonEnd
 
 ; Set BC and E to point to the end of the "Palette Data?" (12 bytes) above
@@ -2554,11 +2538,11 @@ InventoryLoad1Handler::
     ld   [wDrawCommandsAltSize], a                ; $5A20: $EA $90 $DC
 
 ; Palette loading complete, start building inventory
-inventoryDisplayEntryPoint:
+.inventoryDisplayEntryPoint:
     ld   de, wHasFlippers                         ; $5A23: $11 $0C $DB
     ld   bc, $00                                  ; $5A26: $01 $00 $00
 
-inventoryDisplayLoop:
+.inventoryDisplayLoop:
     ; c is the counted
     ld   a, c                                     ; $5A29: $79
     cp   $02                                      ; $5A2A: $FE $02
@@ -2567,39 +2551,39 @@ inventoryDisplayLoop:
     ; Only executed for Trade Sequence items
     ld   a, [wExchangingTradeSequenceItem]        ; $5A2E: $FA $7F $DB
     and  a                                        ; $5A31: $A7
-    jr   nz, overwriteInventoryDisplaySprite      ; $5A32: $20 $23
+    jr   nz, .overwriteInventoryDisplaySprite     ; $5A32: $20 $23
 .tradeSequenceItemEnd
 
     ld   a, c                                     ; $5A34: $79
     cp   $04                                      ; $5A35: $FE $04
-    jr   nz, jr_020_5A4F                          ; $5A37: $20 $16
+    jr   nz, .jr_020_5A4F                         ; $5A37: $20 $16
 
     ; Only executed for dungeon keys
     ld   de, wHasTailKey                          ; $5A39: $11 $11 $DB
     ld   a, [wIsIndoor]                           ; $5A3C: $FA $A5 $DB
     and  a                                        ; $5A3F: $A7
-    jr   z, jr_020_5A4F                           ; $5A40: $28 $0D
+    jr   z, .jr_020_5A4F                          ; $5A40: $28 $0D
 
     ldh  a, [hMapId]                              ; $5A42: $F0 $F7
     cp   MAP_COLOR_DUNGEON                        ; $5A44: $FE $FF
     jr   z, .jr_5A4C                              ; $5A46: $28 $04
 
     cp   $0A                                      ; $5A48: $FE $0A
-    jr   nc, jr_020_5A4F                          ; $5A4A: $30 $03
+    jr   nc, .jr_020_5A4F                         ; $5A4A: $30 $03
 
 .jr_5A4C
     ld   de, wCurrentDungeonItemFlags             ; $5A4C: $11 $CC $DB
 
-jr_020_5A4F:
+.jr_020_5A4F:
     ; Load current inventory display item memory
     ld   a, [de]                                  ; $5A4F: $1A
     cp   $FF                                      ; $5A50: $FE $FF
-    jr   z, overwriteInventoryDisplaySprite       ; $5A52: $28 $03
+    jr   z, .overwriteInventoryDisplaySprite      ; $5A52: $28 $03
 
     and  a                                        ; $5A54: $A7
-    jr   nz, incrementInventoryDisplay            ; $5A55: $20 $1E
+    jr   nz, .incrementInventoryDisplay           ; $5A55: $20 $1E
 
-overwriteInventoryDisplaySprite:
+.overwriteInventoryDisplaySprite:
     ; Push current inventory item to the stack
     push de                                       ; $5A57: $D5
 
@@ -2631,14 +2615,14 @@ overwriteInventoryDisplaySprite:
     pop  de                                       ; $5A74: $D1
 
 ; Increment inventory memory pointer to display next item
-incrementInventoryDisplay:
+.incrementInventoryDisplay:
     inc  de                                       ; $5A75: $13
     inc  c                                        ; $5A76: $0C
 
     ; Loop until all 8 items are handled
     ld   a, c                                     ; $5A77: $79
     cp   $09                                      ; $5A78: $FE $09
-    jr   nz, inventoryDisplayLoop                 ; $5A7A: $20 $AD
+    jr   nz, .inventoryDisplayLoop                ; $5A7A: $20 $AD
 
 
     ld   hl, wDrawCommand                         ; $5A7C: $21 $01 $D6
@@ -2665,19 +2649,19 @@ incrementInventoryDisplay:
     add  hl, de                                   ; $5A9D: $19
     ld   a, [wIsIndoor]                           ; $5A9E: $FA $A5 $DB
     and  a                                        ; $5AA1: $A7
-    jr   z, jr_020_5AD1                           ; $5AA2: $28 $2D
+    jr   z, .jr_020_5AD1                          ; $5AA2: $28 $2D
 
     ldh  a, [hMapId]                              ; $5AA4: $F0 $F7
     cp   MAP_COLOR_DUNGEON                        ; $5AA6: $FE $FF
     jr   z, .jr_5AAE                              ; $5AA8: $28 $04
 
     cp   $0A                                      ; $5AAA: $FE $0A
-    jr   nc, jr_020_5AD1                          ; $5AAC: $30 $23
+    jr   nc, .jr_020_5AD1                         ; $5AAC: $30 $23
 
 .jr_5AAE
     ld   a, [wSmallKeysCount]                     ; $5AAE: $FA $D0 $DB
     and  a                                        ; $5AB1: $A7
-    jr   z, jr_020_5ADE                           ; $5AB2: $28 $2A
+    jr   z, .jr_020_5ADE                          ; $5AB2: $28 $2A
 
     push af                                       ; $5AB4: $F5
     push hl                                       ; $5AB5: $E5
@@ -2697,31 +2681,31 @@ incrementInventoryDisplay:
     ld   [hl], $01                                ; $5ACB: $36 $01
     pop  hl                                       ; $5ACD: $E1
     pop  af                                       ; $5ACE: $F1
-    jr   DrawKeyCounter                           ; $5ACF: $18 $0A
+    jr   .drawKeyCounter                          ; $5ACF: $18 $0A
 
-jr_020_5AD1:
+.jr_020_5AD1:
     ld   a, [wGoldenLeavesCount]                  ; $5AD1: $FA $15 $DB
     ; if no golden leaves
     and  a                                        ; $5AD4: $A7
-    jr   z, jr_020_5ADE                           ; $5AD5: $28 $07
+    jr   z, .jr_020_5ADE                          ; $5AD5: $28 $07
     ; if not slime key
     cp   SLIME_KEY                                ; $5AD7: $FE $06
-    jr   nc, jr_020_5ADE                          ; $5AD9: $30 $03
+    jr   nc, .jr_020_5ADE                         ; $5AD9: $30 $03
 
-DrawKeyCounter:
+.drawKeyCounter:
     add  $B0                                      ; $5ADB: $C6 $B0
     ld   [hl], a                                  ; $5ADD: $77
 
-jr_020_5ADE:
+.jr_020_5ADE:
     ld   a, $32                                   ; $5ADE: $3E $32
     ld   [wDrawCommandsSize], a                   ; $5AE0: $EA $00 $D6
     ld   a, $03                                   ; $5AE3: $3E $03
     ldh  [hVolumeRight], a                        ; $5AE5: $E0 $A9
     ld   a, $30                                   ; $5AE7: $3E $30
     ldh  [hVolumeLeft], a                         ; $5AE9: $E0 $AA
-    jp   label_020_5D34                           ; $5AEB: $C3 $34 $5D
+    jp   InventoryLoad3Handler.changeBGColumnPaletteAndExecuteDrawCommands ; $5AEB: $C3 $34 $5D
 
-tradingItemPaletteIndexes:
+TradingItemPaletteIndexes:
     db $00  ; TRADING_ITEM_NONE
     db $05  ; TRADING_ITEM_YOSHI_DOLL
     db $02  ; TRADING_ITEM_RIBBON
@@ -2736,8 +2720,9 @@ tradingItemPaletteIndexes:
     db $01  ; TRADING_ITEM_FISHING_HOOK
     db $02  ; TRADING_ITEM_NECKLACE
     db $02  ; TRADING_ITEM_SCALE
-    db $05  ; TRADING_ITEM_MAGNIFIYING_GLASS
+    db $05  ; TRADING_ITEM_MAGNIFYING_LENS
 
+; Continue building display of inventory
 InventoryLoad2Handler::
     ldh  a, [hIsGBC]                              ; $5AFD: $F0 $FE
     and  a                                        ; $5AFF: $A7
@@ -2746,7 +2731,7 @@ InventoryLoad2Handler::
     ld   b, $00                                   ; $5B02: $06 $00
     ld   a, [wTradeSequenceItem]                  ; $5B04: $FA $0E $DB
     ld   c, a                                     ; $5B07: $4F
-    ld   hl, tradingItemPaletteIndexes            ; $5B08: $21 $EE $5A
+    ld   hl, TradingItemPaletteIndexes            ; $5B08: $21 $EE $5A
     add  hl, bc                                   ; $5B0B: $09
     ld   a, [hl]                                  ; $5B0C: $7E
     ldh  [hMultiPurpose0], a                      ; $5B0D: $E0 $D7
@@ -2875,7 +2860,7 @@ func_020_5BA8::
     ld   [hl+], a                                 ; $5BB7: $22
     ret                                           ; $5BB8: $C9
 
-; Configure request for loading inventory plette
+; Configure request for loading inventory palette
 func_020_5BB9::
     push bc                                       ; $5BB9: $C5
     ld   a, [wDrawCommandsAltSize]                ; $5BBA: $FA $90 $DC
@@ -2918,7 +2903,7 @@ func_020_5BB9::
     ld   a, $02                                   ; $5BF3: $3E $02
     ld   [hl+], a                                 ; $5BF5: $22
     ld   [hl+], a                                 ; $5BF6: $22
-    jr   jr_020_5C10                              ; $5BF7: $18 $17
+    jr   .jr_020_5C10                             ; $5BF7: $18 $17
 
 .jr_5BF9
     cp   $18                                      ; $5BF9: $FE $18
@@ -2932,7 +2917,7 @@ func_020_5BB9::
     ld   [hl+], a                                 ; $5C05: $22
     ld   a, $03                                   ; $5C06: $3E $03
     ld   [hl+], a                                 ; $5C08: $22
-    jr   jr_020_5C10                              ; $5C09: $18 $05
+    jr   .jr_020_5C10                             ; $5C09: $18 $05
 
 .jr_5C0B
     ld   a, [de]                                  ; $5C0B: $1A
@@ -2941,7 +2926,7 @@ func_020_5BB9::
     ld   a, [de]                                  ; $5C0E: $1A
     ld   [hl+], a                                 ; $5C0F: $22
 
-jr_020_5C10:
+.jr_020_5C10:
     xor  a                                        ; $5C10: $AF
     ld   [hl], a                                  ; $5C11: $77
     pop  bc                                       ; $5C12: $C1
@@ -3008,11 +2993,22 @@ InventoryTileMapPositions::
     db  HIGH(vBGMap1 + $100), $81,   HIGH(vBGMap1 + $100), $85  ;  [   ] [   ]
     db  HIGH(vBGMap1 + $100), $E1,   HIGH(vBGMap1 + $100), $E5  ;  [   ] [   ]
 
-; Draw a and B button slot in the inventory bar
-func_020_5C9C::
+; Build wDrawCommand to draw inventory slots
+;
+; Starts at the slot number in bc, counting from the bottom of the inventory
+; and up, ie. from the highest slot number, and up until (but not including)
+; the slot number in e. This numbering starts at wInventoryItems.BButtonSlot as index 0,
+; wInventoryItems.AButtonSlot as index 1, and then the remaining wInventoryItems.
+;
+; If this were Python, it could be described as: range(bc, e, -1)
+;
+; bc = The bottom-most inventory slot to draw
+; e = One less than the top-most inventory slot to draw
+;     ($FF draws all the way to the top, including the A and B slots)
+DrawInventorySlots::
     push de                                       ; $5C9C: $D5
     push bc                                       ; $5C9D: $C5
-    ld   hl, wBButtonSlot                         ; $5C9E: $21 $00 $DB
+    ld   hl, wInventoryItems                      ; $5C9E: $21 $00 $DB
     add  hl, bc                                   ; $5CA1: $09
     ld   a, [hl]                                  ; $5CA2: $7E
     ldh  [hMultiPurpose1], a                      ; $5CA3: $E0 $D8
@@ -3131,24 +3127,25 @@ func_020_5C9C::
     dec  c                                        ; $5D1E: $0D
     ld   a, c                                     ; $5D1F: $79
     cp   e                                        ; $5D20: $BB
-    jp   nz, func_020_5C9C                        ; $5D21: $C2 $9C $5C
+    jp   nz, DrawInventorySlots                   ; $5D21: $C2 $9C $5C
 
     ret                                           ; $5D24: $C9
 
+; Draws the inventory slots
 InventoryLoad3Handler::
     ld   a, [wC154]                               ; $5D25: $FA $54 $C1
     ld   c, a                                     ; $5D28: $4F
     ld   b, $00                                   ; $5D29: $06 $00
     ld   e, $FF                                   ; $5D2B: $1E $FF
-    call func_020_5C9C                            ; $5D2D: $CD $9C $5C
+    call DrawInventorySlots                       ; $5D2D: $CD $9C $5C
     xor  a                                        ; $5D30: $AF
     ld   [wC154], a                               ; $5D31: $EA $54 $C1
 
-label_020_5D34:
+.changeBGColumnPaletteAndExecuteDrawCommands                                 :
     call IncrementGameplaySubtype_20              ; $5D34: $CD $83 $66
     call LCDOff                                   ; $5D37: $CD $CF $28
     ld   a, $20                                   ; $5D3A: $3E $20
-    call func_AB5                                 ; $5D3C: $CD $B5 $0A
+    call ChangeBGColumnPaletteAndExecuteDrawCommands ; $5D3C: $CD $B5 $0A
     xor  a                                        ; $5D3F: $AF
     ld   [wDrawCommandsSize], a                   ; $5D40: $EA $00 $D6
     ld   [wDrawCommand]               , a         ; $5D43: $EA $01 $D6
@@ -3161,42 +3158,41 @@ label_020_5D34:
 InventoryLoad4Handler::
     call LCDOff                                   ; $5D52: $CD $CF $28
     call ReloadColorDungeonNpcTiles               ; $5D55: $CD $D1 $3F
+    ; Turn on LCD
     ld   a, [wLCDControl]                         ; $5D58: $FA $FD $D6
     ldh  [rLCDC], a                               ; $5D5B: $E0 $40
     call IncrementGameplaySubtype_20              ; $5D5D: $CD $83 $66
     ret                                           ; $5D60: $C9
 
 InventoryPalettes::
-    ; 8 + 8 palettes used for the inventory subscreen
-    ;       0      1      2      3
-    dw   $57FF, $26C4, $1521, $0000
-    dw   $57FF, $5231, $28C5, $0000
-    dw   $57FF, $2C7F, $140E, $0000
-    dw   $57FF, $11D9, $10CE, $0000
-    dw   $57FF, $7EAE, $7C00, $0000
-    dw   $57FF, $7FFF, $0642, $0000
-    dw   $57FF, $12BB, $0151, $0000
-    dw   $57FF, $2B02, $0A00, $0000
-    dw   $57FF, $0000, $22A2, $4EFF
-    dw   $7C00, $0000, $05FF, $4EFF
-    dw   $7C00, $0000, $7E03, $4EFF
-    dw   $7C00, $0000, $5231, $7FFF
-    dw   $7C00, $1ADF, $187D, $0000
-    dw   $7C00, $0000, $22A2, $7FFF
-    dw   $7C00, $0000, $001F, $7FFF
-    dw   $7C00, $0000, $7C00, $7FFF
+    rgb   #F8F8A8, #20B048, #084828, #000000
+    rgb   #F8F8A8, #8888A0, #283050, #000000
+    rgb   #F8F8A8, #F81858, #700028, #000000
+    rgb   #F8F8A8, #C87020, #703020, #000000
+    rgb   #F8F8A8, #70A8F8, #0000F8, #000000
+    rgb   #F8F8A8, #F8F8F8, #109008, #000000
+    rgb   #F8F8A8, #D8A820, #885000, #000000
+    rgb   #F8F8A8, #10C050, #008010, #000000
+
+    rgb   #F8F8A8, #000000, #10A840, #F8B898
+    rgb   #0000F8, #000000, #F87808, #F8B898
+    rgb   #0000F8, #000000, #1880F8, #F8B898
+    rgb   #0000F8, #000000, #8888A0, #F8F8F8
+    rgb   #0000F8, #F8B030, #E81830, #000000
+    rgb   #0000F8, #000000, #10A840, #F8F8F8
+    rgb   #0000F8, #000000, #F80000, #F8F8F8
+    rgb   #0000F8, #000000, #0000F8, #F8F8F8
 
 InventoryTradingItemPalettes::
     ; Replaces the second and third color in the fifth BG palette line
     ; Used for trading sequence items
-    ;       2      3
-    dw   $7FFF, $0642
-    dw   $0FBE, $0213
-    dw   $0F7F, $09E0
-    dw   $32DF, $187D
-    dw   $7FFF, $083D
-    dw   $7EAE, $7C00
-    dw   $7FFF, $5231
+    rgb            #F8F8F8, #109008          ; Yoshi doll
+    rgb            #F0E818, #988000          ; bananas
+    rgb            #F8D818, #007810          ; pineapple
+    rgb            #F8B060, #E81830          ; hibiscus
+    rgb            #F8F8F8, #E80810          ; letter
+    rgb            #70A8F8, #0000F8          ; magnifying lens
+    rgb            #F8F8F8, #8888A0          ; dog food
 
 InventoryTradingItemPaletteTable::
     ; Pointers to InventoryTradingItemPalettes
@@ -3225,7 +3221,7 @@ InventoryTradingItemPaletteIndex::
     db  $00  ; TRADING_ITEM_FISHING_HOOK
     db  $00  ; TRADING_ITEM_NECKLACE
     db  $00  ; TRADING_ITEM_SCALE
-    db  $06  ; TRADING_ITEM_MAGNIFIYING_GLASS
+    db  $06  ; TRADING_ITEM_MAGNIFYING_LENS
 
 InventoryLoad5Handler::
     xor  a                                        ; $5E1A: $AF
@@ -3234,7 +3230,7 @@ InventoryLoad5Handler::
     ld   [wPaletteUnknownE], a                    ; $5E20: $EA $D5 $DD
     ldh  a, [hIsGBC]                              ; $5E23: $F0 $FE
     and  a                                        ; $5E25: $A7
-    jr   z, jr_020_5E6D                           ; $5E26: $28 $45
+    jr   z, .jr_020_5E6D                          ; $5E26: $28 $45
 
     ld   bc, InventoryPalettes                    ; $5E28: $01 $61 $5D
     ld   hl, wBGPal1                              ; $5E2B: $21 $10 $DC
@@ -3260,7 +3256,7 @@ InventoryLoad5Handler::
     add  hl, de                                   ; $5E48: $19
     ld   a, [hl]                                  ; $5E49: $7E
     and  a                                        ; $5E4A: $A7
-    jr   z, jr_020_5E6D                           ; $5E4B: $28 $20
+    jr   z, .jr_020_5E6D                          ; $5E4B: $28 $20
 
     sla  a                                        ; $5E4D: $CB $27
     ld   e, a                                     ; $5E4F: $5F
@@ -3288,7 +3284,7 @@ InventoryLoad5Handler::
     ldh  [rSVBK], a                               ; $5E6A: $E0 $70
     ei                                            ; $5E6C: $FB
 
-jr_020_5E6D:
+.jr_020_5E6D
     xor  a                                        ; $5E6D: $AF
     ld   [wTransitionSequenceCounter], a          ; $5E6E: $EA $6B $C1
     call IncrementGameplaySubtype_20              ; $5E71: $CD $83 $66
@@ -3296,22 +3292,22 @@ jr_020_5E6D:
 
 InventoryInstrumentCyclingColors::
     ; Palette colors for the color-cycling the instruments use on the subscreen.
-    dw  $2680, $1100
-    dw  $3A20, $18E0
-    dw  $51A0, $20C0
-    dw  $7D08, $3484
-    dw  $7CAD, $3046
-    dw  $5C50, $2827
-    dw  $4012, $1C08
-    dw  $3015, $1409
-    dw  $1417, $0009
-    dw  $04D7, $046A
-    dw  $0537, $048A
-    dw  $0997, $04AA
-    dw  $09F5, $04C9
-    dw  $0A10, $04E7
-    dw  $064B, $0505
-    dw  $02A0, $0120
+    rgb   #00A048, #004020
+    rgb   #008870, #003830
+    rgb   #0068A0, #003040
+    rgb   #4040F8, #202068
+    rgb   #6828F8, #301060
+    rgb   #8010B8, #380850
+    rgb   #900080, #400038
+    rgb   #A80060, #480028
+    rgb   #B80028, #480000
+    rgb   #B83008, #501808
+    rgb   #B84808, #502008
+    rgb   #B86010, #502808
+    rgb   #A87810, #483008
+    rgb   #808010, #383808
+    rgb   #589008, #284008
+    rgb   #00A800, #004800
 
 func_020_5EB5::
     ldh  a, [hIsGBC]                              ; $5EB5: $F0 $FE
@@ -3470,7 +3466,7 @@ jr_020_5F59:
     ld   [hl], JINGLE_MOVE_SELECTION              ; $5F91: $36 $0A
     ld   e, a                                     ; $5F93: $5F
     ld   d, $00                                   ; $5F94: $16 $00
-    ld   hl, wInventoryItems                      ; $5F96: $21 $02 $DB
+    ld   hl, wInventoryItems.subscreen            ; $5F96: $21 $02 $DB
     add  hl, de                                   ; $5F99: $19
     ld   a, [hl]                                  ; $5F9A: $7E
     cp   INVENTORY_OCARINA                        ; $5F9B: $FE $09
@@ -3509,9 +3505,9 @@ jr_020_5FC1:
     and  J_A                                      ; $5FCD: $E6 $10
     jr   z, jr_020_5FED                           ; $5FCF: $28 $1C
 
-    ld   a, [wAButtonSlot]                        ; $5FD1: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $5FD1: $FA $01 $DB
     push af                                       ; $5FD4: $F5
-    ld   hl, wInventoryItems                      ; $5FD5: $21 $02 $DB
+    ld   hl, wInventoryItems.subscreen            ; $5FD5: $21 $02 $DB
     ld   a, [wInventorySelection]                 ; $5FD8: $FA $A3 $DB
 
 label_020_5FDB:
@@ -3519,7 +3515,7 @@ label_020_5FDB:
     ld   b, $00                                   ; $5FDC: $06 $00
     add  hl, bc                                   ; $5FDE: $09
     ld   a, [hl]                                  ; $5FDF: $7E
-    ld   [wAButtonSlot], a                        ; $5FE0: $EA $01 $DB
+    ld   [wInventoryItems.AButtonSlot], a         ; $5FE0: $EA $01 $DB
     pop  af                                       ; $5FE3: $F1
     ld   [hl], a                                  ; $5FE4: $77
     ld   c, $01                                   ; $5FE5: $0E $01
@@ -3532,15 +3528,15 @@ jr_020_5FED:
     and  J_B                                      ; $5FEF: $E6 $20
     jr   z, ret_020_604A                          ; $5FF1: $28 $57
 
-    ld   a, [wBButtonSlot]                        ; $5FF3: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $5FF3: $FA $00 $DB
     push af                                       ; $5FF6: $F5
-    ld   hl, wInventoryItems                      ; $5FF7: $21 $02 $DB
+    ld   hl, wInventoryItems.subscreen            ; $5FF7: $21 $02 $DB
     ld   a, [wInventorySelection]                 ; $5FFA: $FA $A3 $DB
     ld   c, a                                     ; $5FFD: $4F
     ld   b, $00                                   ; $5FFE: $06 $00
     add  hl, bc                                   ; $6000: $09
     ld   a, [hl]                                  ; $6001: $7E
-    ld   [wBButtonSlot], a                        ; $6002: $EA $00 $DB
+    ld   [wInventoryItems.BButtonSlot], a         ; $6002: $EA $00 $DB
     pop  af                                       ; $6005: $F1
     ld   [hl], a                                  ; $6006: $77
     ld   c, $00                                   ; $6007: $0E $00
@@ -3574,7 +3570,7 @@ jr_020_600D:
     ld   [wOcarinaMenuClosing], a                 ; $6033: $EA $B9 $C1
 
 jr_020_6036:
-    call func_020_5C9C                            ; $6036: $CD $9C $5C
+    call DrawInventorySlots                       ; $6036: $CD $9C $5C
 
 func_020_6039:
     ld   a, JINGLE_VALIDATE                       ; $6039: $3E $13
@@ -3585,7 +3581,7 @@ func_020_6039:
     ld   b, $00                                   ; $6043: $06 $00
     dec  a                                        ; $6045: $3D
     ld   e, a                                     ; $6046: $5F
-    call func_020_5C9C                            ; $6047: $CD $9C $5C
+    call DrawInventorySlots                       ; $6047: $CD $9C $5C
 
 ret_020_604A:
     ret                                           ; $604A: $C9
@@ -4031,7 +4027,7 @@ func_020_635C::
     ld   d, $0C                                   ; $635C: $16 $0C
 
 jr_020_635E:
-    ld   hl, wBButtonSlot                         ; $635E: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $635E: $21 $00 $DB
     ld   e, $00                                   ; $6361: $1E $00
 
 .loop_6363
@@ -4084,7 +4080,8 @@ jr_020_63A2:
     and  a                                        ; $63A5: $A7
     jr   z, .jr_63AB                              ; $63A6: $28 $03
 
-    ld   hl, wDynamicOAMBuffer+$6C                ; $63A8: $21 $9C $C0
+    ; Look at the last entry in wDynamicOAMBuffer
+    ld   hl, wDynamicOAMBuffer + (27 * sizeof_OAM_ATTRS) ; $63A8: $21 $9C $C0
 
 .jr_63AB
     ld   a, [wWindowY]                            ; $63AB: $FA $9A $DB
@@ -4209,19 +4206,28 @@ func_020_6446::
 
     ret                                           ; $645B: $C9
 
-Data_020_645C::
-    db   $40, $05, $40, $25, $5C, $03, $5E, $03   ; $645C
+GreenTunicStatusOAMData::
+    db   $40, OAM_GBC_PAL_5              ; left green tunic
+    db   $40, OAM_GBC_PAL_5 | OAMF_XFLIP ; right green tunic
+    db   $5C, OAM_GBC_PAL_3              ; left "WEAR G"
+    db   $5E, OAM_GBC_PAL_3              ; right "WEAR G"
 
-Data_020_6464::
-    db   $40, $06, $40, $26, $60, $03, $62, $03   ; $6464
+RedTunicStatusOAMData::
+    db   $40, OAM_GBC_PAL_6              ; left red tunic
+    db   $40, OAM_GBC_PAL_6 | OAMF_XFLIP ; right red tunic
+    db   $60, OAM_GBC_PAL_3              ; left "WEAR R"
+    db   $62, OAM_GBC_PAL_3              ; right "WEAR R"
 
-Data_020_646C::
-    db   $40, $07, $40, $27, $64, $03, $7E, $03   ; $646C
+BlueTunicStatusOAMData::
+    db   $40, OAM_GBC_PAL_7              ; left blue tunic
+    db   $40, OAM_GBC_PAL_7 | OAMF_XFLIP ; right blue tunic
+    db   $64, OAM_GBC_PAL_3              ; left "WEAR B"
+    db   $7E, OAM_GBC_PAL_3              ; right "WEAR B"
 
-Data_020_6474::
-    dw   Data_020_645C
-    dw   Data_020_6464
-    dw   Data_020_646C
+TunicStatusOAMTable::
+    dw   GreenTunicStatusOAMData
+    dw   RedTunicStatusOAMData
+    dw   BlueTunicStatusOAMData
 
 Data_020_647A::
     db   $42, $06, $42, $26, $66, $03, $7A, $03, $6E, $03
@@ -4258,7 +4264,8 @@ Data_020_64E4::
     db   $7A, $03, $68, $03, $6A, $03   ; $64E2
     db   $7C, $03, $7C, $03                       ; $64EA
 
-DrawStatusWindow::
+; Draw the inventory status window that appears when you hold SELECT
+RenderInventoryStatus::
     ld   hl, wOAMBuffer+$10                       ; $64EE: $21 $10 $C0
     ld   a, $53                                   ; $64F1: $3E $53
     ldh  [hBGMapOffsetLow], a                     ; $64F3: $E0 $E1
@@ -4266,7 +4273,7 @@ DrawStatusWindow::
     ldh  [hMultiPurposeB], a                      ; $64F8: $E0 $E2
     push hl                                       ; $64FA: $E5
     ld   c, $04                                   ; $64FB: $0E $04
-    ld   hl, Data_020_6474                        ; $64FD: $21 $74 $64
+    ld   hl, TunicStatusOAMTable                  ; $64FD: $21 $74 $64
     ld   a, [wTunicType]                          ; $6500: $FA $0F $DC
     and  $03
     sla  a                                        ; $6503: $CB $27
@@ -4357,7 +4364,7 @@ jr_020_654E:
 
 InventoryStatusInHandler::
     call func_020_5EB5                            ; $6583: $CD $B5 $5E
-    call DrawStatusWindow                            ; $6586: $CD $EE $64
+    call RenderInventoryStatus                    ; $6586: $CD $EE $64
     ldh  a, [hPressedButtonsMask]                 ; $6589: $F0 $CB
     and  J_SELECT                                 ; $658B: $E6 $40
     jr   nz, .jr_6596                             ; $658D: $20 $07
@@ -4384,7 +4391,7 @@ InventoryStatusInHandler::
 
 InventoryStatusHandler::
     call func_020_5EB5                            ; $65A8: $CD $B5 $5E
-    call DrawStatusWindow                            ; $65AB: $CD $EE $64
+    call RenderInventoryStatus                    ; $65AB: $CD $EE $64
     ldh  a, [hPressedButtonsMask]                 ; $65AE: $F0 $CB
     and  J_SELECT                                 ; $65B0: $E6 $40
     jp   z, IncrementGameplaySubtype_20              ; $65B4: $CD $83 $66
@@ -4412,7 +4419,7 @@ InventoryStatusHandler::
 
 InventoryStatusOutHandler::
     call func_020_5EB5                            ; $65B8: $CD $B5 $5E
-    call DrawStatusWindow                            ; $65BB: $CD $EE $64
+    call RenderInventoryStatus                    ; $65BB: $CD $EE $64
     ld   a, [wDE0A]                               ; $65BE: $FA $0A $DE
     add  $04                                      ; $65C1: $C6 $04
     cp   $90                                      ; $65C3: $FE $90
@@ -4490,7 +4497,7 @@ jr_020_6628:
     ld   a, $07                                   ; $663D: $3E $07
     ld   [rWX], a                                 ; $663F: $E0 $4B
     ld   a, $08                                   ; $6641: $3E $08
-    ld   [wC150], a                               ; $6643: $EA $50 $C1
+    ld   [wSubscreenScrollIncrement], a           ; $6643: $EA $50 $C1
     ld   a, $07                                   ; $6646: $3E $07
     ldh  [hVolumeRight], a                        ; $6648: $E0 $A9
     ld   a, $70                                   ; $664A: $3E $70
@@ -4519,7 +4526,7 @@ jr_020_6628:
     xor  a                                        ; $6668: $AF
     ld   [rSVBK], a                               ; $6669: $E0 $70
     ld   a, [wLCDControl]                         ; $666B: $FA $FD $D6
-    and  $7F                                      ; $666E: $E6 $7F
+    and  ~LCDCF_ON                                ; $666E: $E6 $7F
     ld   [rLCDC], a                               ; $6670: $E0 $40
     ldh  a, [hMapId]                              ; $6672: $F0 $F7
     cp   MAP_COLOR_DUNGEON                        ; $6674: $FE $FF
@@ -4694,7 +4701,7 @@ Data_020_6A28::
 func_020_6A30::
     ldh  a, [hIsGBC]                              ; $6A30: $F0 $FE
     and  a                                        ; $6A32: $A7
-    jp   z, label_020_6B81                        ; $6A33: $CA $81 $6B
+    jp   z, IgnorePaletteChange_DMG               ; $6A33: $CA $81 $6B
 
     ld   a, e                                     ; $6A36: $7B
     cp   $03                                      ; $6A37: $FE $03
@@ -4800,7 +4807,7 @@ func_020_6A68::
 func_020_6AC1::
     ldh  a, [hIsGBC]                              ; $6AC1: $F0 $FE
     and  a                                        ; $6AC3: $A7
-    jp   z, label_020_6B81                        ; $6AC4: $CA $81 $6B
+    jp   z, IgnorePaletteChange_DMG               ; $6AC4: $CA $81 $6B
 
     ld   a, e                                     ; $6AC7: $7B
     cp   $06                                      ; $6AC8: $FE $06
@@ -4948,7 +4955,7 @@ jr_020_6B5C:
     ld   [wPaletteDataFlags], a                   ; $6B7E: $EA $D1 $DD
 
 ; Jumped to when running on DMG: don't do anything with palettes
-label_020_6B81:
+IgnorePaletteChange_DMG:
     xor  a                                        ; $6B81: $AF
     ld   [wPaletteUnknownE], a                    ; $6B82: $EA $D5 $DD
     ret                                           ; $6B85: $C9
@@ -4979,11 +4986,11 @@ IntroCopyAndBlendColor::
     dec  bc                                       ; $6B92: $0B
     dec  hl                                       ; $6B93: $2B
 
-    ; Switch back to RAM bank 0
+    ; Switch back to RAM bank 1
     xor  a                                        ; $6B94: $AF
     ldh  [rSVBK], a                               ; $6B95: $E0 $70
 
-    ; Copy two bytes from de to [hl] in RAM0
+    ; Copy two bytes from de to [hl] in RAM1
     ld   [hl], e                                  ; $6B97: $73
     inc  hl                                       ; $6B98: $23
     ld   [hl], d                                  ; $6B99: $72
@@ -5009,7 +5016,7 @@ IntroColorModifierTable::
 UpdateIntroSeaBGPalettes::
     ldh  a, [hIsGBC]                              ; $6BA4: $F0 $FE
     and  a                                        ; $6BA6: $A7
-    jp   z, label_020_6B81                        ; $6BA7: $CA $81 $6B
+    jp   z, IgnorePaletteChange_DMG               ; $6BA7: $CA $81 $6B
 
     ld   a, [wIntroSubTimer]                      ; $6BAA: $FA $02 $D0
     and  a                                        ; $6BAD: $A7
@@ -5084,7 +5091,7 @@ func_020_6BDC::
 LoadFileMenuBG::
     ldh  a, [hIsGBC]                              ; $6C00: $F0 $FE
     and  a                                        ; $6C02: $A7
-    jp   z, label_020_6B81                        ; $6C03: $CA $81 $6B
+    jp   z, IgnorePaletteChange_DMG               ; $6C03: $CA $81 $6B
 
     ld   c, $80                                   ; $6C06: $0E $80
     ld   hl, wBGPal1                              ; $6C08: $21 $10 $DC
@@ -5153,7 +5160,7 @@ CopyLinkTunicPalette::
 func_020_6C4F::
     ldh  a, [hIsGBC]                              ; $6C4F: $F0 $FE
     and  a                                        ; $6C51: $A7
-    jp   z, label_020_6B81                        ; $6C52: $CA $81 $6B
+    jp   z, IgnorePaletteChange_DMG               ; $6C52: $CA $81 $6B
 
     ld   a, [wC16C]                               ; $6C55: $FA $6C $C1
     and  $01                                      ; $6C58: $E6 $01
@@ -5181,7 +5188,7 @@ jr_020_6C76:
 func_020_6C7A::
     ldh  a, [hIsGBC]                              ; $6C7A: $F0 $FE
     and  a                                        ; $6C7C: $A7
-    jp   z, label_020_6B81                        ; $6C7D: $CA $81 $6B
+    jp   z, IgnorePaletteChange_DMG               ; $6C7D: $CA $81 $6B
 
     ld   a, [wC16C]                               ; $6C80: $FA $6C $C1
     and  $01                                      ; $6C83: $E6 $01
@@ -5508,11 +5515,14 @@ ASSERT LOW(wRoomObjectsArea) & $0F == 0, "wRoomObjectsArea must be aligned on $1
 
     ret                                           ; $6E4F: $C9
 
-func_020_6E50::
+; Check if the object at HL is in the overworld object ignore list.
+;
+; See BackupObjectInRAM2
+CheckOverworldObjectIgnoreList::
     push hl                                       ; $6E50: $E5
     ld   c, [hl]                                  ; $6E51: $4E
     ld   b, $0E                                   ; $6E52: $06 $0E
-    ld   hl, Data_020_6E65                        ; $6E54: $21 $65 $6E
+    ld   hl, OverworldObjectIgnoreList            ; $6E54: $21 $65 $6E
 
 .loop
     ld   a, [hl+]                                 ; $6E57: $2A
@@ -5533,8 +5543,9 @@ func_020_6E50::
     pop  hl                                       ; $6E63: $E1
     ret                                           ; $6E64: $C9
 
-; Sprite table for overworld?
-Data_020_6E65::
+; List of overworld objects that should not be backed up in WRAM bank 2.
+; This is used to prevent exiting the inventory menu from messing up the overlay grass tiles.
+OverworldObjectIgnoreList::
     db   $03, $04, $09, $5E, $91, $A1, $AA, $C4, $C6, $CC, $DB, $E1, $E3, $E8
 
 TilesetTables::
@@ -5542,57 +5553,57 @@ TilesetTables::
 ; Constants for Overworld tilesets
 ; See W_TILESET_* constants for values
 OverworldTilesetsTable::
-    db   $1C, $1C, $3E, $3C, $3E, $3E, $3E, $30
-    db   $0F, $36, $36, $1A, $0F, $34, $0F, $3E
-    db   $20, $20, $0F, $38, $28, $28, $32, $32
-    db   $20, $20, $38, $38, $28, $28, $32, $32
-    db   $0F, $26, $0F, $24, $0F, $1E, $2A, $0F
-    db   $26, $26, $2E, $2E, $0F, $2A, $2A, $2A
-    db   $0F, $24, $2E, $2E, $3A, $0F, $26, $2C
-    db   $22, $22, $22, $0F, $3A, $3A, $0F, $2C
+    db   W_TILESET_TURTLE_ROCK,      W_TILESET_TURTLE_ROCK,         W_TILESET_TARAMANCH_MIDDLE, W_TILESET_EGG,                  W_TILESET_TARAMANCH_MIDDLE, W_TILESET_TARAMANCH_MIDDLE, W_TILESET_TARAMANCH_MIDDLE, W_TILESET_EAGLES_TOWER
+    db   W_TILESET_KEEP,             W_TILESET_GOPONGO_SWAMP,       W_TILESET_GOPONGO_SWAMP,    W_TILESET_CAMERA_SHOP,          W_TILESET_KEEP,             W_TILESET_ANGLERS_TUNNEL,   W_TILESET_KEEP,             W_TILESET_TARAMANCH_MIDDLE
+    db   W_TILESET_MYSTERIOUS_WOODS, W_TILESET_MYSTERIOUS_WOODS,    W_TILESET_KEEP,             W_TILESET_GRAVEYARD,            W_TILESET_KANALET_CASTLE,   W_TILESET_KANALET_CASTLE,   W_TILESET_RAFTING_GAME,     W_TILESET_RAFTING_GAME
+    db   W_TILESET_MYSTERIOUS_WOODS, W_TILESET_MYSTERIOUS_WOODS,    W_TILESET_GRAVEYARD,        W_TILESET_GRAVEYARD,            W_TILESET_KANALET_CASTLE,   W_TILESET_KANALET_CASTLE,   W_TILESET_RAFTING_GAME,     W_TILESET_RAFTING_GAME
+    db   W_TILESET_KEEP,             W_TILESET_MABE_VILLAGE,        W_TILESET_KEEP,             W_TILESET_PRAIRIE_STONE_HEAD,   W_TILESET_KEEP,             W_TILESET_SEASHELL_MANSION, W_TILESET_FACE_SHRINE,      W_TILESET_KEEP
+    db   W_TILESET_MABE_VILLAGE,     W_TILESET_MABE_VILLAGE,        W_TILESET_PRAIRIE_SOUTH,    W_TILESET_PRAIRIE_SOUTH,        W_TILESET_KEEP,             W_TILESET_FACE_SHRINE,      W_TILESET_FACE_SHRINE,      W_TILESET_FACE_SHRINE
+    db   W_TILESET_KEEP,             W_TILESET_PRAIRIE_STONE_HEAD,  W_TILESET_PRAIRIE_SOUTH,    W_TILESET_PRAIRIE_SOUTH,        W_TILESET_MARTHAS_BAY,      W_TILESET_KEEP,             W_TILESET_MABE_VILLAGE,     W_TILESET_YARNA_DESERT
+    db   W_TILESET_BEACH,            W_TILESET_BEACH,               W_TILESET_BEACH,            W_TILESET_KEEP,                 W_TILESET_MARTHAS_BAY,      W_TILESET_MARTHAS_BAY,      W_TILESET_KEEP,             W_TILESET_YARNA_DESERT
 
 ; Constants for Indoors tilesets, indexed by hRoomId.
 ; See W_TILESET_* constants for values
 IndoorsTilesetsTable::
-    db   $FF, $00, $00, $00, $FF, $01, $00, $05, $00, $09, $00, $00, $05, $05, $05, $FF
-    db   $00, $00, $FF, $FF, $02, $01, $01, $01, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-    db   $FF, $FF, $FF, $FF, $FF, $00, $FF, $00, $FF, $00, $FF, $FF, $02, $00, $FF, $0E
-    db   $FF, $FF, $FF, $FF, $FF, $FF, $01, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-    db   $02, $02, $FF, $02, $02, $09, $09, $FF, $02, $02, $09, $02, $09, $09, $09, $09
-    db   $09, $FF, $01, $01, $05, $00, $00, $00, $00, $0A, $0A, $0A, $0A, $00, $00, $00
-    db   $09, $00, $00, $09, $09, $00, $00, $09, $09, $09, $09, $00, $00, $FF, $02, $FF
-    db   $09, $00, $00, $FF, $00, $00, $00, $FF, $FF, $00, $01, $05, $00, $00, $00, $00
-    db   $FF, $05, $FF, $FF, $FF, $06, $07, $07, $07, $FF, $FF, $06, $06, $FF, $FF, $FF
-    db   $09, $FF, $FF, $FF, $07, $FF, $FF, $07, $FF, $07, $05, $FF, $FF, $05, $05, $05
-    db   $FF, $01, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $19, $FF, $FF, $FF
-    db   $03, $0E, $03, $0E, $FF, $0E, $0E, $0E, $0E, $0E, $0E, $FF, $0E, $0E, $FF, $0E
-    db   $0E, $0E, $0E, $09, $00, $0E, $09, $FF, $FF, $0E, $09, $00, $0E, $FF, $02, $0E
-    db   $0E, $0E, $02, $FF, $01, $01, $01, $09, $00, $00, $00, $00, $00, $00, $00, $00
-    db   $0F, $0F, $0F, $08, $00, $0C, $0C, $03, $0C, $0C, $0C, $00, $00, $00, $0C, $00
-    db   $03, $03, $00, $19, $00, $08, $0C, $03, $0C, $0C, $08, $19, $0C, $05, $0C, $00
+    db   W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_01, W_TILESET_INDOOR_00, W_TILESET_INDOOR_05, W_TILESET_INDOOR_00, W_TILESET_INDOOR_09, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_NO_UPDATE
+    db   W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_02, W_TILESET_INDOOR_01, W_TILESET_INDOOR_01, W_TILESET_INDOOR_01, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE
+    db   W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_02, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0E
+    db   W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_01, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE
+    db   W_TILESET_INDOOR_02, W_TILESET_INDOOR_02, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_02, W_TILESET_INDOOR_02, W_TILESET_INDOOR_09, W_TILESET_INDOOR_09, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_02, W_TILESET_INDOOR_02, W_TILESET_INDOOR_09, W_TILESET_INDOOR_02, W_TILESET_INDOOR_09, W_TILESET_INDOOR_09, W_TILESET_INDOOR_09, W_TILESET_INDOOR_09
+    db   W_TILESET_INDOOR_09, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_01, W_TILESET_INDOOR_01, W_TILESET_INDOOR_05, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_0A, W_TILESET_INDOOR_0A, W_TILESET_INDOOR_0A, W_TILESET_INDOOR_0A, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00
+    db   W_TILESET_INDOOR_09, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_09, W_TILESET_INDOOR_09, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_09, W_TILESET_INDOOR_09, W_TILESET_INDOOR_09, W_TILESET_INDOOR_09, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_02, W_TILESET_NO_UPDATE
+    db   W_TILESET_INDOOR_09, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_INDOOR_01, W_TILESET_INDOOR_05, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00
+    db   W_TILESET_NO_UPDATE, W_TILESET_INDOOR_05, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_06, W_TILESET_INDOOR_07, W_TILESET_INDOOR_07, W_TILESET_INDOOR_07, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_06, W_TILESET_INDOOR_06, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE
+    db   W_TILESET_INDOOR_09, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_07, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_07, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_07, W_TILESET_INDOOR_05, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05
+    db   W_TILESET_NO_UPDATE, W_TILESET_INDOOR_01, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_19, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE
+    db   W_TILESET_INDOOR_03, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_03, W_TILESET_INDOOR_0E, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0E
+    db   W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_09, W_TILESET_INDOOR_00, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_09, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_09, W_TILESET_INDOOR_00, W_TILESET_INDOOR_0E, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_02, W_TILESET_INDOOR_0E
+    db   W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_02, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_01, W_TILESET_INDOOR_01, W_TILESET_INDOOR_01, W_TILESET_INDOOR_09, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00
+    db   W_TILESET_INDOOR_0F, W_TILESET_INDOOR_0F, W_TILESET_INDOOR_0F, W_TILESET_INDOOR_08, W_TILESET_INDOOR_00, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_03, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_00
+    db   W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_00, W_TILESET_INDOOR_19, W_TILESET_INDOOR_00, W_TILESET_INDOOR_08, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_03, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_08, W_TILESET_INDOOR_19, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_05, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_00
 
-    db   $00, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $FF, $01, $FF
-    db   $03, $03, $03, $FF, $03, $03, $FF, $0B, $FF, $03, $FF, $FF, $FF, $07, $07, $FF
-    db   $FF, $06, $FF, $FF, $00, $FF, $FF, $FF, $FF, $0E, $0E, $FF, $FF, $0E, $0E, $00
-    db   $FF, $00, $FF, $FF, $FF, $FF, $FF, $00, $FF, $17, $17, $17, $FF, $03, $FF, $FF
-    db   $FF, $FF, $0A, $0A, $0A, $FF, $FF, $FF, $0A, $0A, $FF, $0B, $FF, $0D, $FF, $FF
-    db   $0A, $0A, $FF, $00, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $09, $01, $00, $00
-    db   $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $01
-    db   $0C, $FF, $FF, $FF, $1A, $FF, $FF, $FF, $FF, $FF, $0C, $0C, $0C, $0C, $0C, $01
-    db   $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $05, $05, $05, $01
-    db   $05, $05, $05, $05, $05, $05, $05, $05, $05, $04, $05, $04, $04, $04, $00, $08
-    db   $04, $04, $08, $08, $00, $08, $08, $08, $08, $08, $08, $05, $05, $08, $0C, $0C
-    db   $08, $04, $05, $0C, $04, $08, $05, $05, $0C, $0C, $0C, $0C, $0C, $05, $0C, $0C
-    db   $0C, $0C, $03, $03, $00, $03, $FF, $08, $00, $0C, $0C, $04, $04, $0C, $0C, $0C
-    db   $0C, $0C, $FF, $01, $00, $01, $01, $08, $00, $08, $08, $08, $08, $08, $0C, $0C
-    db   $FF, $08, $08, $04, $0C, $0C, $0C, $0C, $00, $08, $0C, $0C, $0C, $0C, $0C, $0C
-    db   $0C, $0C, $0C, $0C, $0C, $00, $0C, $0C, $00, $0C, $0C, $18, $05, $00, $08, $00
+    db   W_TILESET_INDOOR_00, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_01, W_TILESET_NO_UPDATE
+    db   W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0B, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_03, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_07, W_TILESET_INDOOR_07, W_TILESET_NO_UPDATE
+    db   W_TILESET_NO_UPDATE, W_TILESET_INDOOR_06, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_0E, W_TILESET_INDOOR_00
+    db   W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_17, W_TILESET_INDOOR_17, W_TILESET_INDOOR_17, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_03, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE
+    db   W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0A, W_TILESET_INDOOR_0A, W_TILESET_INDOOR_0A, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0A, W_TILESET_INDOOR_0A, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0B, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0D, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE
+    db   W_TILESET_INDOOR_0A, W_TILESET_INDOOR_0A, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_00, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_09, W_TILESET_INDOOR_01, W_TILESET_INDOOR_00, W_TILESET_INDOOR_00
+    db   W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_01
+    db   W_TILESET_INDOOR_0C, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_WINDFISH_FLOOR, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_01
+    db   W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_01
+    db   W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_04, W_TILESET_INDOOR_05, W_TILESET_INDOOR_04, W_TILESET_INDOOR_04, W_TILESET_INDOOR_04, W_TILESET_INDOOR_00, W_TILESET_INDOOR_08
+    db   W_TILESET_INDOOR_04, W_TILESET_INDOOR_04, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_00, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_08, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C
+    db   W_TILESET_INDOOR_08, W_TILESET_INDOOR_04, W_TILESET_INDOOR_05, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_04, W_TILESET_INDOOR_08, W_TILESET_INDOOR_05, W_TILESET_INDOOR_05, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_05, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C
+    db   W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_03, W_TILESET_INDOOR_03, W_TILESET_INDOOR_00, W_TILESET_INDOOR_03, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_08, W_TILESET_INDOOR_00, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_04, W_TILESET_INDOOR_04, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C
+    db   W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_NO_UPDATE, W_TILESET_INDOOR_01, W_TILESET_INDOOR_00, W_TILESET_INDOOR_01, W_TILESET_INDOOR_01, W_TILESET_INDOOR_08, W_TILESET_INDOOR_00, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C
+    db   W_TILESET_NO_UPDATE, W_TILESET_INDOOR_08, W_TILESET_INDOOR_08, W_TILESET_INDOOR_04, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_00, W_TILESET_INDOOR_08, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C
+    db   W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_00, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_00, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_0C, W_TILESET_INDOOR_18, W_TILESET_INDOOR_05, W_TILESET_INDOOR_00, W_TILESET_INDOOR_08, W_TILESET_INDOOR_00
 
 ; Constants for Color Dungeon tilesets
 ; See W_TILESET_* constants for values
 ColorDungeonTilesetsTable::
     db   $00, $00, $0B, $0B, $00, $00, $0B, $0B, $0B, $0B, $0B, $0B, $0B, $0B, $0B, $0E
-    db   $0B, $0B, $0B, $18, $0B, $0B, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    db   $0B, $0B, $0B, $18, $0B, $0B, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE, W_TILESET_NO_UPDATE
 
 ; Spritesheets group for each room, indexed by hRoomId.
 ;
@@ -6472,215 +6483,215 @@ ENDC
 
 IF __PATCH_1__
 func_020_7E0E:
-    ld a, $06                                     ; $7e0e: $3e $06
-    ldh [hMultiPurposeD], a                            ; $7e10: $e0 $e4
-    ld a, $0c                                     ; $7e12: $3e $0c
-    ldh [hMultiPurposeE], a                            ; $7e14: $e0 $e5
-    ld a, $18                                     ; $7e16: $3e $18
-    ldh [hMultiPurposeF], a                            ; $7e18: $e0 $e6
-    ld hl, wBGPal1                                ; $7e1a: $21 $10 $dc
-    ld a, $40                                     ; $7e1d: $3e $40
-    ldh [hMultiPurpose3], a                            ; $7e1f: $e0 $da
-    call Call_020_7e25                            ; $7e21: $cd $25 $7e
-    ret                                           ; $7e24: $c9
+    ld a, $06                                     ; $7E0E: $3E $06
+    ldh [hMultiPurposeD], a                       ; $7E10: $E0 $E4
+    ld a, $0c                                     ; $7E12: $3E $0C
+    ldh [hMultiPurposeE], a                       ; $7E14: $E0 $E5
+    ld a, $18                                     ; $7E16: $3E $18
+    ldh [hMultiPurposeF], a                       ; $7E18: $E0 $E6
+    ld hl, wBGPal1                                ; $7E1A: $21 $10 $DC
+    ld a, $40                                     ; $7E1D: $3E $40
+    ldh [hMultiPurpose3], a                       ; $7E1F: $E0 $DA
+    call Call_020_7e25                            ; $7E21: $CD $25 $7E
+    ret                                           ; $7E24: $C9
 
 Call_020_7e25:
 Jump_020_7e25:
-    push hl                                       ; $7e25: $e5
-    ld a, $02                                     ; $7e26: $3e $02
-    ldh [rSVBK], a                                ; $7e28: $e0 $70
-    ld a, [hl+]                                   ; $7e2a: $2a
-    ld e, a                                       ; $7e2b: $5f
-    ld a, [hl]                                    ; $7e2c: $7e
-    ld d, a                                       ; $7e2d: $57
-    dec hl                                        ; $7e2e: $2b
-    xor a                                         ; $7e2f: $af
-    ldh [rSVBK], a                                ; $7e30: $e0 $70
-    ldh a, [hMultiPurposeD]                            ; $7e32: $f0 $e4
-    ld c, a                                       ; $7e34: $4f
-    ld a, e                                       ; $7e35: $7b
-    and $1f                                       ; $7e36: $e6 $1f
-    ld b, a                                       ; $7e38: $47
-    ld a, [hl]                                    ; $7e39: $7e
-    and $1f                                       ; $7e3a: $e6 $1f
-    cp b                                          ; $7e3c: $b8
-    jr c, .jr_7e47                             ; $7e3d: $38 $08
+    push hl                                       ; $7E25: $E5
+    ld a, $02                                     ; $7E26: $3E $02
+    ldh [rSVBK], a                                ; $7E28: $E0 $70
+    ld a, [hl+]                                   ; $7E2A: $2A
+    ld e, a                                       ; $7E2B: $5F
+    ld a, [hl]                                    ; $7E2C: $7E
+    ld d, a                                       ; $7E2D: $57
+    dec hl                                        ; $7E2E: $2B
+    xor a                                         ; $7E2F: $AF
+    ldh [rSVBK], a                                ; $7E30: $E0 $70
+    ldh a, [hMultiPurposeD]                       ; $7E32: $F0 $E4
+    ld c, a                                       ; $7E34: $4F
+    ld a, e                                       ; $7E35: $7B
+    and $1f                                       ; $7E36: $E6 $1F
+    ld b, a                                       ; $7E38: $47
+    ld a, [hl]                                    ; $7E39: $7E
+    and $1f                                       ; $7E3A: $E6 $1F
+    cp b                                          ; $7E3C: $B8
+    jr c, .jr_7e47                                ; $7E3D: $38 $08
 
-    jr z, .jr_7e47                             ; $7e3f: $28 $06
+    jr z, .jr_7e47                                ; $7E3F: $28 $06
 
-    sub c                                         ; $7e41: $91
-    jr c, .jr_7e47                             ; $7e42: $38 $03
+    sub c                                         ; $7E41: $91
+    jr c, .jr_7e47                                ; $7E42: $38 $03
 
-    cp b                                          ; $7e44: $b8
-    jr nc, jr_020_7e48                            ; $7e45: $30 $01
+    cp b                                          ; $7E44: $B8
+    jr nc, jr_020_7e48                            ; $7E45: $30 $01
 
 .jr_7e47
-    ld a, b                                       ; $7e47: $78
+    ld a, b                                       ; $7E47: $78
 
 jr_020_7e48:
-    ldh [hMultiPurpose0], a                            ; $7e48: $e0 $d7
-    ld a, e                                       ; $7e4a: $7b
-    and $e0                                       ; $7e4b: $e6 $e0
-    swap a                                        ; $7e4d: $cb $37
-    ld b, a                                       ; $7e4f: $47
-    ld a, d                                       ; $7e50: $7a
-    and $03                                       ; $7e51: $e6 $03
-    swap a                                        ; $7e53: $cb $37
-    or b                                          ; $7e55: $b0
-    ld b, a                                       ; $7e56: $47
-    ld a, [hl+]                                   ; $7e57: $2a
-    and $e0                                       ; $7e58: $e6 $e0
-    swap a                                        ; $7e5a: $cb $37
-    ld c, a                                       ; $7e5c: $4f
-    ld a, [hl]                                    ; $7e5d: $7e
-    and $03                                       ; $7e5e: $e6 $03
-    swap a                                        ; $7e60: $cb $37
-    or c                                          ; $7e62: $b1
-    push af                                       ; $7e63: $f5
-    ldh a, [hMultiPurposeE]                            ; $7e64: $f0 $e5
-    ld c, a                                       ; $7e66: $4f
-    pop af                                        ; $7e67: $f1
-    cp b                                          ; $7e68: $b8
-    jr c, .jr_7e73                             ; $7e69: $38 $08
+    ldh [hMultiPurpose0], a                       ; $7E48: $E0 $D7
+    ld a, e                                       ; $7E4A: $7B
+    and $e0                                       ; $7E4B: $E6 $E0
+    swap a                                        ; $7E4D: $CB $37
+    ld b, a                                       ; $7E4F: $47
+    ld a, d                                       ; $7E50: $7A
+    and $03                                       ; $7E51: $E6 $03
+    swap a                                        ; $7E53: $CB $37
+    or b                                          ; $7E55: $B0
+    ld b, a                                       ; $7E56: $47
+    ld a, [hl+]                                   ; $7E57: $2A
+    and $e0                                       ; $7E58: $E6 $E0
+    swap a                                        ; $7E5A: $CB $37
+    ld c, a                                       ; $7E5C: $4F
+    ld a, [hl]                                    ; $7E5D: $7E
+    and $03                                       ; $7E5E: $E6 $03
+    swap a                                        ; $7E60: $CB $37
+    or c                                          ; $7E62: $B1
+    push af                                       ; $7E63: $F5
+    ldh a, [hMultiPurposeE]                       ; $7E64: $F0 $E5
+    ld c, a                                       ; $7E66: $4F
+    pop af                                        ; $7E67: $F1
+    cp b                                          ; $7E68: $B8
+    jr c, .jr_7e73                                ; $7E69: $38 $08
 
-    jr z, .jr_7e73                             ; $7e6b: $28 $06
+    jr z, .jr_7e73                                ; $7E6B: $28 $06
 
-    sub c                                         ; $7e6d: $91
-    jr c, .jr_7e73                             ; $7e6e: $38 $03
+    sub c                                         ; $7E6D: $91
+    jr c, .jr_7e73                                ; $7E6E: $38 $03
 
-    cp b                                          ; $7e70: $b8
-    jr nc, jr_020_7e74                            ; $7e71: $30 $01
+    cp b                                          ; $7E70: $B8
+    jr nc, jr_020_7e74                            ; $7E71: $30 $01
 
 .jr_7e73
-    ld a, b                                       ; $7e73: $78
+    ld a, b                                       ; $7E73: $78
 
 jr_020_7e74:
-    ldh [hMultiPurpose1], a                            ; $7e74: $e0 $d8
-    ldh a, [hMultiPurposeF]                            ; $7e76: $f0 $e6
-    ld c, a                                       ; $7e78: $4f
-    ld a, d                                       ; $7e79: $7a
-    and $7c                                       ; $7e7a: $e6 $7c
-    ld b, a                                       ; $7e7c: $47
-    ld a, [hl]                                    ; $7e7d: $7e
-    and $7c                                       ; $7e7e: $e6 $7c
-    cp b                                          ; $7e80: $b8
-    jr c, .jr_7e8b                             ; $7e81: $38 $08
+    ldh [hMultiPurpose1], a                       ; $7E74: $E0 $D8
+    ldh a, [hMultiPurposeF]                       ; $7E76: $F0 $E6
+    ld c, a                                       ; $7E78: $4F
+    ld a, d                                       ; $7E79: $7A
+    and $7c                                       ; $7E7A: $E6 $7C
+    ld b, a                                       ; $7E7C: $47
+    ld a, [hl]                                    ; $7E7D: $7E
+    and $7c                                       ; $7E7E: $E6 $7C
+    cp b                                          ; $7E80: $B8
+    jr c, .jr_7e8b                                ; $7E81: $38 $08
 
-    jr z, .jr_7e8b                             ; $7e83: $28 $06
+    jr z, .jr_7e8b                                ; $7E83: $28 $06
 
-    sub c                                         ; $7e85: $91
-    jr c, .jr_7e8b                             ; $7e86: $38 $03
+    sub c                                         ; $7E85: $91
+    jr c, .jr_7e8b                                ; $7E86: $38 $03
 
-    cp b                                          ; $7e88: $b8
-    jr nc, jr_020_7e8c                            ; $7e89: $30 $01
+    cp b                                          ; $7E88: $B8
+    jr nc, jr_020_7e8c                            ; $7E89: $30 $01
 
 .jr_7e8b
-    ld a, b                                       ; $7e8b: $78
+    ld a, b                                       ; $7E8B: $78
 
 jr_020_7e8c:
-    ldh [hMultiPurpose2], a                            ; $7e8c: $e0 $d9
-    pop hl                                        ; $7e8e: $e1
-    ldh a, [hMultiPurpose0]                            ; $7e8f: $f0 $d7
-    ld b, a                                       ; $7e91: $47
-    ldh a, [hMultiPurpose1]                            ; $7e92: $f0 $d8
-    swap a                                        ; $7e94: $cb $37
-    ld c, a                                       ; $7e96: $4f
-    and $e0                                       ; $7e97: $e6 $e0
-    or b                                          ; $7e99: $b0
-    ld [hl+], a                                   ; $7e9a: $22
-    ldh a, [hMultiPurpose2]                            ; $7e9b: $f0 $d9
-    ld b, a                                       ; $7e9d: $47
-    ld a, c                                       ; $7e9e: $79
-    and $03                                       ; $7e9f: $e6 $03
-    or b                                          ; $7ea1: $b0
-    ld [hl+], a                                   ; $7ea2: $22
-    ldh a, [hMultiPurpose3]                            ; $7ea3: $f0 $da
-    dec a                                         ; $7ea5: $3d
-    ldh [hMultiPurpose3], a                            ; $7ea6: $e0 $da
-    and a                                         ; $7ea8: $a7
-    jp nz, Jump_020_7e25                          ; $7ea9: $c2 $25 $7e
+    ldh [hMultiPurpose2], a                       ; $7E8C: $E0 $D9
+    pop hl                                        ; $7E8E: $E1
+    ldh a, [hMultiPurpose0]                       ; $7E8F: $F0 $D7
+    ld b, a                                       ; $7E91: $47
+    ldh a, [hMultiPurpose1]                       ; $7E92: $F0 $D8
+    swap a                                        ; $7E94: $CB $37
+    ld c, a                                       ; $7E96: $4F
+    and $e0                                       ; $7E97: $E6 $E0
+    or b                                          ; $7E99: $B0
+    ld [hl+], a                                   ; $7E9A: $22
+    ldh a, [hMultiPurpose2]                       ; $7E9B: $F0 $D9
+    ld b, a                                       ; $7E9D: $47
+    ld a, c                                       ; $7E9E: $79
+    and $03                                       ; $7E9F: $E6 $03
+    or b                                          ; $7EA1: $B0
+    ld [hl+], a                                   ; $7EA2: $22
+    ldh a, [hMultiPurpose3]                       ; $7EA3: $F0 $DA
+    dec a                                         ; $7EA5: $3D
+    ldh [hMultiPurpose3], a                       ; $7EA6: $E0 $DA
+    and a                                         ; $7EA8: $A7
+    jp nz, Jump_020_7e25                          ; $7EA9: $C2 $25 $7E
 
-    xor a                                         ; $7eac: $af
-    ld [wPaletteUnknownE], a                      ; $7ead: $ea $d5 $dd
-    ret                                           ; $7eb0: $c9
+    xor a                                         ; $7EAC: $AF
+    ld [wPaletteUnknownE], a                      ; $7EAD: $EA $D5 $DD
+    ret                                           ; $7EB0: $C9
 
 func_020_7EB1::
-    ld a, $06                                     ; $7eb1: $3e $06
-    ldh [hMultiPurposeD], a                            ; $7eb3: $e0 $e4
-    ld a, $0c                                     ; $7eb5: $3e $0c
-    ldh [hMultiPurposeE], a                            ; $7eb7: $e0 $e5
-    ld a, $18                                     ; $7eb9: $3e $18
-    ldh [hMultiPurposeF], a                            ; $7ebb: $e0 $e6
-    ld hl, wBGPal1                                ; $7ebd: $21 $10 $dc
-    ld d, $40                                     ; $7ec0: $16 $40
-    ldh [hMultiPurpose3], a                            ; $7ec2: $e0 $da
-    call Call_020_7ec8                            ; $7ec4: $cd $c8 $7e
-    ret                                           ; $7ec7: $c9
+    ld a, $06                                     ; $7EB1: $3E $06
+    ldh [hMultiPurposeD], a                       ; $7EB3: $E0 $E4
+    ld a, $0c                                     ; $7EB5: $3E $0C
+    ldh [hMultiPurposeE], a                       ; $7EB7: $E0 $E5
+    ld a, $18                                     ; $7EB9: $3E $18
+    ldh [hMultiPurposeF], a                       ; $7EBB: $E0 $E6
+    ld hl, wBGPal1                                ; $7EBD: $21 $10 $DC
+    ld d, $40                                     ; $7EC0: $16 $40
+    ldh [hMultiPurpose3], a                       ; $7EC2: $E0 $DA
+    call Call_020_7ec8                            ; $7EC4: $CD $C8 $7E
+    ret                                           ; $7EC7: $C9
 
 
 Call_020_7ec8:
 jr_020_7ec8:
-    push hl                                       ; $7ec8: $e5
-    ldh a, [hMultiPurposeD]                            ; $7ec9: $f0 $e4
-    ld c, a                                       ; $7ecb: $4f
-    ld a, [hl]                                    ; $7ecc: $7e
-    and $1f                                       ; $7ecd: $e6 $1f
-    add c                                         ; $7ecf: $81
-    cp $20                                        ; $7ed0: $fe $20
-    jr c, .jr_7ed6                             ; $7ed2: $38 $02
+    push hl                                       ; $7EC8: $E5
+    ldh a, [hMultiPurposeD]                       ; $7EC9: $F0 $E4
+    ld c, a                                       ; $7ECB: $4F
+    ld a, [hl]                                    ; $7ECC: $7E
+    and $1f                                       ; $7ECD: $E6 $1F
+    add c                                         ; $7ECF: $81
+    cp $20                                        ; $7ED0: $FE $20
+    jr c, .jr_7ed6                                ; $7ED2: $38 $02
 
-    ld a, $1f                                     ; $7ed4: $3e $1f
+    ld a, $1f                                     ; $7ED4: $3E $1F
 
 .jr_7ed6
-    ldh [hMultiPurpose0], a                            ; $7ed6: $e0 $d7
-    ldh a, [hMultiPurposeE]                            ; $7ed8: $f0 $e5
-    ld c, a                                       ; $7eda: $4f
-    ld a, [hl+]                                   ; $7edb: $2a
-    and $e0                                       ; $7edc: $e6 $e0
-    swap a                                        ; $7ede: $cb $37
-    ld b, a                                       ; $7ee0: $47
-    ld a, [hl]                                    ; $7ee1: $7e
-    and $03                                       ; $7ee2: $e6 $03
-    swap a                                        ; $7ee4: $cb $37
-    or b                                          ; $7ee6: $b0
-    and $3e                                       ; $7ee7: $e6 $3e
-    add c                                         ; $7ee9: $81
-    cp $40                                        ; $7eea: $fe $40
-    jr c, .jr_7ef0                             ; $7eec: $38 $02
+    ldh [hMultiPurpose0], a                       ; $7ED6: $E0 $D7
+    ldh a, [hMultiPurposeE]                       ; $7ED8: $F0 $E5
+    ld c, a                                       ; $7EDA: $4F
+    ld a, [hl+]                                   ; $7EDB: $2A
+    and $e0                                       ; $7EDC: $E6 $E0
+    swap a                                        ; $7EDE: $CB $37
+    ld b, a                                       ; $7EE0: $47
+    ld a, [hl]                                    ; $7EE1: $7E
+    and $03                                       ; $7EE2: $E6 $03
+    swap a                                        ; $7EE4: $CB $37
+    or b                                          ; $7EE6: $B0
+    and $3e                                       ; $7EE7: $E6 $3E
+    add c                                         ; $7EE9: $81
+    cp $40                                        ; $7EEA: $FE $40
+    jr c, .jr_7ef0                                ; $7EEC: $38 $02
 
-    ld a, $3e                                     ; $7eee: $3e $3e
+    ld a, $3e                                     ; $7EEE: $3E $3E
 
 .jr_7ef0
-    ldh [hMultiPurpose1], a                            ; $7ef0: $e0 $d8
-    ldh a, [hMultiPurposeF]                            ; $7ef2: $f0 $e6
-    ld c, a                                       ; $7ef4: $4f
-    ld a, [hl]                                    ; $7ef5: $7e
-    and $7c                                       ; $7ef6: $e6 $7c
-    add c                                         ; $7ef8: $81
-    cp $80                                        ; $7ef9: $fe $80
-    jr c, .jr_7eff                             ; $7efb: $38 $02
+    ldh [hMultiPurpose1], a                       ; $7EF0: $E0 $D8
+    ldh a, [hMultiPurposeF]                       ; $7EF2: $F0 $E6
+    ld c, a                                       ; $7EF4: $4F
+    ld a, [hl]                                    ; $7EF5: $7E
+    and $7c                                       ; $7EF6: $E6 $7C
+    add c                                         ; $7EF8: $81
+    cp $80                                        ; $7EF9: $FE $80
+    jr c, .jr_7eff                                ; $7EFB: $38 $02
 
-    ld a, $7c                                     ; $7efd: $3e $7c
+    ld a, $7c                                     ; $7EFD: $3E $7C
 
 .jr_7eff
-    ldh [hMultiPurpose2], a                            ; $7eff: $e0 $d9
-    pop hl                                        ; $7f01: $e1
-    ldh a, [hMultiPurpose0]                            ; $7f02: $f0 $d7
-    ld b, a                                       ; $7f04: $47
-    ldh a, [hMultiPurpose1]                            ; $7f05: $f0 $d8
-    swap a                                        ; $7f07: $cb $37
-    ld c, a                                       ; $7f09: $4f
-    and $e0                                       ; $7f0a: $e6 $e0
-    or b                                          ; $7f0c: $b0
-    ld [hl+], a                                   ; $7f0d: $22
-    ldh a, [hMultiPurpose2]                            ; $7f0e: $f0 $d9
-    ld b, a                                       ; $7f10: $47
-    ld a, c                                       ; $7f11: $79
-    and $03                                       ; $7f12: $e6 $03
-    or b                                          ; $7f14: $b0
-    ld [hl+], a                                   ; $7f15: $22
-    dec d                                         ; $7f16: $15
-    jr nz, jr_020_7ec8                            ; $7f17: $20 $af
+    ldh [hMultiPurpose2], a                       ; $7EFF: $E0 $D9
+    pop hl                                        ; $7F01: $E1
+    ldh a, [hMultiPurpose0]                       ; $7F02: $F0 $D7
+    ld b, a                                       ; $7F04: $47
+    ldh a, [hMultiPurpose1]                       ; $7F05: $F0 $D8
+    swap a                                        ; $7F07: $CB $37
+    ld c, a                                       ; $7F09: $4F
+    and $e0                                       ; $7F0A: $E6 $E0
+    or b                                          ; $7F0C: $B0
+    ld [hl+], a                                   ; $7F0D: $22
+    ldh a, [hMultiPurpose2]                       ; $7F0E: $F0 $D9
+    ld b, a                                       ; $7F10: $47
+    ld a, c                                       ; $7F11: $79
+    and $03                                       ; $7F12: $E6 $03
+    or b                                          ; $7F14: $B0
+    ld [hl+], a                                   ; $7F15: $22
+    dec d                                         ; $7F16: $15
+    jr nz, jr_020_7ec8                            ; $7F17: $20 $AF
 
-    ret                                           ; $7f19: $c9
+    ret                                           ; $7F19: $C9
 ENDC

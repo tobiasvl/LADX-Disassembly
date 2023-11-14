@@ -103,7 +103,7 @@ CheepCheepJumpingEntityHandler::
     jr   nz, .jr_6BD3                             ; $6BCB: $20 $06
 
     ldh  a, [hActiveEntityFlipAttribute]          ; $6BCD: $F0 $ED
-    or   OAM_Y_FLIP                               ; $6BCF: $F6 $40
+    or   OAMF_YFLIP                               ; $6BCF: $F6 $40
     ldh  [hActiveEntityFlipAttribute], a          ; $6BD1: $E0 $ED
 
 .jr_6BD3
@@ -247,8 +247,8 @@ func_019_6C99::
 CheepCheepJumpingState5Handler::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6CA9: $21 $40 $C3
     add  hl, bc                                   ; $6CAC: $09
-    set  7, [hl]                                  ; $6CAD: $CB $FE
-    set  6, [hl]                                  ; $6CAF: $CB $F6
+    set  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $6CAD: $CB $FE
+    set  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $6CAF: $CB $F6
     ld   hl, wEntitiesSpeedYTable                 ; $6CB1: $21 $50 $C2
     add  hl, bc                                   ; $6CB4: $09
     inc  [hl]                                     ; $6CB5: $34
@@ -281,6 +281,6 @@ func_019_6CD3::
     ldh  [hMultiPurpose0], a                      ; $6CD7: $E0 $D7
     ld   a, TRANSCIENT_VFX_WATER_SPLASH           ; $6CD9: $3E $01
     call AddTranscientVfx                         ; $6CDB: $CD $C7 $0C
-    ld   a, JINGLE_WATER_DIVE                     ; $6CDE: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $6CDE: $3E $0E
     ldh  [hJingle], a                             ; $6CE0: $E0 $F2
     ret                                           ; $6CE2: $C9

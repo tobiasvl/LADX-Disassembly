@@ -69,7 +69,7 @@ WarpEntityHandler::
     ld   [wC198], a                               ; $426A: $EA $98 $C1
     ld   a, $51                                   ; $426D: $3E $51
     ld   [wDBCB], a                               ; $426F: $EA $CB $DB
-    ld   a, $0C                                   ; $4272: $3E $0C
+    ld   a, WAVE_SFX_LINK_FALL                    ; $4272: $3E $0C
     ldh  [hWaveSfx], a                            ; $4274: $E0 $F3
     jp   ClearEntityStatus_19                     ; $4276: $C3 $61 $7E
 
@@ -95,17 +95,17 @@ jr_019_4279:
 
 WarpState0Handler::
     call IncrementEntityState                     ; $429A: $CD $12 $3B
-    ld   a, MUSIC_INSTRUMENT_ACQUIRED             ; $429D: $3E $1B
+    ld   a, MUSIC_OBTAIN_INSTRUMENT               ; $429D: $3E $1B
     ld   [wMusicTrackToPlay], a                   ; $429F: $EA $68 $D3
     ret                                           ; $42A2: $C9
 
 WarpState1Handler::
-    call func_019_7E0B                            ; $42A3: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $42A3: $CD $0B $7E
     add  $04                                      ; $42A6: $C6 $04
     cp   $08                                      ; $42A8: $FE $08
     jp   nc, IncrementEntityState                 ; $42AA: $D2 $12 $3B
 
-    call func_019_7E1B                            ; $42AD: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $42AD: $CD $1B $7E
     add  $04                                      ; $42B0: $C6 $04
     cp   $08                                      ; $42B2: $FE $08
     ret  c                                        ; $42B4: $D8
@@ -117,12 +117,12 @@ WarpState2Handler::
     and  a                                        ; $42BA: $A7
     jr   nz, label_019_42E0                       ; $42BB: $20 $23
 
-    call func_019_7E0B                            ; $42BD: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $42BD: $CD $0B $7E
     add  $03                                      ; $42C0: $C6 $03
     cp   $06                                      ; $42C2: $FE $06
     jr   nc, label_019_42E0                       ; $42C4: $30 $1A
 
-    call func_019_7E1B                            ; $42C6: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $42C6: $CD $1B $7E
     add  $03                                      ; $42C9: $C6 $03
     cp   $06                                      ; $42CB: $FE $06
     jr   nc, label_019_42E0                       ; $42CD: $30 $11
@@ -132,7 +132,7 @@ WarpState2Handler::
     ld   [wC1C6], a                               ; $42D4: $EA $C6 $C1
     call GetEntityTransitionCountdown             ; $42D7: $CD $05 $0C
     ld   [hl], $50                                ; $42DA: $36 $50
-    ld   a, JINGLE_MIDBOSS_WARP                   ; $42DC: $3E $1C
+    ld   a, JINGLE_DUNGEON_WARP                   ; $42DC: $3E $1C
     ldh  [hJingle], a                             ; $42DE: $E0 $F2
 
 label_019_42E0:
@@ -268,7 +268,7 @@ Data_019_43A5::
 func_019_43A9::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $43A9: $21 $40 $C3
     add  hl, bc                                   ; $43AC: $09
-    ld   [hl], $C2                                ; $43AD: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $43AD: $36 $C2
     ldh  a, [hFrameCounter]                       ; $43AF: $F0 $E7
     rra                                           ; $43B1: $1F
     rra                                           ; $43B2: $1F
@@ -279,7 +279,7 @@ func_019_43A9::
     call RenderActiveEntitySpritesPair            ; $43BB: $CD $C0 $3B
     ld   hl, wEntitiesPhysicsFlagsTable           ; $43BE: $21 $40 $C3
     add  hl, bc                                   ; $43C1: $09
-    ld   [hl], $C1                                ; $43C2: $36 $C1
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $43C2: $36 $C1
     xor  a                                        ; $43C4: $AF
 
 .loop_43C5
@@ -329,11 +329,11 @@ Data_019_4404::
 label_019_4406:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4406: $21 $40 $C3
     add  hl, bc                                   ; $4409: $09
-    ld   [hl], $C1                                ; $440A: $36 $C1
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $440A: $36 $C1
     ldh  a, [hFrameCounter]                       ; $440C: $F0 $E7
     rla                                           ; $440E: $17
     rla                                           ; $440F: $17
-    and  OAM_DMG_PAL_1                            ; $4410: $E6 $10
+    and  OAMF_PAL1                                ; $4410: $E6 $10
     ldh  [hActiveEntityFlipAttribute], a          ; $4412: $E0 $ED
     ldh  a, [hActiveEntityPosX]                   ; $4414: $F0 $EE
     ldh  [hMultiPurposeE], a                      ; $4416: $E0 $E5

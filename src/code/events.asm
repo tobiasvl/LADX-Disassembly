@@ -39,7 +39,7 @@ KillAllEnemiesEffectHandler::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5D80: $21 $40 $C3
     add  hl, bc                                   ; $5D83: $09
     ld   a, [hl]                                  ; $5D84: $7E
-    and  $80                                      ; $5D85: $E6 $80
+    and  ENTITY_PHYSICS_HARMLESS                  ; $5D85: $E6 $80
     jr   nz, .continue                            ; $5D87: $20 $1
 
     ; If the entity is active…
@@ -57,8 +57,9 @@ KillAllEnemiesEffectHandler::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5D9A: $21 $40 $C3
     add  hl, bc                                   ; $5D9D: $09
     ld   a, [hl]                                  ; $5D9E: $7E
-    and  $F0                                      ; $5D9F: $E6 $F0
-    or   $02                                      ; $5DA1: $F6 $02
+    and  ENTITY_PHYSICS_MASK                      ; $5D9F: $E6 $F0
+    ; Set the entity's sprite count to 2
+    or   2                                        ; $5DA1: $F6 $02
     ld   [hl], a                                  ; $5DA3: $77
     ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $5DA4: $3E $13
     ldh  [hNoiseSfx], a                           ; $5DA6: $E0 $F4
@@ -224,7 +225,7 @@ OpenLockedDoorsEffectHandler::
 jr_002_5E63:
     add  hl, de                                   ; $5E63: $19
     set  5, [hl]                                  ; $5E64: $CB $EE
-    ld   a, JINGLE_CLEAR_MIDBOSS                  ; $5E66: $3E $1B
+    ld   a, JINGLE_DUNGEON_WARP_APPEAR            ; $5E66: $3E $1B
     ldh  [hJingle], a                             ; $5E68: $E0 $F2
 
 jr_002_5E6A:
@@ -258,7 +259,7 @@ func_002_5E7B::
     ld   [wC190], a                               ; $5E96: $EA $90 $C1
     ld   a, $04                                   ; $5E99: $3E $04
     ld   [wC111], a                               ; $5E9B: $EA $11 $C1
-    ld   a, WAVE_SFX_BOSS_AGONY                   ; $5E9E: $3E $10
+    ld   a, WAVE_SFX_BOSS_DEATH_CRY               ; $5E9E: $3E $10
     ldh  [hNoiseSfx], a                           ; $5EA0: $E0 $F4
 
 .return

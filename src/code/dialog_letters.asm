@@ -10,7 +10,7 @@ ClearLetterPixels::
     add  hl, de                                   ; $4A00: $19
     ld   a, [hl]                                  ; $4A01: $7E
 
-ld   hl, wDrawCommandsSize                        ; $4A02: $21 $00 $D6
+    ld   hl, wDrawCommandsSize                    ; $4A02: $21 $00 $D6
     add  hl, bc                                   ; $4A05: $09
     ldi  [hl], a ; wDrawCommand.destinationHigh   ; $4A06: $22
 
@@ -46,7 +46,7 @@ DialogOpenAnimationEnd::
     cp   $05                                      ; $4A33: $FE $05
     jr   z, func_01C_4A71                         ; $4A35: $28 $3A
 
-    bit  7, c                                     ; $4A37: $CB $79
+    bit  DIALOG_BOX_BOTTOM_BIT, c                 ; $4A37: $CB $79
     jr   z, func_01C_4A3D                         ; $4A39: $28 $02
 
     add  $05                                      ; $4A3B: $C6 $05
@@ -203,7 +203,7 @@ AnimateDialogClosing::
     ld   b, $00                                   ; $4AE2: $06 $00
     ld   hl, wD500                                ; $4AE4: $21 $00 $D5
     add  hl, bc                                   ; $4AE7: $09
-IF __PATCH_9__
+IF __OPTIMIZATIONS_2__
     ld   c, l
     ld   b, h
 ELSE

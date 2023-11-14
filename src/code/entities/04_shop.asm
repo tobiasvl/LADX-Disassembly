@@ -1,29 +1,29 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 ShopOwnerSpriteVariants::
 .variant0
-    db $60, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant1
-    db $62, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 |OAM_X_FLIP
-    db $60, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 |OAM_X_FLIP
+    db $62, OAM_GBC_PAL_3 | OAMF_PAL0 |OAMF_XFLIP
+    db $60, OAM_GBC_PAL_3 | OAMF_PAL0 |OAMF_XFLIP
 .variant2
-    db $64, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $64, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant3
-    db $66, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $64, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $64, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant4
-    db $68, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $68, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant5
-    db $6C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant6
-    db $6A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $68, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $68, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant7
-    db $6E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 
 ShopOwnerEntityHandler::
     ld   a, [wBlockItemUsage]                     ; $76EB: $FA $0A $C5
@@ -59,7 +59,7 @@ jr_004_770E:
     cp   $04                                      ; $771C: $FE $04
     jr   nc, .jr_7723                             ; $771E: $30 $03
 
-    call ApplySolidCollision_04                   ; $7720: $CD $E3 $7B
+    call PushLinkOutOfEntity_04                   ; $7720: $CD $E3 $7B
 
 .jr_7723
     ldh  a, [hActiveEntityState]                  ; $7723: $F0 $F0
@@ -113,7 +113,7 @@ Data_004_77B5::             ; @TODO Shop item "for sale" table.
 ;
 ; @TODO: Shop dialogue indexes (table 0) when about to buy
 ShopItemPresentationDialogs::
-._0 db_dialog_low Dialog030 ; Showel
+._0 db_dialog_low Dialog030 ; Shovel
 ._1 db_dialog_low Dialog031 ; 3 hearts
 ._2 db_dialog_low Dialog032 ; Shield
 ._3 db_dialog_low Dialog033 ; 10 bombs
@@ -168,7 +168,7 @@ func_004_77F8::
     ld   hl, wEntitiesStateTable                  ; $782D: $21 $90 $C2
     add  hl, bc                                   ; $7830: $09
     ld   [hl], $04                                ; $7831: $36 $04
-    ld   a, MUSIC_BOSS_BATTLE                     ; $7833: $3E $19
+    ld   a, MUSIC_BOSS                            ; $7833: $3E $19
     ld   [wMusicTrackToPlay], a                   ; $7835: $EA $68 $D3
 
 .ret_7838
@@ -185,8 +185,8 @@ jr_004_7839:
 
 .jr_7845
     push bc                                       ; $7845: $C5
-    ld   hl, wBButtonSlot                         ; $7846: $21 $00 $DB
-    ld   c, INVENTORY_SLOT_COUNT -1               ; $7849: $0E $0B
+    ld   hl, wInventoryItems.BButtonSlot          ; $7846: $21 $00 $DB
+    ld   c, INVENTORY_SLOT_COUNT - 1              ; $7849: $0E $0B
 
 jr_004_784B:
     ld   a, [wBoomerangTradedItem]                ; $784B: $FA $7D $DB
@@ -206,8 +206,8 @@ jr_004_7859:
     cp   $FF                                      ; $785B: $FE $FF
     jr   nz, jr_004_784B                          ; $785D: $20 $EC
 
-    ld   hl, wBButtonSlot                         ; $785F: $21 $00 $DB
-    ld   c, INVENTORY_SLOT_COUNT -1               ; $7862: $0E $0B
+    ld   hl, wInventoryItems.BButtonSlot          ; $785F: $21 $00 $DB
+    ld   c, INVENTORY_SLOT_COUNT - 1              ; $7862: $0E $0B
 
 jr_004_7864:
     ld   a, [wBoomerangTradedItem]                ; $7864: $FA $7D $DB
@@ -476,7 +476,7 @@ jr_004_79AB:
     cp   $04                                      ; $79BB: $FE $04
     jr   nz, jr_004_79D9                          ; $79BD: $20 $1A
 
-    ld   hl, wBButtonSlot                         ; $79BF: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $79BF: $21 $00 $DB
     ld   d, INVENTORY_SLOT_COUNT                  ; $79C2: $16 $0C
 
 .loop_79C4
@@ -501,7 +501,7 @@ jr_004_79D9:
     cp   $06                                      ; $79D9: $FE $06
     jr   nz, jr_004_79F7                          ; $79DB: $20 $1A
 
-    ld   hl, wBButtonSlot                         ; $79DD: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $79DD: $21 $00 $DB
     ld   d, INVENTORY_SLOT_COUNT                  ; $79E0: $16 $0C
 
 .loop_79E2
@@ -526,7 +526,7 @@ jr_004_79F7:
     cp   $03                                      ; $79F7: $FE $03
     jr   nz, jr_004_7A0C                          ; $79F9: $20 $11
 
-    ld   hl, wBButtonSlot                         ; $79FB: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $79FB: $21 $00 $DB
     ld   d, INVENTORY_SLOT_COUNT                  ; $79FE: $16 $0C
 
 jr_004_7A00:
@@ -704,7 +704,7 @@ func_004_7AED::
 
     ld   a, ENTITY_MAD_BATTER                     ; $7AF3: $3E $CA
     call SpawnNewEntity_trampoline                ; $7AF5: $CD $86 $3B
-    ld   a, $26                                   ; $7AF8: $3E $26
+    ld   a, NOISE_SFX_ELECTRIC_BEAM               ; $7AF8: $3E $26
     ldh  [hNoiseSfx], a                           ; $7AFA: $E0 $F4
     ldh  a, [hMultiPurpose0]                      ; $7AFC: $F0 $D7
     ld   hl, wEntitiesPosXTable                   ; $7AFE: $21 $00 $C2
@@ -769,20 +769,20 @@ Data_004_7B56::
 ; overlaps with the next list
 Unknown091SpriteVariants::
 .variant0
-    db $5D, OAM_GBC_PAL_5 | OAM_DMG_PAL_1 | OAM_BANK_1 | OAM_Y_FLIP | OAM_X_FLIP
+    db $5D, OAM_GBC_PAL_5 | OAMF_PAL1 | OAMF_BANK1 | OAMF_YFLIP | OAMF_XFLIP
 
 Data_004_7B5A::
-    db $96, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $A8, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
-    db $86, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $80, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $88, OAM_GBC_PAL_6 | OAM_DMG_PAL_1
-    db $FF, OAM_GBC_PAL_7 | OAM_DMG_PAL_1 | OAM_BANK_1 | OAM_Y_FLIP | OAM_X_FLIP | OAM_PRIORITY
-    db $90, OAM_GBC_PAL_0 | OAM_DMG_PAL_1
-    db $AE, OAM_GBC_PAL_0 | OAM_DMG_PAL_1
-    db $A0, OAM_GBC_PAL_0 | OAM_DMG_PAL_1
-    db $2A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $2A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $96, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $A8, OAM_GBC_PAL_4 | OAMF_PAL1
+    db $86, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $80, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $88, OAM_GBC_PAL_6 | OAMF_PAL1
+    db $FF, OAM_GBC_PAL_7 | OAMF_PAL1 | OAMF_BANK1 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
+    db $90, OAM_GBC_PAL_0 | OAMF_PAL1
+    db $AE, OAM_GBC_PAL_0 | OAMF_PAL1
+    db $A0, OAM_GBC_PAL_0 | OAMF_PAL1
+    db $2A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_YFLIP
+    db $2A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 
 func_004_7B70::
     ld   a, $04                                   ; $7B70: $3E $04
@@ -861,7 +861,7 @@ func_004_7BB7::
     jp   RenderActiveEntitySprite                 ; $7BE0: $C3 $77 $3C
 
 ; Disallow Link going through a solid object
-ApplySolidCollision_04::
+PushLinkOutOfEntity_04::
     call CheckLinkCollisionWithEnemy_trampoline   ; $7BE3: $CD $5A $3B
     jr   nc, .ret_7C05                            ; $7BE6: $30 $1D
 
@@ -907,8 +907,8 @@ func_004_7C06::
     cp   e                                        ; $7C25: $BB
     jr   nz, .jr_7C49                             ; $7C26: $20 $21
 
-    ld   hl, wC1AD                                ; $7C28: $21 $AD $C1
-    ld   [hl], $01                                ; $7C2B: $36 $01
+    ld   hl, wItemUsageContext                    ; $7C28: $21 $AD $C1
+    ld   [hl], ITEM_USAGE_NEAR_NPC                ; $7C2B: $36 $01
     ld   a, [wDialogState]                        ; $7C2D: $FA $9F $C1
     ld   hl, wInventoryAppearing                  ; $7C30: $21 $4F $C1
     or   [hl]                                     ; $7C33: $B6

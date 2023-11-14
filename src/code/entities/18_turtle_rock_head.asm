@@ -68,7 +68,7 @@ TurtleRockHeadEntityHandler::
     cp   $05                                      ; $7365: $FE $05
     jr   z, jr_018_737E                           ; $7367: $28 $15
 
-    call func_018_7F0F                            ; $7369: $CD $0F $7F
+    call AnimateBossAgony_18                      ; $7369: $CD $0F $7F
     ld   hl, wEntitiesStatusTable                 ; $736C: $21 $80 $C2
     add  hl, bc                                   ; $736F: $09
     ld   a, [hl]                                  ; $7370: $7E
@@ -76,7 +76,7 @@ TurtleRockHeadEntityHandler::
     jr   nz, .ret_737D                            ; $7372: $20 $09
 
     ld   hl, wOverworldRoomStatus + $10           ; $7374: $21 $10 $D8
-    set  5, [hl]                                  ; $7377: $CB $EE
+    set  OW_ROOM_STATUS_FLAG_OWL_TALKED, [hl]     ; $7377: $CB $EE
     ld   a, JINGLE_PUZZLE_SOLVED                  ; $7379: $3E $02
     ldh  [hJingle], a                             ; $737B: $E0 $F2
 
@@ -91,7 +91,7 @@ jr_018_737E:
     cp   $05                                      ; $7389: $FE $05
     jr   nc, .jr_7392                             ; $738B: $30 $05
 
-    call func_018_7D36                            ; $738D: $CD $36 $7D
+    call PushLinkOutOfEntity_18                   ; $738D: $CD $36 $7D
     jr   jr_018_7395                              ; $7390: $18 $03
 
 .jr_7392
@@ -185,7 +185,7 @@ TurtleRockHeadState3Handler::
     cp   $06                                      ; $741C: $FE $06
     jr   z, .jr_746E                              ; $741E: $28 $4E
 
-    ld   a, $13                                   ; $7420: $3E $13
+    ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $7420: $3E $13
     ldh  [hNoiseSfx], a                           ; $7422: $E0 $F4
     ld   a, ENTITY_TURTLE_ROCK_HEAD               ; $7424: $3E $7F
     call SpawnNewEntity_trampoline                ; $7426: $CD $86 $3B
@@ -280,7 +280,7 @@ TurtleRockHeadState5Handler::
     ld   [hl], $40                                ; $74A0: $36 $40
     ld   hl, wEntitiesPhysicsFlagsTable           ; $74A2: $21 $40 $C3
     add  hl, bc                                   ; $74A5: $09
-    res  7, [hl]                                  ; $74A6: $CB $BE
+    res  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $74A6: $CB $BE
     ld   hl, wEntitiesOptions1Table               ; $74A8: $21 $30 $C4
     add  hl, bc                                   ; $74AB: $09
     res  ENTITY_OPT1_B_SWORD_CLINK_OFF, [hl]      ; $74AC: $CB $B6
@@ -451,8 +451,8 @@ Data_018_758E::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 TurtleRockHeadSpriteVariants::
 .variant0
-    db $76, OAM_GBC_PAL_7 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_7 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_7 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_7 | OAMF_PAL0 | OAMF_XFLIP
 
 func_018_766A::
     ldh  a, [hActiveEntitySpriteVariant]          ; $766A: $F0 $F1
@@ -557,7 +557,7 @@ jr_018_76C9:
     ld   [wInvincibilityCounter], a               ; $770B: $EA $C7 $DB
     ld   a, $08                                   ; $770E: $3E $08
     ld   [wSubtractHealthBuffer], a               ; $7710: $EA $94 $DB
-    ld   a, $03                                   ; $7713: $3E $03
+    ld   a, WAVE_SFX_LINK_HURT                    ; $7713: $3E $03
     ldh  [hWaveSfx], a                            ; $7715: $E0 $F3
 
 jr_018_7717:

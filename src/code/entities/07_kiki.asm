@@ -1,38 +1,38 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 KikiTheMonkey2SpriteVariants::
 .variant0
-    db $78, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $78, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant1
-    db $7A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $7A, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant2
-    db $70, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $70, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant3
-    db $7C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $7E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $7C, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $7E, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant4
-    db $74, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $74, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_2 | OAMF_PAL0
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 KikiTheMonkey1SpriteVariants::
 .variant0
-    db $72, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $78, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $78, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $72, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $7A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $7A, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $72, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $70, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $70, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $7E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $7C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7E, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $7C, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant4
-    db $76, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $74, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $74, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 KikiTheMonkeyEntityHandler::
     ldh  a, [hRoomStatus]                         ; $5842: $F0 $F8
@@ -109,12 +109,12 @@ func_007_58A8::
     and  a                                        ; $58B4: $A7
     jr   nz, .jr_58C9                             ; $58B5: $20 $12
 
-    call func_007_7E5D                            ; $58B7: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $58B7: $CD $5D $7E
     add  $18                                      ; $58BA: $C6 $18
     cp   $30                                      ; $58BC: $FE $30
     jr   nc, KikiOpenDialog.return                ; $58BE: $30 $1D
 
-    call func_007_7E6D                            ; $58C0: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $58C0: $CD $6D $7E
     add  $18                                      ; $58C3: $C6 $18
     cp   $30                                      ; $58C5: $FE $30
     jr   nc, KikiOpenDialog.return                ; $58C7: $30 $14
@@ -136,7 +136,7 @@ KikiOpenDialog::
     ret                                           ; $58DD: $C9
 
 jr_007_58DE:
-    call func_007_7CF0                            ; $58DE: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $58DE: $CD $F0 $7C
     call func_007_7D43                            ; $58E1: $CD $43 $7D
     jr   nc, func_007_58FA                        ; $58E4: $30 $14
 
@@ -270,7 +270,7 @@ func_007_5997::
     ld   a, JINGLE_PUZZLE_SOLVED                  ; $59A3: $3E $02
     ldh  [hJingle], a                             ; $59A5: $E0 $F2
     ld   a, [wOverworldRoomStatus + $7B]          ; $59A7: $FA $7B $D8
-    or   $10                                      ; $59AA: $F6 $10
+    or   OW_ROOM_STATUS_CHANGED                   ; $59AA: $F6 $10
     ld   [wOverworldRoomStatus + $7B], a          ; $59AC: $EA $7B $D8
     ld   a, $01                                   ; $59AF: $3E $01
     ld   [wExchangingTradeSequenceItem], a        ; $59B1: $EA $7F $DB
@@ -421,15 +421,15 @@ jr_007_5A2A:
     ld   hl, wRoomObjectsArea + $25               ; $5A8E: $21 $25 $D7
     ld   [hl], $DB                                ; $5A91: $36 $DB
     ld   a, $87                                   ; $5A93: $3E $87
-    call func_2BF                                 ; $5A95: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $5A95: $CD $2F $0B
     ld   hl, wRoomObjectsArea + $35               ; $5A98: $21 $35 $D7
     ld   [hl], $DB                                ; $5A9B: $36 $DB
     ld   a, $87                                   ; $5A9D: $3E $87
-    call func_2BF                                 ; $5A9F: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $5A9F: $CD $2F $0B
     ld   hl, wRoomObjectsArea + $45               ; $5AA2: $21 $45 $D7
     ld   [hl], $DB                                ; $5AA5: $36 $DB
     ld   a, $87                                   ; $5AA7: $3E $87
-    jp   func_2BF                                 ; $5AA9: $C3 $2F $0B
+    jp   BackupObjectInRAM2                       ; $5AA9: $C3 $2F $0B
 
 func_007_5AAC::
     call GetEntityTransitionCountdown             ; $5AAC: $CD $05 $0C

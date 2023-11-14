@@ -1,8 +1,8 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 SpikeTrapSpriteVariants::
 .variant0
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 Data_006_74FE::
     db   $20, $E0, $00, $00
@@ -103,7 +103,7 @@ ret_006_7599:
     ret                                           ; $7599: $C9
 
 jr_006_759A:
-    ld   a, $0A                                   ; $759A: $3E $0A
+    ld   a, NOISE_SFX_WHOOSH                      ; $759A: $3E $0A
     ldh  [hNoiseSfx], a                           ; $759C: $E0 $F4
     jp   IncrementEntityState                     ; $759E: $C3 $12 $3B
 

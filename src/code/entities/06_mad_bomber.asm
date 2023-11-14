@@ -1,20 +1,20 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MadBomberSpriteVariants::
 .variant0
-    db $FF, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $FF, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $FF, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $FF, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $70, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $70, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $70, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $70, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $72, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $74, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $74, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant4
-    db $76, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $74, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $74, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 Data_006_413A::
     db   $28, $38, $58, $58, $78, $88, $28, $88
@@ -149,7 +149,7 @@ label_006_41F8:
     ld   a, $10                                   ; $420D: $3E $10
     call ApplyVectorTowardsLink_trampoline        ; $420F: $CD $AA $3B
     pop  bc                                       ; $4212: $C1
-    ld   a, JINGLE_JUMP_DOWN                      ; $4213: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $4213: $3E $08
     ldh  [hJingle], a                             ; $4215: $E0 $F2
 
 ret_006_4217:

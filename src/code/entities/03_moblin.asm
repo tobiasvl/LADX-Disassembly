@@ -183,14 +183,14 @@ Unknown009SpriteVariants::
     db $60, OAM_GBC_PAL_3
     db $62, OAM_GBC_PAL_3
 .variant1
-    db $62, OAM_GBC_PAL_3 | OAM_X_FLIP
-    db $60, OAM_GBC_PAL_3 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_3 | OAMF_XFLIP
+    db $60, OAM_GBC_PAL_3 | OAMF_XFLIP
 .variant2
     db $64, OAM_GBC_PAL_3
     db $66, OAM_GBC_PAL_3
 .variant3
-    db $66, OAM_GBC_PAL_3 | OAM_X_FLIP
-    db $64, OAM_GBC_PAL_3 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_3 | OAMF_XFLIP
+    db $64, OAM_GBC_PAL_3 | OAMF_XFLIP
 .variant4
     db $68, OAM_GBC_PAL_3
     db $6A, OAM_GBC_PAL_3
@@ -198,11 +198,11 @@ Unknown009SpriteVariants::
     db $6C, OAM_GBC_PAL_3
     db $6E, OAM_GBC_PAL_3
 .variant6
-    db $6A, OAM_GBC_PAL_3 | OAM_X_FLIP
-    db $68, OAM_GBC_PAL_3 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_3 | OAMF_XFLIP
+    db $68, OAM_GBC_PAL_3 | OAMF_XFLIP
 .variant7
-    db $6E, OAM_GBC_PAL_3 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_3 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_3 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_3 | OAMF_XFLIP
 
 Data_003_5937::
     db   $08, $F8, $04, $FC
@@ -279,7 +279,7 @@ Data_003_5994::
 SpawnOctorokRock::
     ld   a, ENTITY_OCTOROK_ROCK                   ; $5998: $3E $0A
     call SpawnNewEntity                           ; $599A: $CD $CA $64
-    jr   c, .jr_59D6                              ; $599D: $38 $37
+    jr   c, .return                               ; $599D: $38 $37
 
     push bc                                       ; $599F: $C5
     ldh  a, [hMultiPurpose2]                      ; $59A0: $F0 $D9
@@ -316,7 +316,10 @@ SpawnOctorokRock::
     pop  bc                                       ; $59D4: $C1
     and  a                                        ; $59D5: $A7
 
-.jr_59D6
-IF !__PATCH_0__
+.return
+IF !__OPTIMIZATIONS_1__
+    ; Small optimization: This RET isn't needed since we just
+    ; fall through to EntityInitBrokenHeartContainer, which only
+    ; contains RET.
     ret                                           ; $59D6: $C9
 ENDC

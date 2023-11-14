@@ -1,11 +1,11 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 RollingBonesSpriteVariants::
 .variant0
-    db $6C, OAM_GBC_PAL_7 | OAM_DMG_PAL_0
-    db $6C, OAM_GBC_PAL_7 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6C, OAM_GBC_PAL_7 | OAMF_PAL0
+    db $6C, OAM_GBC_PAL_7 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $6C, OAM_GBC_PAL_7 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $6C, OAM_GBC_PAL_7 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $6C, OAM_GBC_PAL_7 | OAMF_PAL0 | OAMF_YFLIP
+    db $6C, OAM_GBC_PAL_7 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 
 Data_006_6EDD::
     db   $70, $60, $50, $40, $30, $20
@@ -164,7 +164,7 @@ RollingBonesBarRollingHandler::
     ld   [wC157], a                               ; $6FA5: $EA $57 $C1
     xor  a                                        ; $6FA8: $AF
     ld   [wC158], a                               ; $6FA9: $EA $58 $C1
-    ld   a, JINGLE_HUGE_BUMP                      ; $6FAC: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $6FAC: $3E $0B
     ldh  [hJingle], a                             ; $6FAE: $E0 $F2
     call IncrementEntityState                     ; $6FB0: $CD $12 $3B
 
@@ -174,7 +174,7 @@ RollingBonesBarRollingHandler::
     cp   $09                                      ; $6FB7: $FE $09
     jr   c, .jr_6FC0                              ; $6FB9: $38 $05
 
-    ld   a, $1A                                   ; $6FBB: $3E $1A
+    ld   a, WAVE_SFX_ROLLING_SPIKE_BAR            ; $6FBB: $3E $1A
     ldh  [hWaveSfx], a                            ; $6FBD: $E0 $F3
     xor  a                                        ; $6FBF: $AF
 

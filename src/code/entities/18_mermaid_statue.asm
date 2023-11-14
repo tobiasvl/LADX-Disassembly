@@ -27,7 +27,7 @@ MermaidStatueInitHandler::
     jp   IncrementEntityState                     ; $4957: $C3 $12 $3B
 
 MermaidStatueInteractiveHandler::
-    call func_018_7D36                            ; $495A: $CD $36 $7D
+    call PushLinkOutOfEntity_18                   ; $495A: $CD $36 $7D
     ld   a, [wExchangingTradeSequenceItem]        ; $495D: $FA $7F $DB
     and  a                                        ; $4960: $A7
     ret  nz                                       ; $4961: $C0
@@ -36,18 +36,18 @@ MermaidStatueInteractiveHandler::
     ret  nc                                       ; $4965: $D0
 
     ld   a, [wTradeSequenceItem]                  ; $4966: $FA $0E $DB
-    cp   TRADING_ITEM_MAGNIFIYING_GLASS           ; $4969: $FE $0E
-    ret  z                                        ; If you have the magnifying glass, return
+    cp   TRADING_ITEM_MAGNIFYING_LENS             ; $4969: $FE $0E
+    ret  z                                        ; If you have the magnifying lens, return
 
     cp   TRADING_ITEM_SCALE                       ; $496C: $FE $0D
-    jr   nz, .alreadyHasMagnifyingGlass
+    jr   nz, .alreadyHasMagnifyingLens
 
     ; If the player has the Mermaid Scale, move the statue and open the passage
-    ld   a, TRADING_ITEM_MAGNIFIYING_GLASS        ; $4970: $3E $0E
+    ld   a, TRADING_ITEM_MAGNIFYING_LENS          ; $4970: $3E $0E
     ld   [wTradeSequenceItem], a                  ; $4972: $EA $0E $DB
     ld   a, $01                                   ; $4975: $3E $01
     ld   [wExchangingTradeSequenceItem], a        ; $4977: $EA $7F $DB
-    ld   a, $04                                   ; $497A: $3E $04
+    ld   a, NOISE_SFX_DOOR_UNLOCKED               ; $497A: $3E $04
     ldh  [hNoiseSfx], a                           ; $497C: $E0 $F4
     call GetEntityTransitionCountdown             ; $497E: $CD $05 $0C
     ld   [hl], $60                                ; $4981: $36 $60
@@ -56,7 +56,7 @@ MermaidStatueInteractiveHandler::
 
     jp   IncrementEntityState                     ; $498B: $C3 $12 $3B
 
-.alreadyHasMagnifyingGlass
+.alreadyHasMagnifyingLens
     jp_open_dialog Dialog19C                      ; $498E
 
 MermaidStatueOpeningHandler::
@@ -79,7 +79,7 @@ MermaidStatueOpeningHandler::
     jr   nz, .jr_49B6                             ; $49AF: $20 $05
 
     ld   hl, hNoiseSfx                            ; $49B1: $21 $F4 $FF
-    ld   [hl], $11                                ; $49B4: $36 $11
+    ld   [hl], NOISE_SFX_RUMBLE                   ; $49B4: $36 $11
 
 .jr_49B6
     ret  nc                                       ; $49B6: $D0

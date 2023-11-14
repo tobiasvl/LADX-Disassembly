@@ -5,7 +5,7 @@ BlainoEntityHandler::
     call func_018_68EA                            ; $64CC: $CD $EA $68
     ldh  a, [hActiveEntityStatus]                 ; $64CF: $F0 $EA
     cp   $01                                      ; $64D1: $FE $01
-    jp   z, func_018_7F0F                         ; $64D3: $CA $0F $7F
+    jp   z, AnimateBossAgony_18                   ; $64D3: $CA $0F $7F
 
     call ReturnIfNonInteractive_18                ; $64D6: $CD $E8 $7D
     call BossIntro                                ; $64D9: $CD $E8 $3E
@@ -29,7 +29,7 @@ BlainoEntityHandler::
     jr   nz, .jr_64FC                             ; $64F5: $20 $05
 
     ld   hl, hJingle                              ; $64F7: $21 $F2 $FF
-    ld   [hl], JINGLE_BLAINO_PUNCH                ; $64FA: $36 $33
+    ld   [hl], JINGLE_LINK_DAZED                  ; $64FA: $36 $33
 
 .jr_64FC
     and  a                                        ; $64FC: $A7
@@ -159,7 +159,7 @@ label_018_65B8:
     cp   $01                                      ; $65BB: $FE $01
     jr   nz, .jr_65C3                             ; $65BD: $20 $04
 
-    ld   a, $0A                                   ; $65BF: $3E $0A
+    ld   a, NOISE_SFX_WHOOSH                      ; $65BF: $3E $0A
     ldh  [hNoiseSfx], a                           ; $65C1: $E0 $F4
 
 .jr_65C3
@@ -442,7 +442,7 @@ func_018_68EA::
     inc  a                                        ; $6913: $3C
     ldh  [hMultiPurposeG], a                      ; $6914: $E0 $E8
     ld   hl, hActiveEntityFlipAttribute           ; $6916: $21 $ED $FF
-    set  OAM_BIT_X_FLIP, [hl]                     ; $6919: $CB $EE
+    set  OAMB_XFLIP, [hl]                         ; $6919: $CB $EE
 
 .jr_691B
     ld   hl, Data_018_673A                        ; $691B: $21 $3A $67
@@ -537,7 +537,7 @@ jr_018_6972:
     jr   z, .jr_699A                              ; $698C: $28 $0C
 
     ldh  a, [hActiveEntityFlipAttribute]          ; $698E: $F0 $ED
-    bit  OAM_BIT_GB_PAL, a                        ; $6990: $CB $67
+    bit  OAMB_PAL1, a                             ; $6990: $CB $67
     jr   z, .jr_699A                              ; $6992: $28 $06
 
     ld   a, [de]                                  ; $6994: $1A

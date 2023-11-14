@@ -1,20 +1,20 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 WizrobeSpriteVariants::
 .variant0
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $66, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $64, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $64, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $64, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $64, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant3
-    db $62, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant4
-    db $60, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $60, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $60, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $60, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 
 Data_006_7618::
     db   $08, $F8, $00, $00
@@ -208,12 +208,12 @@ label_006_7709:
 jr_006_772D:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $772D: $21 $40 $C3
     add  hl, bc                                   ; $7730: $09
-    ld   a, $02                                   ; $7731: $3E $02
+    ld   a, 2                                     ; $7731: $3E $02
     ld   [hl], a                                  ; $7733: $77
     ret                                           ; $7734: $C9
 
 label_006_7735:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7735: $21 $40 $C3
     add  hl, bc                                   ; $7738: $09
-    ld   [hl], $42                                ; $7739: $36 $42
+    ld   [hl], 2 | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $7739: $36 $42
     ret                                           ; $773B: $C9

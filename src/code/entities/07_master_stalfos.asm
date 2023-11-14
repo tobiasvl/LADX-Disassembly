@@ -31,12 +31,12 @@ func_007_698A::
     ret  nz                                       ; $698D: $C0
 
 .jr_698E
-    ld   a, MUSIC_WATERFALL_DRAIN                 ; $698E: $3E $4C
+    ld   a, MUSIC_OPEN_ANGLERS_TUNNEL             ; $698E: $3E $4C
     ld   [wMusicTrackToPlay], a                   ; $6990: $EA $68 $D3
     jp   IncrementEntityState                     ; $6993: $C3 $12 $3B
 
 func_007_6996::
-    ld   a, $1D                                   ; $6996: $3E $1D
+    ld   a, NOISE_SFX_OPEN_D4_D7                  ; $6996: $3E $1D
     ldh  [hNoiseSfx], a                           ; $6998: $E0 $F4
     call GetEntityTransitionCountdown             ; $699A: $CD $05 $0C
     ld   [hl], $80                                ; $699D: $36 $80
@@ -140,7 +140,7 @@ label_007_69D0:
     ld   h, b                                     ; $6A26: $60
     ld   l, c                                     ; $6A27: $69
     ld   a, $87                                   ; $6A28: $3E $87
-    call func_2BF                                 ; $6A2A: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $6A2A: $CD $2F $0B
     pop  hl                                       ; $6A2D: $E1
     inc  bc                                       ; $6A2E: $03
     dec  e                                        ; $6A2F: $1D
@@ -282,7 +282,7 @@ func_007_6AF5::
     cp   $01                                      ; $6AFA: $FE $01
     jr   nz, .jr_6B02                             ; $6AFC: $20 $04
 
-    ld   a, JINGLE_JUMP_DOWN                      ; $6AFE: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $6AFE: $3E $08
     ldh  [hJingle], a                             ; $6B00: $E0 $F2
 
 .jr_6B02
@@ -424,7 +424,7 @@ func_007_6BC8::
     call IncrementEntityState                     ; $6BDC: $CD $12 $3B
 
 label_007_6BDF:
-    call func_007_7E5D                            ; $6BDF: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $6BDF: $CD $5D $7E
     ld   hl, wEntitiesDirectionTable              ; $6BE2: $21 $80 $C3
     add  hl, bc                                   ; $6BE5: $09
     ld   [hl], e                                  ; $6BE6: $73
@@ -441,12 +441,12 @@ func_007_6BE7::
 
 func_007_6BF4::
     call func_007_6EA2                            ; $6BF4: $CD $A2 $6E
-    call func_007_7E5D                            ; $6BF7: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $6BF7: $CD $5D $7E
     add  $20                                      ; $6BFA: $C6 $20
     cp   $40                                      ; $6BFC: $FE $40
     jr   nc, .jr_6C14                             ; $6BFE: $30 $14
 
-    call func_007_7E6D                            ; $6C00: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $6C00: $CD $6D $7E
     add  $1C                                      ; $6C03: $C6 $1C
     cp   $38                                      ; $6C05: $FE $38
     jr   nc, .jr_6C14                             ; $6C07: $30 $0B
@@ -525,7 +525,7 @@ jr_007_6C55:
     cp   $17                                      ; $6C7B: $FE $17
     jr   nz, .jr_6C89                             ; $6C7D: $20 $0A
 
-    ld   a, $27                                   ; $6C7F: $3E $27
+    ld   a, NOISE_SFX_WEAPON_SWING                ; $6C7F: $3E $27
     ldh  [hNoiseSfx], a                           ; $6C81: $E0 $F4
     ld   hl, wEntitiesPrivateCountdown2Table      ; $6C83: $21 $00 $C3
     add  hl, bc                                   ; $6C86: $09
@@ -578,7 +578,7 @@ jr_007_6CB8:
     cp   $17                                      ; $6CDB: $FE $17
     jr   nz, .jr_6CE9                             ; $6CDD: $20 $0A
 
-    ld   a, $27                                   ; $6CDF: $3E $27
+    ld   a, NOISE_SFX_WEAPON_SWING                ; $6CDF: $3E $27
     ldh  [hNoiseSfx], a                           ; $6CE1: $E0 $F4
     ld   hl, wEntitiesPrivateCountdown2Table      ; $6CE3: $21 $00 $C3
     add  hl, bc                                   ; $6CE6: $09
@@ -684,7 +684,7 @@ func_007_6D7F::
     ld   hl, wEntitiesOptions1Table               ; $6D92: $21 $30 $C4
     add  hl, bc                                   ; $6D95: $09
     set  ENTITY_OPT1_B_SWORD_CLINK_OFF, [hl]      ; $6D96: $CB $F6
-    ld   a, JINGLE_MASTER_STALFOS                 ; $6D98: $3E $28
+    ld   a, JINGLE_STALFOS_COLLAPSE               ; $6D98: $3E $28
     ldh  [hJingle], a                             ; $6D9A: $E0 $F2
 
 .jr_6D9C
@@ -849,7 +849,7 @@ func_007_6E58::
     dec  a                                        ; $6E60: $3D
     jr   nz, .jr_6E67                             ; $6E61: $20 $04
 
-    ld   a, $3F                                   ; $6E63: $3E $3F
+    ld   a, NOISE_SFX_MINIBOSS_FLEE               ; $6E63: $3E $3F
     ldh  [hNoiseSfx], a                           ; $6E65: $E0 $F4
 
 .jr_6E67
@@ -905,12 +905,12 @@ func_007_6EA2::
     ld   hl, wEntitiesPrivateState1Table          ; $6EA2: $21 $B0 $C2
     add  hl, bc                                   ; $6EA5: $09
     ld   [hl], b                                  ; $6EA6: $70
-    call func_007_7E5D                            ; $6EA7: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $6EA7: $CD $5D $7E
     add  $30                                      ; $6EAA: $C6 $30
     cp   $60                                      ; $6EAC: $FE $60
     jr   nc, .jr_6EC3                             ; $6EAE: $30 $13
 
-    call func_007_7E6D                            ; $6EB0: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $6EB0: $CD $6D $7E
     add  $30                                      ; $6EB3: $C6 $30
     cp   $60                                      ; $6EB5: $FE $60
     jr   nc, .jr_6EC3                             ; $6EB7: $30 $0A
@@ -1198,7 +1198,7 @@ func_007_70B7::
     ld   [wSubtractHealthBuffer], a               ; $7105: $EA $94 $DB
     ld   a, $20                                   ; $7108: $3E $20
     ld   [wInvincibilityCounter], a               ; $710A: $EA $C7 $DB
-    ld   a, $03                                   ; $710D: $3E $03
+    ld   a, WAVE_SFX_LINK_HURT                    ; $710D: $3E $03
     ldh  [hWaveSfx], a                            ; $710F: $E0 $F3
 
 ret_007_7111:

@@ -43,12 +43,12 @@ FileSelectionPrepare1::
     jp   IncrementGameplaySubtypeAndReturn        ; $47FA: $C3 $D6 $44
 
 FileSelectionPrepare2::
-    call func_001_4DA6                            ; $47FD: $CD $A6 $4D
-    call func_001_4DBE                            ; $4800: $CD $BE $4D
+    call DrawSaveSlot1MaxHearts                   ; $47FD: $CD $A6 $4D
+    call DrawSaveSlot2MaxHearts                   ; $4800: $CD $BE $4D
     jp   IncrementGameplaySubtypeAndReturn        ; $4803: $C3 $D6 $44
 
 FileSelectionPrepare3::
-    call func_001_4DD6                            ; $4806: $CD $D6 $4D
+    call DrawSaveSlot3MaxHearts                   ; $4806: $CD $D6 $4D
     jp   IncrementGameplaySubtypeAndReturn        ; $4809: $C3 $D6 $44
 
 CopyDeathCountsToBG::
@@ -118,7 +118,7 @@ DrawSaveSlotName::
     ldh  [hMultiPurpose0], a                      ; $486D: $E0 $D7
     ld   a, [de]                                  ; $486F: $1A
     and  a                                        ; $4870: $A7
-    ld   a, $7E                ; Empty tile       ; $4871: $3E $7E
+    ld   a, DIALOG_BG_TILE_DARK                   ; $4871: $3E $7E
     jr   z, .drawCharacterTile                    ; $4873: $28 $0C
     ld   a, [de]                                  ; $4875: $1A
     dec  a                                        ; $4876: $3D
@@ -177,26 +177,26 @@ ENDC
 .selectSpacingTile::
     ; Select what tile to draw above the current character
 IF __DIACRITICS_SUPPORT__
-    ld   a, $7E               ; Empty tile
-    jr   z, .drawSpacingTile  ; Jump if no diacritic
-    ldh  a, [hDialogBackgroundTile] ; Load value from DiacriticsTable
-    cp   2                    ; Check if DiacriticsTable had value 2
-    ld   a, $C8               ; First diacritic tile
-    jr   z, .drawSpacingTile  ; Jump if diacritic 2
-    inc  a                    ; Second diacritic tile
+    ld   a, DIALOG_BG_TILE_DARK
+    jr   z, .drawSpacingTile   ; Jump if no diacritic
+    ldh  a, [hDialogBackgroundTile] ; Load value from CodepointToDiacritics table
+    cp   2                     ; Check if diacritic had value 2
+    ld   a, DIALOG_DIACRITIC_2 ; First diacritic tile
+    jr   z, .drawSpacingTile   ; Jump if diacritic 2
+    inc  a                     ; DIALOG_DIACRITIC_1
 ELIF LANG_FR
-    ld   a, $7E               ; Empty tile
-    jr   z, .drawSpacingTile  ; Jump if no diacritic
-    ld   a, $C9               ; Second diacritic tile
+    ld   a, DIALOG_BG_TILE_DARK
+    jr   z, .drawSpacingTile   ; Jump if no diacritic
+    ld   a, DIALOG_DIACRITIC_1 ; Second diacritic tile
 ELSE
-    ld   a, $7E               ; Empty tile        ; $489D: $3E $7E
+    ld   a, DIALOG_BG_TILE_DARK                   ; $489D: $3E $7E
     jr   .drawSpacingTile                         ; $489F: $18 $08
     ; Unreachable code, likely early diacritics
     ; support that has been stubbed out:
     ld   a, [de]                                  ; $48A1: $1A
     and  $80                                      ; $48A2: $E6 $80
-    ld   a, $C8                                   ; $48A4: $3E $C8
-    jr   z, .drawSpacingTile                              ; $48A6: $28 $01
+    ld   a, DIALOG_DIACRITIC_2                    ; $48A4: $3E $C8
+    jr   z, .drawSpacingTile                      ; $48A6: $28 $01
     inc  a                                        ; $48A8: $3C
 ENDC
 
@@ -285,7 +285,7 @@ IF LANG_DE
 ENDC
 
 .start
-    call func_001_6BA8                            ; $48E8: $CD $A8 $6B
+    call MoveSelect                               ; $48E8: $CD $A8 $6B
     ldh  a, [hJoypadState]                        ; $48EB: $F0 $CC
     and  J_A | J_START                            ; $48ED: $E6 $90
     jr   z, .jr_48F4                              ; $48EF: $28 $03
@@ -329,7 +329,7 @@ jr_001_4920::
     ldh  a, [hJoypadState]                        ; $4927: $F0 $CC
     and  J_RIGHT | J_LEFT                         ; $4929: $E6 $03
     jr   z, .jr_4938                              ; $492B: $28 $0B
-    call func_001_6BAE                            ; $492D: $CD $AE $6B
+    call MoveSelect.playMoveSelectionJingle       ; $492D: $CD $AE $6B
     ld   a, [wIsFileSelectionArrowShifted]        ; $4930: $FA $00 $D0
     xor  $01                                      ; $4933: $EE $01
     ld   [wIsFileSelectionArrowShifted], a        ; $4935: $EA $00 $D0
@@ -345,12 +345,12 @@ jr_001_4920::
     ld   a, FILE_64                               ; $4946: $3E $64
 
 .jr_4948::
-    ld   hl, wOAMBuffer + $8                      ; $4948: $21 $08 $C0
+    ld   hl, wOAMBuffer + $8 ; Arrow sprite              ; $4948: $21 $08 $C0
     ld   [hl], $88 ; y                            ; $494B: $36 $88
     inc  hl                                       ; $494D: $23
     ldi  [hl], a ; x                              ; $494E: $22
     ld   a, $BE                                   ; $494F: $3E $BE
-    ldi  [hl], a ; chr                            ; $4951: $22
+    ldi  [hl], a ; Tile                           ; $4951: $22
     xor  a                                        ; $4952: $AF
     ld   [hl], a                                  ; $4953: $77
 
@@ -474,20 +474,20 @@ HandleFileSelectionCommand::
 
 ; File creation data
 Data_001_49F2::
-    dw   SaveGame1.main + wBButtonSlot - wOverworldRoomStatus
-    dw   SaveGame2.main + wBButtonSlot - wOverworldRoomStatus
-    dw   SaveGame3.main + wBButtonSlot - wOverworldRoomStatus
+    dw   SaveGame1.main + wInventoryItems.BButtonSlot - wOverworldRoomStatus
+    dw   SaveGame2.main + wInventoryItems.BButtonSlot - wOverworldRoomStatus
+    dw   SaveGame3.main + wInventoryItems.BButtonSlot - wOverworldRoomStatus
 
-Data_001_49F8::
+SaveGameTable::
     dw   SaveGame1.main
     dw   SaveGame2.main
     dw   SaveGame3.main
 
 ; Part of file copy
 Data_001_49FE::
-    dw SaveGame1                                  ; $49FE
-    dw SaveGame2                                  ; $4A00
-    dw SaveGame3                                  ; $4A02
+    dw   SaveGame1                                ; $49FE
+    dw   SaveGame2                                ; $4A00
+    dw   SaveGame3                                ; $4A02
 
 FileSelectionLoadSavedFile::
     jp   LoadSavedFile                            ; $4A04: $C3 $A4 $52
@@ -519,8 +519,8 @@ FileCreationInit1Handler::
     ld   [wTilesetToLoad], a                      ; $4A16: $EA $FE $D6
     xor  a                                        ; $4A19: $AF
     ld   [wDBA8], a                               ; $4A1A: $EA $A8 $DB
-    ld   [wDBA9], a                               ; $4A1D: $EA $A9 $DB
-    ld   [wDBAA], a                               ; $4A20: $EA $AA $DB
+    ld   [wNameEntryCurrentChar], a               ; $4A1D: $EA $A9 $DB
+    ld   [wSaveSlotNameCharIndex], a              ; $4A20: $EA $AA $DB
     ret                                           ; $4A23: $C9
 
 FileCreationInit2Handler::
@@ -553,10 +553,10 @@ IF !LANG_DE
 ;   hl   address of the save file start
 ;   bc   offset
 ;   a    value to write
-WriteByteToExternalRAM::
+WriteByteToSRAM::
     push hl                                       ; $4A3F: $E5
     add  hl, bc                                   ; $4A40: $09
-    call EnableExternalRAMWriting                 ; $4A41: $CD $D0 $27
+    call EnableSRAM                               ; $4A41: $CD $D0 $27
     ld   [hl], a                                  ; $4A44: $77
     pop  hl                                       ; $4A45: $E1
     ret                                           ; $4A46: $C9
@@ -567,7 +567,7 @@ label_4A47::
     push hl                                       ; $4A4C: $E5
 
 .loop_4A4D
-    call EnableExternalRAMWriting                 ; $4A4D: $CD $D0 $27
+    call EnableSRAM                               ; $4A4D: $CD $D0 $27
     ld   a, [bc]                                  ; $4A50: $0A
     ldi  [hl], a                                  ; $4A51: $22
     inc  bc                                       ; $4A52: $03
@@ -578,26 +578,26 @@ label_4A47::
     pop  hl                                       ; $4A58: $E1
     ld   bc, $4E                                  ; $4A59: $01 $4E $00
     ld   a, $01                                   ; $4A5C: $3E $01
-    call WriteByteToExternalRAM                   ; $4A5E: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A5E: $CD $3F $4A
     ld   bc, $44                                  ; $4A61: $01 $44 $00
-    call WriteByteToExternalRAM                   ; $4A64: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A64: $CD $3F $4A
     ld   bc, $43                                  ; $4A67: $01 $43 $00
     ld   a, $02                                   ; $4A6A: $3E $02
-    call WriteByteToExternalRAM                   ; $4A6C: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A6C: $CD $3F $4A
     ld   bc, $4D                                  ; $4A6F: $01 $4D $00
     ld   a, $59                                   ; $4A72: $3E $59
-    call WriteByteToExternalRAM                   ; $4A74: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A74: $CD $3F $4A
     ld   bc, $77                                  ; $4A77: $01 $77 $00
-    call WriteByteToExternalRAM                   ; $4A7A: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A7A: $CD $3F $4A
     ld   bc, $78                                  ; $4A7D: $01 $78 $00
-    call WriteByteToExternalRAM                   ; $4A80: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A80: $CD $3F $4A
     ld   bc, $45                                  ; $4A83: $01 $45 $00
-    call WriteByteToExternalRAM                   ; $4A86: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A86: $CD $3F $4A
     ld   bc, $76                                  ; $4A89: $01 $76 $00
     ld   a, $39                                   ; $4A8C: $3E $39
-    call WriteByteToExternalRAM                   ; $4A8E: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A8E: $CD $3F $4A
     ld   bc, $4C                                  ; $4A91: $01 $4C $00
-    call WriteByteToExternalRAM                   ; $4A94: $CD $3F $4A
+    call WriteByteToSRAM                          ; $4A94: $CD $3F $4A
     ret                                           ; $4A97: $C9
 ENDC
 
@@ -659,7 +659,7 @@ ENDC
     ld   h, [hl]                                  ; $4AC8: $66
     ld   l, a                                     ; $4AC9: $6F
     push hl                                       ; $4ACA: $E5
-    ld   de, wName - wBButtonSlot                 ; $4ACB: $11 $4F $00
+    ld   de, wName - wInventoryItems.BButtonSlot  ; $4ACB: $11 $4F $00
     add  hl, de                                   ; $4ACE: $19
     push hl                                       ; $4ACF: $E5
     ld   a, [wSaveSlot]                           ; $4AD0: $FA $A6 $DB
@@ -689,7 +689,7 @@ ENDC
     pop  bc                                       ; $4B02: $C1
     ld   e, NAME_LENGTH                           ; $4B03: $1E $05
 .loop
-    call EnableExternalRAMWriting                 ; $4B05: $CD $D0 $27
+    call EnableSRAM                               ; $4B05: $CD $D0 $27
     ld   a, [hli]                                 ; $4B08: $2A
     ld   [bc], a                                  ; $4B09: $02
     inc  bc                                       ; $4B0A: $03
@@ -698,16 +698,16 @@ ENDC
 
     pop  hl                                       ; $4B0E: $E1
     push hl                                       ; $4B0F: $E5
-    ld   de, wHealth - wBButtonSlot               ; $4B10: $11 $5A $00
+    ld   de, wHealth - wInventoryItems.BButtonSlot ; $4B10: $11 $5A $00
     add  hl, de                                   ; $4B13: $19
     ld   [hl], $18  ; write new save current health ; $4B14: $36 $18
     pop  hl                                       ; $4B16: $E1
     push hl                                       ; $4B17: $E5
-    ld   de, wMaxHealth - wBButtonSlot            ; $4B18: $11 $5B $00
+    ld   de, wMaxHearts - wInventoryItems.BButtonSlot ; $4B18: $11 $5B $00
     add  hl, de                                   ; $4B1B: $19
     ld   [hl], $03  ; write new save max health   ; $4B1C: $36 $03
     pop  hl                                       ; $4B1E: $E1
-    ld   de, wDeathCount - wBButtonSlot           ; $4B1F: $11 $57 $00
+    ld   de, wDeathCount - wInventoryItems.BButtonSlot ; $4B1F: $11 $57 $00
     add  hl, de                                   ; $4B22: $19
     xor  a                                        ; $4B23: $AF
     ldi  [hl], a                                  ; $4B24: $22
@@ -787,10 +787,10 @@ jr_001_4C1F::
     jr   jr_001_4C63                              ; $4C1F: $18 $42
 
 jr_001_4C21::
-    call func_001_6BAE                            ; $4C21: $CD $AE $6B
+    call MoveSelect.playMoveSelectionJingle       ; $4C21: $CD $AE $6B
     bit  1, a                                     ; $4C24: $CB $4F
     jr   nz, .jr_4C34                             ; $4C26: $20 $0C
-    ld   a, [wDBA9]                               ; $4C28: $FA $A9 $DB
+    ld   a, [wNameEntryCurrentChar]               ; $4C28: $FA $A9 $DB
     add  a, $01                                   ; $4C2B: $C6 $01
     cp   NameEntryCharacterTableSize              ; $4C2D: $FE $40
     jr   c, jr_001_4C5E                           ; $4C2F: $38 $2D
@@ -798,7 +798,7 @@ jr_001_4C21::
     jr   jr_001_4C5E                              ; $4C32: $18 $2A
 
 .jr_4C34::
-    ld   a, [wDBA9]                               ; $4C34: $FA $A9 $DB
+    ld   a, [wNameEntryCurrentChar]               ; $4C34: $FA $A9 $DB
     sub  a, $01                                   ; $4C37: $D6 $01
     cp   $FF                                      ; $4C39: $FE $FF
     jr   nz, jr_001_4C5E                          ; $4C3B: $20 $21
@@ -806,34 +806,34 @@ jr_001_4C21::
     jr   jr_001_4C5E                              ; $4C3F: $18 $1D
 
 jr_001_4C41::
-    call func_001_6BAE                            ; $4C41: $CD $AE $6B
+    call MoveSelect.playMoveSelectionJingle       ; $4C41: $CD $AE $6B
     bit  2, a                                     ; $4C44: $CB $57
     jr   z, .jr_4C53                              ; $4C46: $28 $0B
-    ld   a, [wDBA9]                               ; $4C48: $FA $A9 $DB
+    ld   a, [wNameEntryCurrentChar]               ; $4C48: $FA $A9 $DB
     sub  a, $10                                   ; $4C4B: $D6 $10
     jr   nc, jr_001_4C5E                          ; $4C4D: $30 $0F
     add  a, NameEntryCharacterTableSize           ; $4C4F: $C6 $40
     jr   jr_001_4C5E                              ; $4C51: $18 $0B
 
 .jr_4C53::
-    ld   a, [wDBA9]                               ; $4C53: $FA $A9 $DB
+    ld   a, [wNameEntryCurrentChar]               ; $4C53: $FA $A9 $DB
     add  a, $10                                   ; $4C56: $C6 $10
     cp   NameEntryCharacterTableSize              ; $4C58: $FE $40
     jr   c, jr_001_4C5E                           ; $4C5A: $38 $02
     sub  a, NameEntryCharacterTableSize           ; $4C5C: $D6 $40
 
 jr_001_4C5E::
-    ld   [wDBA9], a                               ; $4C5E: $EA $A9 $DB
+    ld   [wNameEntryCurrentChar], a               ; $4C5E: $EA $A9 $DB
     jr   jr_001_4C63                              ; $4C61: $18 $00
 
 jr_001_4C63::
-    ld   a, [wDBA9]                               ; $4C63: $FA $A9 $DB
+    ld   a, [wNameEntryCurrentChar]               ; $4C63: $FA $A9 $DB
     ld   hl, Data_001_4B70                        ; $4C66: $21 $70 $4B
     ld   c, a                                     ; $4C69: $4F
     ld   b, $00                                   ; $4C6A: $06 $00
     add  hl, bc                                   ; $4C6C: $09
     ld   e, [hl]                                  ; $4C6D: $5E
-    ld   a, [wDBA9]                               ; $4C6E: $FA $A9 $DB
+    ld   a, [wNameEntryCurrentChar]               ; $4C6E: $FA $A9 $DB
     ld   hl, Data_001_4B30                        ; $4C71: $21 $30 $4B
     ld   c, a                                     ; $4C74: $4F
     ld   b, $00                                   ; $4C75: $06 $00
@@ -852,17 +852,17 @@ jr_001_4C63::
     ld   [hl], a                                  ; $4C88: $77
     ret                                           ; $4C89: $C9
 
-func_001_4C8A::                            ; "Enter Name" screen
-    ldh  a, [hJoypadState]              ; Check inputs... ; $4C8A: $F0 $CC
-    and  J_A | J_B                      ; Was A or B pushed? ; $4C8C: $E6 $30
-    jr   z, jr_001_4CB7                  ; If no, bail ; $4C8E: $28 $27
-    bit  5, a                           ; Was B pushed? ; $4C90: $CB $6F
-    jr   nz, .jr_4CA7                 ; If yes, backspace ; $4C92: $20 $13
-    call PlayValidationJingle           ; Otherwise, A was pushed ; $4C94: $CD $BE $49
-    call func_001_4CDA                     ; so add the current letter ; $4C97: $CD $DA $4C
-    ld   a, [wDBAA]                               ; $4C9A: $FA $AA $DB
+func_001_4C8A:: ; "Enter Name" screen
+    ldh  a, [hJoypadState] ; Check inputs...      ; $4C8A: $F0 $CC
+    and  J_A | J_B ; Was A or B pushed?           ; $4C8C: $E6 $30
+    jr   z, jr_001_4CB7 ; If no, bail             ; $4C8E: $28 $27
+    bit  J_BIT_B, a ; Was B pushed?               ; $4C90: $CB $6F
+    jr   nz, .jr_4CA7 ; If yes, backspace         ; $4C92: $20 $13
+    call PlayValidationJingle ; Otherwise, A was pushed ; $4C94: $CD $BE $49
+    call func_001_4CDA ; so add the current letter ; $4C97: $CD $DA $4C
+    ld   a, [wSaveSlotNameCharIndex]              ; $4C9A: $FA $AA $DB
     add  a, $01                                   ; $4C9D: $C6 $01
-    cp   $05                            ; Prevent cursor from going > 5th place ; $4C9F: $FE $05
+    cp   NAME_LENGTH ; Prevent cursor from going > 5th place ; $4C9F: $FE $05
     jr   c, jr_001_4CB4                           ; $4CA1: $38 $11
     ld   a, $04                                   ; $4CA3: $3E $04
     jr   jr_001_4CB4                              ; $4CA5: $18 $0D
@@ -870,17 +870,17 @@ func_001_4C8A::                            ; "Enter Name" screen
 .jr_4CA7::
     ; B button when inputting filename
     call PlayValidationJingle                     ; $4CA7: $CD $BE $49
-    ld   a, [wDBAA]                               ; $4CAA: $FA $AA $DB
+    ld   a, [wSaveSlotNameCharIndex]              ; $4CAA: $FA $AA $DB
     sub  a, $01                                   ; $4CAD: $D6 $01
     cp   $FF                                      ; $4CAF: $FE $FF
     jr   nz, jr_001_4CB4                          ; $4CB1: $20 $01
-    xor  a                              ; Prevent cursor from going < 1st place ; $4CB3: $AF
+    xor  a ; Prevent cursor from going < 1st place ; $4CB3: $AF
 
 jr_001_4CB4::
-    ld   [wDBAA], a                               ; $4CB4: $EA $AA $DB
+    ld   [wSaveSlotNameCharIndex], a              ; $4CB4: $EA $AA $DB
 
 jr_001_4CB7::
-    ld   a, [wDBAA]                               ; $4CB7: $FA $AA $DB
+    ld   a, [wSaveSlotNameCharIndex]              ; $4CB7: $FA $AA $DB
     ld   hl, Data_001_4BB0                        ; $4CBA: $21 $B0 $4B
     ld   c, a                                     ; $4CBD: $4F
     ld   b, $00                                   ; $4CBE: $06 $00
@@ -905,7 +905,7 @@ jr_001_4CB7::
     ret                                           ; $4CD9: $C9
 
 func_001_4CDA::
-    ld   a, [wDBA9]                               ; $4CDA: $FA $A9 $DB
+    ld   a, [wNameEntryCurrentChar]               ; $4CDA: $FA $A9 $DB
     ld   c, a                                     ; $4CDD: $4F
     ld   b, $00                                   ; $4CDE: $06 $00
     ld   hl, NameEntryCharacterTable              ; $4CE0: $21 $B5 $4B
@@ -920,7 +920,7 @@ func_001_4CDA::
     ld   c, a                                     ; $4CEF: $4F
     ld   hl, wSaveSlot1Name                       ; $4CF0: $21 $80 $DB
     add  hl, bc                                   ; $4CF3: $09
-    ld   a, [wDBAA]                               ; $4CF4: $FA $AA $DB
+    ld   a, [wSaveSlotNameCharIndex]              ; $4CF4: $FA $AA $DB
     ld   c, a                                     ; $4CF7: $4F
     add  hl, bc                                   ; $4CF8: $09
     ld   [hl], e                                  ; $4CF9: $73
@@ -936,9 +936,9 @@ func_001_4CDA::
 
 
 FileDeletionEntryPoint::
-    call func_5DC0                                ; $4CFB: $CD $C0 $5D ; $4CFB: $CD $C0 $5D
-    ld   a, [wGameplaySubtype]                    ; $4CFE: $FA $96 $DB ; $4CFE: $FA $96 $DB
-    JP_TABLE                                      ; $4D01 ; $4D01: $C7
+    call func_5DC0                                ; $4CFB: $CD $C0 $5D
+    ld   a, [wGameplaySubtype]                    ; $4CFE: $FA $96 $DB
+    JP_TABLE                                      ; $4D01: $C7
 ._00 dw FileDeletionState0Handler                 ; $4D02
 ._01 dw FileDeletionState1Handler                 ; $4D04
 ._02 dw FileDeletionState2Handler                 ; $4D06
@@ -1007,132 +1007,136 @@ FileDeletionState3Handler::
     jp   IncrementGameplaySubtypeAndReturn        ; $4D6A: $C3 $D6 $44 ; $4D6A: $C3 $D6 $44
 
 FileDeletionState4Handler::
-    call func_001_4D8B                            ; $4D6D: $CD $8B $4D ; $4D6D: $CD $8B $4D
-    call func_001_4D94                            ; $4D70: $CD $94 $4D ; $4D70: $CD $94 $4D
-    call func_001_4D9D                            ; $4D73: $CD $9D $4D ; $4D73: $CD $9D $4D
+    call DrawSaveSlot1Name                        ; $4D6D: $CD $8B $4D ; $4D6D: $CD $8B $4D
+    call DrawSaveSlot2Name                        ; $4D70: $CD $94 $4D ; $4D70: $CD $94 $4D
+    call DrawSaveSlot3Name                        ; $4D73: $CD $9D $4D ; $4D73: $CD $9D $4D
     jp   IncrementGameplaySubtypeAndReturn        ; $4D76: $C3 $D6 $44 ; $4D76: $C3 $D6 $44
 
 FileDeletionState5Handler::
-    call func_001_4DA6                            ; $4D79: $CD $A6 $4D ; $4D79: $CD $A6 $4D
-    call func_001_4DBE                            ; $4D7C: $CD $BE $4D ; $4D7C: $CD $BE $4D
+    call DrawSaveSlot1MaxHearts                   ; $4D79: $CD $A6 $4D
+    call DrawSaveSlot2MaxHearts                   ; $4D7C: $CD $BE $4D ; $4D7C: $CD $BE $4D
     jp   IncrementGameplaySubtypeAndReturn        ; $4D7F: $C3 $D6 $44 ; $4D7F: $C3 $D6 $44
 
 FileDeletionState6Handler::
-    call func_001_4DD6                            ; $4D82: $CD $D6 $4D ; $4D82: $CD $D6 $4D
+    call DrawSaveSlot3MaxHearts                   ; $4D82: $CD $D6 $4D ; $4D82: $CD $D6 $4D
     jp   IncrementGameplaySubtypeAndReturn        ; $4D85: $C3 $D6 $44 ; $4D85: $C3 $D6 $44
 
 FileDeletionState7Handler::
     jp   CopyDeathCountsToBG                      ; $4D88: $C3 $0C $48 ; $4D88: $C3 $0C $48
 
-func_001_4D8B::
+DrawSaveSlot1Name::
     ld   bc, $98C5                                ; $4D8B: $01 $C5 $98 ; $4D8B: $01 $C5 $98
     ld   de, wSaveSlot1Name                       ; $4D8E: $11 $80 $DB ; $4D8E: $11 $80 $DB
     jp   DrawSaveSlotName                         ; $4D91: $C3 $52 $48 ; $4D91: $C3 $52 $48
 
-func_001_4D94::
+DrawSaveSlot2Name::
     ld   bc, $9925                                ; $4D94: $01 $25 $99 ; $4D94: $01 $25 $99
     ld   de, wSaveSlot2Name                       ; $4D97: $11 $85 $DB ; $4D97: $11 $85 $DB
     jp   DrawSaveSlotName                         ; $4D9A: $C3 $52 $48 ; $4D9A: $C3 $52 $48
 
-func_001_4D9D::
+DrawSaveSlot3Name::
     ld   bc, $9985                                ; $4D9D: $01 $85 $99 ; $4D9D: $01 $85 $99
     ld   de, wSaveSlot3Name                       ; $4DA0: $11 $8A $DB ; $4DA0: $11 $8A $DB
     jp   DrawSaveSlotName                         ; $4DA3: $C3 $52 $48 ; $4DA3: $C3 $52 $48
 
-func_001_4DA6::
+DrawSaveSlot1MaxHearts::
     ld   a, [wSaveFilesCount]                     ; $4DA6: $FA $A7 $DB ; $4DA6: $FA $A7 $DB
     and  $01                                      ; $4DA9: $E6 $01 ; $4DA9: $E6 $01
-IF __PATCH_4__
+
+; If the __RECALCULATE_MAX_HEARTS__ patch is enabled, also clamp
+; the maximum number of hearts before drawing:
+IF __RECALCULATE_MAX_HEARTS__
     ret  z
     xor  a
     ld   hl, wFile1Health
-    ld   de, wFile1MaxHealth
-    ; fallthrough
-ELSE
-    jr   z, ret_001_4DBD                          ; $4DAB: $28 $10 ; $4DAB: $28 $10
+    ld   de, wFile1MaxHearts
 
-    xor  a                                        ; $4DAD: $AF ; $4DAD: $AF
-    ldh  [hMultiPurpose4], a                      ; $4DAE: $E0 $DB ; $4DAE: $E0 $DB
-    ld   a, [wFile1Health]                        ; $4DB0: $FA $06 $DC ; $4DB0: $FA $06 $DC
-    ldh  [hMultiPurpose2], a                      ; $4DB3: $E0 $D9 ; $4DB3: $E0 $D9
-    ld   a, [wFile1MaxHealth]                     ; $4DB5: $FA $09 $DC ; $4DB5: $FA $09 $DC
-    ldh  [hMultiPurpose3], a                      ; $4DB8: $E0 $DA ; $4DB8: $E0 $DA
-    jp   label_001_5D53                           ; $4DBA: $C3 $53 $5D ; $4DBA: $C3 $53 $5D
-ENDC
-
-IF __PATCH_4__
-jr_001_4db6:
+.clamp:
     ldh [hMultiPurpose4], a
     ld a, [hl]
     ldh [hMultiPurpose2], a
     ld a, [de]
-    cp $03
-    jr nc, jr_001_4dc2
-    ld a, $03
+    cp MIN_HEARTS
+    jr nc, .max
+    ld a, MIN_HEARTS
+.max:
+    cp MAX_HEARTS
+    jr c, .prepareDrawCommand
 
-jr_001_4dc2:
-    cp $0e
-    jr c, jr_001_4dc8
+    ld a, MAX_HEARTS
 
-    ld a, $0e
-
-jr_001_4dc8:
+.prepareDrawCommand:
     ld [de], a
     ldh [hMultiPurpose3], a
     swap a
     srl a
     cp [hl]
-    jp nc, label_001_5D53
+    jp nc, BuildSaveSlotHeartsDrawCommand
 
     ld [hl], a
     ldh [hMultiPurpose2], a
-    jp label_001_5D53
-
+    jp BuildSaveSlotHeartsDrawCommand
 ELSE
-ret_001_4DBD::
+    jr   z, .return                               ; $4DAB: $28 $10
+
+    xor  a                                        ; $4DAD: $AF
+    ldh  [hMultiPurpose4], a                      ; $4DAE: $E0 $DB
+    ld   a, [wFile1Health]                        ; $4DB0: $FA $06 $DC
+    ldh  [hMultiPurpose2], a                      ; $4DB3: $E0 $D9
+    ld   a, [wFile1MaxHearts]                     ; $4DB5: $FA $09 $DC
+    ldh  [hMultiPurpose3], a                      ; $4DB8: $E0 $DA
+    jp   BuildSaveSlotHeartsDrawCommand           ; $4DBA: $C3 $53 $5D
+
+.return::
     ret                                           ; $4DBD: $C9 ; $4DBD: $C9
 ENDC
 
-func_001_4DBE::
+DrawSaveSlot2MaxHearts::
     ld   a, [wSaveFilesCount]                     ; $4DBE: $FA $A7 $DB ; $4DBE: $FA $A7 $DB
     and  $02                                      ; $4DC1: $E6 $02 ; $4DC1: $E6 $02
-IF __PATCH_4__
+; If the __RECALCULATE_MAX_HEARTS__ patch is enabled, also clamp
+; the maximum number of hearts before drawing (jumps into
+; DrawSaveSlot1MaxHearts to avoid code duplication):
+IF __RECALCULATE_MAX_HEARTS__
     ret  z
     ld   a, $01
     ld   hl, wFile2Health
-    ld   de, wFile2MaxHealth
-    jr   jr_001_4db6
+    ld   de, wFile2MaxHearts
+    jr   DrawSaveSlot1MaxHearts.clamp
 ELSE
-    jr   z, ret_001_4DBD                          ; $4DC3: $28 $F8 ; $4DC3: $28 $F8
+    jr   z, DrawSaveSlot1MaxHearts.return         ; $4DC3: $28 $F8
 
     ld   a, $01                                   ; $4DC5: $3E $01 ; $4DC5: $3E $01
     ldh  [hMultiPurpose4], a                      ; $4DC7: $E0 $DB ; $4DC7: $E0 $DB
     ld   a, [wFile2Health]                        ; $4DC9: $FA $07 $DC ; $4DC9: $FA $07 $DC
     ldh  [hMultiPurpose2], a                      ; $4DCC: $E0 $D9 ; $4DCC: $E0 $D9
-    ld   a, [wFile2MaxHealth]                     ; $4DCE: $FA $0A $DC ; $4DCE: $FA $0A $DC
+    ld   a, [wFile2MaxHearts]                     ; $4DCE: $FA $0A $DC ; $4DCE: $FA $0A $DC
     ldh  [hMultiPurpose3], a                      ; $4DD1: $E0 $DA ; $4DD1: $E0 $DA
-    jp   label_001_5D53                           ; $4DD3: $C3 $53 $5D ; $4DD3: $C3 $53 $5D
+    jp   BuildSaveSlotHeartsDrawCommand           ; $4DD3: $C3 $53 $5D ; $4DD3: $C3 $53 $5D
 ENDC
 
-func_001_4DD6::
+DrawSaveSlot3MaxHearts::
     ld   a, [wSaveFilesCount]                     ; $4DD6: $FA $A7 $DB ; $4DD6: $FA $A7 $DB
     and  $04                                      ; $4DD9: $E6 $04 ; $4DD9: $E6 $04
-IF __PATCH_4__
+; If the __RECALCULATE_MAX_HEARTS__ patch is enabled, also clamp
+; the maximum number of hearts before drawing (jumps into
+; DrawSaveSlot1MaxHearts to avoid code duplication):
+IF __RECALCULATE_MAX_HEARTS__
     ret  z
     ld   a, $02
     ld   hl, wFile3Health
-    ld   de, wFile3MaxHealth
-    jr   jr_001_4db6
+    ld   de, wFile3MaxHearts
+    jr   DrawSaveSlot1MaxHearts.clamp
 ELSE
-    jr   z, ret_001_4DBD                          ; $4DDB: $28 $E0 ; $4DDB: $28 $E0
+    jr   z, DrawSaveSlot1MaxHearts.return         ; $4DDB: $28 $E0
 
     ld   a, $02                                   ; $4DDD: $3E $02 ; $4DDD: $3E $02
     ldh  [hMultiPurpose4], a                      ; $4DDF: $E0 $DB ; $4DDF: $E0 $DB
     ld   a, [wFile3Health]                        ; $4DE1: $FA $08 $DC ; $4DE1: $FA $08 $DC
     ldh  [hMultiPurpose2], a                      ; $4DE4: $E0 $D9 ; $4DE4: $E0 $D9
-    ld   a, [wFile3MaxHealth]                     ; $4DE6: $FA $0B $DC ; $4DE6: $FA $0B $DC
+    ld   a, [wFile3MaxHearts]                     ; $4DE6: $FA $0B $DC ; $4DE6: $FA $0B $DC
     ldh  [hMultiPurpose3], a                      ; $4DE9: $E0 $DA ; $4DE9: $E0 $DA
-    jp   label_001_5D53                           ; $4DEB: $C3 $53 $5D ; $4DEB: $C3 $53 $5D
+    jp   BuildSaveSlotHeartsDrawCommand           ; $4DEB: $C3 $53 $5D ; $4DEB: $C3 $53 $5D
 ENDC
 
 Data_001_4DEE::
@@ -1141,7 +1145,7 @@ Data_001_4DEE::
     db   $99, $65, $44, $7E, $99, $85, $44, $7E   ; $4DFE ; $4DFE
 
 FileDeletionState10Handler::
-    call func_001_6BA8                            ; $4E06: $CD $A8 $6B ; $4E06: $CD $A8 $6B
+    call MoveSelect                               ; $4E06: $CD $A8 $6B
     ldh  a, [hJoypadState]                        ; $4E09: $F0 $CC ; $4E09: $F0 $CC
     and  J_DOWN                                   ; $4E0B: $E6 $08 ; $4E0B: $E6 $08
     jr   z, .jr_4E18                              ; $4E0D: $28 $09 ; $4E0D: $28 $09
@@ -1196,10 +1200,10 @@ CopyQuitOkTilemap::
     ld [hl+], a
     ld a, $3D
 
-    ld [hl+], a                                   ; $4eb9: $22
-    xor a                                         ; $4eba: $af
-    ld [hl], a                                    ; $4ebb: $77
-    ret                                           ; $4ebc: $c9
+    ld [hl+], a                                   ; $4EB9: $22
+    xor a                                         ; $4EBA: $AF
+    ld [hl], a                                    ; $4EBB: $77
+    ret                                           ; $4EBC: $C9
 ELSE
     jr   CopyQuitOkTilemap                        ; $4E41: $18 $12 ; $4E41: $18 $12
 
@@ -1218,16 +1222,16 @@ ELSE
 ENDC
 
 .loop
-    ld   a, [de]                                  ; $4E5D: $1A ; $4E5D: $1A
-    inc  de                                       ; $4E5E: $13 ; $4E5E: $13
-    ld   [hl+], a                                 ; $4E5F: $22 ; $4E5F: $22
-    dec  c                                        ; $4E60: $0D ; $4E60: $0D
+    ld   a, [de]                                  ; $4E5D: $1A
+    inc  de                                       ; $4E5E: $13
+    ld   [hl+], a                                 ; $4E5F: $22
+    dec  c                                        ; $4E60: $0D
 IF LANG_EN
-    ld   a, c                                     ; $4E61: $79 ; $4E61: $79
-    cp   -1                                       ; $4E62: $FE $FF ; $4E62: $FE $FF
+    ld   a, c                                     ; $4E61: $79
+    cp   -1                                       ; $4E62: $FE $FF
 ENDC
-    jr   nz, .loop                                ; $4E64: $20 $F7 ; $4E64: $20 $F7
-    ret                                           ; $4E66: $C9 ; $4E66: $C9
+    jr   nz, .loop                                ; $4E64: $20 $F7
+    ret                                           ; $4E66: $C9
 ENDC
 
 jr_001_4E67::
@@ -1255,7 +1259,7 @@ ENDC
     sla  a                                        ; $4E82: $CB $27 ; $4E82: $CB $27
     ld   e, a                                     ; $4E84: $5F ; $4E84: $5F
     ld   d, $00                                   ; $4E85: $16 $00 ; $4E85: $16 $00
-    ld   hl, Data_001_49F8                        ; $4E87: $21 $F8 $49 ; $4E87: $21 $F8 $49
+    ld   hl, SaveGameTable                        ; $4E87: $21 $F8 $49 ; $4E87: $21 $F8 $49
     add  hl, de                                   ; $4E8A: $19 ; $4E8A: $19
     ld   a, [hl+]                                 ; $4E8B: $2A ; $4E8B: $2A
     ld   h, [hl]                                  ; $4E8C: $66 ; $4E8C: $66
@@ -1263,7 +1267,7 @@ ENDC
     ld   de, SaveGame1.end - SaveGame1.main       ; $4E8E: $11 $A8 $03 ; $4E8E: $11 $A8 $03
 
 .loop_4E91:: ; Clear the save
-    call EnableExternalRAMWriting                 ; $4E91: $CD $D0 $27 ; $4E91: $CD $D0 $27
+    call EnableSRAM                               ; $4E91: $CD $D0 $27 ; $4E91: $CD $D0 $27
     xor  a                                        ; $4E94: $AF ; $4E94: $AF
     ld   [hl+], a                                 ; $4E95: $22 ; $4E95: $22
     dec  de                                       ; $4E96: $1B ; $4E96: $1B
@@ -1282,24 +1286,24 @@ jr_001_4E9E::
 
 IF LANG_JP
 CopyReturnToMenuTilemap::
-    ld   a, [wDrawCommandsSize]                     ; $4eff: $fa $00 $d6
-    ld   e, a                                       ; $4f02: $5f
-    add  $04                                        ; $4f03: $c6 $04
-    ld   [wDrawCommandsSize], a                     ; $4f05: $ea $00 $d6
-    ld   d, $00                                     ; $4f08: $16 $00
-    ld   hl, wDrawCommand                           ; $4f0a: $21 $01 $d6
-    add  hl, de                                     ; $4f0d: $19
-    ld   a, HIGH(vBGMap0 + $1EE)                    ; $4f0e: $3e $99
-    ld   [hl+], a                                   ; $4f10: $22
-    ld   a, LOW(vBGMap0 + $1EE)                     ; $4f11: $3e $ee
-    ld   [hl+], a                                   ; $4f13: $22
-    ld   a, $42                                     ; $4f14: $3e $42
-    ld   [hl+], a                                   ; $4f16: $22
-    ld   a, $7e                                     ; $4f17: $3e $7e
-    ld   [hl+], a                                   ; $4f19: $22
-    xor  a                                          ; $4f1a: $af
-    ld   [hl], a                                    ; $4f1b: $77
-    ret                                             ; $4f1c: $c9
+    ld   a, [wDrawCommandsSize]                   ; $4EFF: $FA $00 $D6
+    ld   e, a                                     ; $4F02: $5F
+    add  $04                                      ; $4F03: $C6 $04
+    ld   [wDrawCommandsSize], a                   ; $4F05: $EA $00 $D6
+    ld   d, $00                                   ; $4F08: $16 $00
+    ld   hl, wDrawCommand                         ; $4F0A: $21 $01 $D6
+    add  hl, de                                   ; $4F0D: $19
+    ld   a, HIGH(vBGMap0 + $1EE)                  ; $4F0E: $3E $99
+    ld   [hl+], a                                 ; $4F10: $22
+    ld   a, LOW(vBGMap0 + $1EE)                   ; $4F11: $3E $EE
+    ld   [hl+], a                                 ; $4F13: $22
+    ld   a, $42                                   ; $4F14: $3E $42
+    ld   [hl+], a                                 ; $4F16: $22
+    ld   a, $7E                                   ; $4F17: $3E $7E
+    ld   [hl+], a                                 ; $4F19: $22
+    xor  a                                        ; $4F1A: $AF
+    ld   [hl], a                                  ; $4F1B: $77
+    ret                                           ; $4F1C: $C9
 ELSE
 
 ; Tilemap for the "RETURN TO MENU" text, formatted as wDrawCommand data
@@ -1361,9 +1365,9 @@ jr_001_4ED9::
 func_001_4EE5::
     ld   a, [wSaveSlot]                           ; $4EE5: $FA $A6 $DB ; $4EE5: $FA $A6 $DB
     JP_TABLE                                      ; $4EE8 ; $4EE8: $C7
-._00 dw func_001_4D8B                                ; $4EE9 ; $4EE9
-._01 dw func_001_4D94                                ; $4EEB ; $4EEB
-._02 dw func_001_4D9D                                ; $4EED ; $4EED
+._00 dw DrawSaveSlot1Name                                ; $4EE9 ; $4EE9
+._01 dw DrawSaveSlot2Name                                ; $4EEB ; $4EEB
+._02 dw DrawSaveSlot3Name                                ; $4EED ; $4EED
 
 jr_001_4EEF::
     ld   a, [wSaveSlot]                           ; $4EEF: $FA $A6 $DB ; $4EEF: $FA $A6 $DB
@@ -1394,7 +1398,7 @@ func_001_4F0C::
     and  J_RIGHT | J_LEFT                         ; $4F0E: $E6 $03 ; $4F0E: $E6 $03
     jr   z, .jr_4F1D                              ; $4F10: $28 $0B ; $4F10: $28 $0B
 
-    call func_001_6BAE                            ; $4F12: $CD $AE $6B ; $4F12: $CD $AE $6B
+    call MoveSelect.playMoveSelectionJingle       ; $4F12: $CD $AE $6B
     ld   a, [wCreditsScratch0]                    ; $4F15: $FA $00 $D0 ; $4F15: $FA $00 $D0
     xor  $01                                      ; $4F18: $EE $01 ; $4F18: $EE $01
     ld   [wCreditsScratch0], a                    ; $4F1A: $EA $00 $D0 ; $4F1A: $EA $00 $D0
@@ -1552,7 +1556,7 @@ FileCopyState5Handler::
     jp   IncrementGameplaySubtypeAndReturn        ; $4FFC: $C3 $D6 $44 ; $4FFC: $C3 $D6 $44
 
 FileCopyState8Handler::
-    call func_001_6BA8                            ; $4FFF: $CD $A8 $6B ; $4FFF: $CD $A8 $6B
+    call MoveSelect                               ; $4FFF: $CD $A8 $6B ; $4FFF: $CD $A8 $6B
     ldh  a, [hJoypadState]                        ; $5002: $F0 $CC ; $5002: $F0 $CC
     and  J_DOWN                                   ; $5004: $E6 $08 ; $5004: $E6 $08
     jr   z, .jr_500E                              ; $5006: $28 $06 ; $5006: $28 $06
@@ -1600,6 +1604,10 @@ jr_001_501D::
 jr_001_5042::
     xor  a                                        ; $5042: $AF ; $5042: $AF
 IF __PATCH_4__
+    ; This patch changes ADD to OR, presumably just for clarity
+    ; (the two opcodes use the same number of cycles, and differ
+    ; only in that ADD sets the H and C flags, but those aren't
+    ; used after this point anyway)
     or   [hl]
     inc  hl
     or   [hl]
@@ -1705,7 +1713,7 @@ Data_001_50C7::
     db   $99, $6D, $44, $7E, $99, $8D, $44, $7E   ; $50D7 ; $50D7
 
 FileCopyState9Handler::
-    call func_001_6BA8                            ; $50DF: $CD $A8 $6B ; $50DF: $CD $A8 $6B
+    call MoveSelect                               ; $50DF: $CD $A8 $6B
     ldh  a, [hJoypadState]                        ; $50E2: $F0 $CC ; $50E2: $F0 $CC
     and  J_DOWN                                   ; $50E4: $E6 $08 ; $50E4: $E6 $08
     jr   z, .jr_50F1                              ; $50E6: $28 $09 ; $50E6: $28 $09
@@ -1922,10 +1930,10 @@ FileCopyStateAHandler::
     ld   de, (SaveGame2 - SaveGame1)              ; $5221: $11 $AD $03 ; $5221: $11 $AD $03
 
 .loop_5224
-    call EnableExternalRAMWriting                 ; $5224: $CD $D0 $27 ; $5224: $CD $D0 $27
+    call EnableSRAM                               ; $5224: $CD $D0 $27 ; $5224: $CD $D0 $27
     ld   a, [bc]                                  ; $5227: $0A ; $5227: $0A
     inc  bc                                       ; $5228: $03 ; $5228: $03
-    call EnableExternalRAMWriting                 ; $5229: $CD $D0 $27 ; $5229: $CD $D0 $27
+    call EnableSRAM                               ; $5229: $CD $D0 $27 ; $5229: $CD $D0 $27
     ld   [hl+], a                                 ; $522C: $22 ; $522C: $22
     dec  de                                       ; $522D: $1B ; $522D: $1B
     ld   a, e                                     ; $522E: $7B ; $522E: $7B

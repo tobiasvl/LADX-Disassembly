@@ -180,7 +180,7 @@ include "code/entities/15_urchin.asm"
 Data_015_7436::
     db   $30, $D0
 
-Entity68Handler::
+HookshotBridgeHandler::
     call ReturnIfNonInteractive_15                ; $7438: $CD $0D $7B
     ld   hl, wEntitiesDirectionTable              ; $743B: $21 $80 $C3
     add  hl, bc                                   ; $743E: $09
@@ -339,7 +339,7 @@ func_015_795D::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $795D: $21 $40 $C3
     add  hl, bc                                   ; $7960: $09
     ld   a, [hl]                                  ; $7961: $7E
-    and  $0F                                      ; $7962: $E6 $0F
+    and  ~ENTITY_PHYSICS_MASK                     ; $7962: $E6 $0F
 
 ; Increment wOAMNextAvailableSlot by `a * 4` tiles
 ; (plus special conditions)
@@ -411,7 +411,7 @@ func_015_7995::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $79B4: $21 $40 $C3
     add  hl, bc                                   ; $79B7: $09
     ld   a, [hl]                                  ; $79B8: $7E
-    and  $10                                      ; $79B9: $E6 $10
+    and  ENTITY_PHYSICS_SHADOW                    ; $79B9: $E6 $10
     ret  z                                        ; $79BB: $C8
 
     ldh  a, [hFrameCounter]                       ; $79BC: $F0 $E7
@@ -552,7 +552,7 @@ label_015_7A27:
 ;
 ; ----------------------------------------------------------------------
 
-func_015_7A6E::
+PushLinkOutOfEntity_15::
     call CheckLinkCollisionWithEnemy_trampoline   ; $7A6E: $CD $5A $3B
     jr   nc, jr_015_7A9A                          ; $7A71: $30 $27
 
@@ -645,8 +645,8 @@ ShouldLinkTalkToEntity_15::
     pop  de                                       ; $7ADF: $D1
     jr   nz, .jr_7B0B                             ; $7AE0: $20 $29
 
-    ld   hl, wC1AD                                ; $7AE2: $21 $AD $C1
-    ld   [hl], $01                                ; $7AE5: $36 $01
+    ld   hl, wItemUsageContext                    ; $7AE2: $21 $AD $C1
+    ld   [hl], ITEM_USAGE_NEAR_NPC                ; $7AE5: $36 $01
     ld   a, [wDialogState]                        ; $7AE7: $FA $9F $C1
     ld   hl, wInventoryAppearing                  ; $7AEA: $21 $4F $C1
     or   [hl]                                     ; $7AED: $B6
@@ -1021,7 +1021,7 @@ label_015_7C91:
     ldh  [hMultiPurpose1], a                      ; $7C9A: $E0 $D8
     ld   a, TRANSCIENT_VFX_POOF                   ; $7C9C: $3E $02
     call AddTranscientVfx                         ; $7C9E: $CD $C7 $0C
-    ld   a, $13                                   ; $7CA1: $3E $13
+    ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $7CA1: $3E $13
     ldh  [hNoiseSfx], a                           ; $7CA3: $E0 $F4
     ret                                           ; $7CA5: $C9
 
@@ -1055,7 +1055,7 @@ label_015_7C91:
 jr_015_7CD2:
     call ClearEntityStatus_15                     ; $7CD2: $CD $31 $7C
     ld   hl, hNoiseSfx                            ; $7CD5: $21 $F4 $FF
-    ld   [hl], $1A                                ; $7CD8: $36 $1A
+    ld   [hl], NOISE_SFX_BOSS_EXPLOSION           ; $7CD8: $36 $1A
     ret                                           ; $7CDA: $C9
 
 func_015_7CDB::

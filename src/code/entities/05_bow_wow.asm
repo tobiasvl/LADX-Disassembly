@@ -1,50 +1,50 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 BowWowAtHomeSpriteVariants::
 .variant0
-    db $70, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $70, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $70, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $70, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $72, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $74, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $74, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant3
-    db $78, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $7A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $78, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $7A, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant4
-    db $76, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $74, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $74, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant5
-    db $7A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $78, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7A, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $78, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant6
-    db $7C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $7C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7C, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $7C, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 BowWowFollowingSpriteVariants::
 .variant0
-    db $40, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $40, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $40, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $40, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $42, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $42, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $42, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $42, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $44, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $46, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $44, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $46, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant3
-    db $48, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $4A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $48, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $4A, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant4
-    db $46, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $44, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $46, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $44, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant5
-    db $4A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $48, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $4A, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $48, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant6
-    db $4C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $4C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $4C, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $4C, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 
 BowWowEntityHandler::
     ld   a, c                                     ; $4038: $79
@@ -200,7 +200,7 @@ func_005_40E6::
     jr   z, .jr_4127                              ; $4112: $28 $13
 
     ; Bow-Wow retrieved from King Moblin
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $4114: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $4114: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $4116: $EA $68 $D3
     call_open_dialog Dialog16C                    ; $4119
     ld   a, WAVE_SFX_CHAIN_CHOMP                  ; $411E: $3E $18
@@ -633,7 +633,7 @@ label_005_4335:
     and  a                                        ; $4385: $A7
     ret  nz                                       ; $4386: $C0
 
-    ld   a, JINGLE_BOW_WOW_CHOMP                  ; $4387: $3E $03
+    ld   a, JINGLE_ENEMY_HIT                      ; $4387: $3E $03
     ldh  [hJingle], a                             ; $4389: $E0 $F2
     ld   hl, wEntitiesTypeTable                   ; $438B: $21 $A0 $C3
     add  hl, de                                   ; $438E: $19

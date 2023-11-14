@@ -2,32 +2,32 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 TarinBeekeeperSpriteVariants::
 .variant0
-    db $5A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $58, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5A, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $58, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $5E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $5C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5E, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $5C, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $58, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $5A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $58, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $5A, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant3
-    db $5C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $5E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $5C, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $5E, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant4
-    db $54, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $56, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $54, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $56, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant5
-    db $56, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $54, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $56, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $54, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant6
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $52, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $52, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant7
-    db $52, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $52, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant8
-    db $74, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $74, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_2 | OAMF_PAL0
 
 TarinBeekeeperEntityHandler::
     ld   a, c                                     ; $4EB1: $79
@@ -87,7 +87,7 @@ func_007_4EFF::
     ld   hl, wEntitiesPosYTable                   ; $4F0A: $21 $10 $C2
     add  hl, bc                                   ; $4F0D: $09
     ld   [hl], $58                                ; $4F0E: $36 $58
-    call func_007_7CF0                            ; $4F10: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $4F10: $CD $F0 $7C
     call func_007_7D43                            ; $4F13: $CD $43 $7D
     ret  nc                                       ; $4F16: $D0
 
@@ -95,7 +95,7 @@ func_007_4EFF::
     jp   IncrementEntityState                     ; $4F1C: $C3 $12 $3B
 
 func_007_4F1F::
-    call func_007_7CF0                            ; $4F1F: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $4F1F: $CD $F0 $7C
     ld   a, [wDialogState]                        ; $4F22: $FA $9F $C1
     and  a                                        ; $4F25: $A7
     jr   nz, ret_007_4F4D                         ; $4F26: $20 $25
@@ -107,7 +107,7 @@ func_007_4F1F::
     ld   a, $02                                   ; $4F2E: $3E $02
     ld   [wExchangingTradeSequenceItem], a        ; $4F30: $EA $7F $DB
     ld   hl, wOverworldRoomStatus + $87           ; $4F33: $21 $87 $D8
-    set  6, [hl]                                  ; $4F36: $CB $F6
+    set  OW_ROOM_STATUS_FLAG_UNKNOWN_6, [hl]      ; $4F36: $CB $F6
     call GetEntityTransitionCountdown             ; $4F38: $CD $05 $0C
     ld   [hl], $A0                                ; $4F3B: $36 $A0
     ld   a, JINGLE_TREASURE_FOUND                 ; $4F3D: $3E $01
@@ -125,11 +125,11 @@ ret_007_4F4D:
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown102SpriteVariants::
 .variant0
-    db $78, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $FF, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $78, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $FF, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant1
-    db $7A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $7C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $7A, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $7C, OAM_GBC_PAL_1 | OAMF_PAL0
 
 func_007_4F56::
     ld   a, $01                                   ; $4F56: $3E $01
@@ -166,7 +166,7 @@ func_007_4F56::
     call GetEntityTransitionCountdown             ; $4F91: $CD $05 $0C
     jr   nz, .jr_4FA5                             ; $4F94: $20 $0F
 
-    ld   a, MUSIC_TARIN_BEEHIVE                   ; $4F96: $3E $34
+    ld   a, MUSIC_TARIN_BEES                      ; $4F96: $3E $34
     ld   [wMusicTrackToPlay], a                   ; $4F98: $EA $68 $D3
     ldh  [hDefaultMusicTrack], a                  ; $4F9B: $E0 $B0
     call GetEntityTransitionCountdown             ; $4F9D: $CD $05 $0C

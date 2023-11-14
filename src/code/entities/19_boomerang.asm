@@ -1,17 +1,17 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 BoomerangSpriteVariants:: ; $4451
 .variant0
-    db $38, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
-    db $38, OAM_GBC_PAL_4 | OAM_DMG_PAL_1 | OAM_X_FLIP
+    db $38, OAM_GBC_PAL_4 | OAMF_PAL1
+    db $38, OAM_GBC_PAL_4 | OAMF_PAL1 | OAMF_XFLIP
 .variant1
-    db $A4, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
-    db $FF, OAM_GBC_PAL_7 | OAM_DMG_PAL_1 | OAM_BANK_1 | OAM_Y_FLIP | OAM_X_FLIP | OAM_PRIORITY
+    db $A4, OAM_GBC_PAL_4 | OAMF_PAL1
+    db $FF, OAM_GBC_PAL_7 | OAMF_PAL1 | OAMF_BANK1 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
 .variant2
-    db $38, OAM_GBC_PAL_4 | OAM_DMG_PAL_1 | OAM_Y_FLIP
-    db $38, OAM_GBC_PAL_4 | OAM_DMG_PAL_1 | OAM_Y_FLIP | OAM_X_FLIP
+    db $38, OAM_GBC_PAL_4 | OAMF_PAL1 | OAMF_YFLIP
+    db $38, OAM_GBC_PAL_4 | OAMF_PAL1 | OAMF_YFLIP | OAMF_XFLIP
 .variant3
-    db $FF, OAM_GBC_PAL_7 | OAM_DMG_PAL_1 | OAM_BANK_1 | OAM_Y_FLIP | OAM_X_FLIP | OAM_PRIORITY
-    db $A4, OAM_GBC_PAL_4 | OAM_DMG_PAL_1 | OAM_X_FLIP
+    db $FF, OAM_GBC_PAL_7 | OAMF_PAL1 | OAMF_BANK1 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
+    db $A4, OAM_GBC_PAL_4 | OAMF_PAL1 | OAMF_XFLIP
 
 BoomerangEntityHandler::
     ; wActiveProjectileCount = 1
@@ -114,6 +114,6 @@ func_019_44CC::
     ldh  [hMultiPurpose1], a                      ; $44F0: $E0 $D8
     ld   a, TRANSCIENT_VFX_SMOKE                  ; $44F2: $3E $08
     call AddTranscientVfx                         ; $44F4: $CD $C7 $0C
-    ld   a, $13                                   ; $44F7: $3E $13
+    ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $44F7: $3E $13
     ldh  [hNoiseSfx], a                           ; $44F9: $E0 $F4
     ret                                           ; $44FB: $C9

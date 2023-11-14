@@ -53,7 +53,7 @@ ZombieEntityHandler::
 .jr_63D1
     add  $40                                      ; $63D1: $C6 $40
     ld   [hl], a                                  ; $63D3: $77
-    ld   a, $BF                                   ; $63D4: $3E $BF
+    ld   a, ENTITY_ZOMBIE                         ; $63D4: $3E $BF
     ld   e, $05                                   ; $63D6: $1E $05
     call SpawnNewEntityInRange_trampoline         ; $63D8: $CD $98 $3B
     jr   c, ret_018_63F7                          ; $63DB: $38 $1A
@@ -71,7 +71,7 @@ ZombieEntityHandler::
     ld   [hl], $01                                ; $63EF: $36 $01
     ld   hl, wEntitiesPhysicsFlagsTable           ; $63F1: $21 $40 $C3
     add  hl, de                                   ; $63F4: $19
-    res  6, [hl]                                  ; $63F5: $CB $B6
+    res  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $63F5: $CB $B6
 
 ret_018_63F7:
     ret                                           ; $63F7: $C9
@@ -79,20 +79,20 @@ ret_018_63F7:
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 ZombieSpriteVariants::
 .variant0
-    db $FF, OAM_GBC_PAL_7 | OAM_DMG_PAL_1 | OAM_BANK_1 | OAM_Y_FLIP | OAM_X_FLIP | OAM_PRIORITY
-    db $FF, OAM_GBC_PAL_7 | OAM_DMG_PAL_1 | OAM_BANK_1 | OAM_Y_FLIP | OAM_X_FLIP | OAM_PRIORITY
+    db $FF, OAM_GBC_PAL_7 | OAMF_PAL1 | OAMF_BANK1 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
+    db $FF, OAM_GBC_PAL_7 | OAMF_PAL1 | OAMF_BANK1 | OAMF_YFLIP | OAMF_XFLIP | OAMF_PRI
 .variant1
-    db $6C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $6C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6C, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $6C, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $68, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $68, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant3
-    db $60, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant4
-    db $64, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $64, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_2 | OAMF_PAL0
 
 label_018_640C:
     ld   de, ZombieSpriteVariants                 ; $640C: $11 $F8 $63
@@ -155,7 +155,7 @@ ZombieState2Handler::
     call IncrementEntityState                     ; $646C: $CD $12 $3B
     ld   hl, wEntitiesPhysicsFlagsTable           ; $646F: $21 $40 $C3
     add  hl, bc                                   ; $6472: $09
-    set  6, [hl]                                  ; $6473: $CB $F6
+    set  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $6473: $CB $F6
 
 jr_018_6475:
     ldh  a, [hFrameCounter]                       ; $6475: $F0 $E7

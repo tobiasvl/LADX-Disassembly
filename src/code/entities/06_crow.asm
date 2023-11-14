@@ -1,17 +1,17 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 CrowSpriteVariants::
 .variant0
-    db $50, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $52, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $50, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $52, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant1
-    db $54, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $56, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $54, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $56, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant2
-    db $52, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $50, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $52, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $50, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $56, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $54, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $56, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $54, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 
 CrowEntityHandler::
     ldh  a, [hMapRoom]                            ; $5C99: $F0 $F6
@@ -209,7 +209,7 @@ label_006_5D8A:
 jr_006_5D9F:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5D9F: $21 $40 $C3
     add  hl, bc                                   ; $5DA2: $09
-    ld   [hl], $12                                ; $5DA3: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $5DA3: $36 $12
     call GetEntityTransitionCountdown             ; $5DA5: $CD $05 $0C
     ld   [hl], $22                                ; $5DA8: $36 $22
     jp   IncrementEntityState                     ; $5DAA: $C3 $12 $3B

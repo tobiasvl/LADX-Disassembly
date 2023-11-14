@@ -143,7 +143,7 @@ func_005_63A8::
     ld   hl, wEntitiesSpeedZTable                 ; $63DB: $21 $20 $C3
     add  hl, bc                                   ; $63DE: $09
     ld   [hl], $18                                ; $63DF: $36 $18
-    ld   a, $16                                   ; $63E1: $3E $16
+    ld   a, WAVE_SFX_BOSS_GROWL                   ; $63E1: $3E $16
     ldh  [hWaveSfx], a                            ; $63E3: $E0 $F3
     call func_005_65D9                            ; $63E5: $CD $D9 $65
     jp   IncrementEntityState                     ; $63E8: $C3 $12 $3B
@@ -380,7 +380,7 @@ func_005_6534::
 
     jr   nz, .jr_6544                             ; $653B: $20 $07
 
-    ld   a, $29                                   ; $653D: $3E $29
+    ld   a, NOISE_SFX_BREAK                       ; $653D: $3E $29
     ldh  [hNoiseSfx], a                           ; $653F: $E0 $F4
     call func_005_657F                            ; $6541: $CD $7F $65
 
@@ -484,7 +484,7 @@ jr_005_6581:
     ld   [hl], $08                                ; $65CB: $36 $08
     ld   hl, wEntitiesPhysicsFlagsTable           ; $65CD: $21 $40 $C3
     add  hl, de                                   ; $65D0: $19
-    ld   [hl], $42                                ; $65D1: $36 $42
+    ld   [hl], 2 | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $65D1: $36 $42
 
 .jr_65D3
     ldh  a, [hMultiPurposeG]                      ; $65D3: $F0 $E8
@@ -514,7 +514,7 @@ func_005_65D9::
     ld   [hl], $14                                ; $65F8: $36 $14
     ld   hl, wEntitiesPhysicsFlagsTable           ; $65FA: $21 $40 $C3
     add  hl, de                                   ; $65FD: $19
-    ld   [hl], $C4                                ; $65FE: $36 $C4
+    ld   [hl], 4 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $65FE: $36 $C4
     ret                                           ; $6600: $C9
 
 Data_005_6601::
@@ -576,7 +576,7 @@ jr_005_6613:
     ld   [hl], $13                                ; $6657: $36 $13
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6659: $21 $40 $C3
     add  hl, de                                   ; $665C: $19
-    ld   [hl], $42                                ; $665D: $36 $42
+    ld   [hl], 2 | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $665D: $36 $42
 
 .jr_665F
     ldh  a, [hMultiPurposeG]                      ; $665F: $F0 $E8
@@ -609,8 +609,8 @@ func_005_6705::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $670B: $21 $40 $C3
     add  hl, bc                                   ; $670E: $09
     ld   a, [hl]                                  ; $670F: $7E
-    and  $F0                                      ; $6710: $E6 $F0
-    or   $08                                      ; $6712: $F6 $08
+    and  ENTITY_PHYSICS_MASK                      ; $6710: $E6 $F0
+    or   8                                        ; $6712: $F6 $08
     ld   [hl], a                                  ; $6714: $77
     ldh  a, [hActiveEntitySpriteVariant]          ; $6715: $F0 $F1
     rla                                           ; $6717: $17
@@ -642,8 +642,8 @@ label_005_672A:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6738: $21 $40 $C3
     add  hl, bc                                   ; $673B: $09
     ld   a, [hl]                                  ; $673C: $7E
-    and  $F0                                      ; $673D: $E6 $F0
-    or   $04                                      ; $673F: $F6 $04
+    and  ENTITY_PHYSICS_MASK                      ; $673D: $E6 $F0
+    or   4                                        ; $673F: $F6 $04
     ld   [hl], a                                  ; $6741: $77
     ldh  a, [hActiveEntityPosY]                   ; $6742: $F0 $EF
     ldh  [hActiveEntityVisualPosY], a             ; $6744: $E0 $EC
@@ -658,8 +658,8 @@ label_005_6754:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6754: $21 $40 $C3
     add  hl, bc                                   ; $6757: $09
     ld   a, [hl]                                  ; $6758: $7E
-    and  $F0                                      ; $6759: $E6 $F0
-    or   $04                                      ; $675B: $F6 $04
+    and  ENTITY_PHYSICS_MASK                      ; $6759: $E6 $F0
+    or   4                                        ; $675B: $F6 $04
     ld   [hl], a                                  ; $675D: $77
     ldh  a, [hActiveEntitySpriteVariant]          ; $675E: $F0 $F1
     dec  a                                        ; $6760: $3D
@@ -694,17 +694,17 @@ label_005_6776:
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 HotHead1SpriteVariants::
 .variant0
-    db $1E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $1E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $1E, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $1E, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 .variant1
-    db $1E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $1E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $1E, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP
+    db $1E, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $7A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $7A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7A, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $7A, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $78, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $78, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $78, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $78, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 label_005_6798:
     ld   de, HotHead1SpriteVariants               ; $6798: $11 $88 $67
@@ -756,11 +756,11 @@ func_005_67D2::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 HotHead2SpriteVariants::
 .variant0
-    db $6C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant1
-    db $6E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 label_005_67EA:
     ld   de, HotHead2SpriteVariants               ; $67EA: $11 $E2 $67

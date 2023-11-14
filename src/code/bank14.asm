@@ -246,7 +246,7 @@ jr_014_4AE7:
     ld   [wNoiseSfxSeaWavesCounter], a            ; $4B09: $EA $14 $C1
 .wavesSfxEnd
 
-    ld   a, [wMaxHealth]                          ; $4B0C: $FA $5B $DB
+    ld   a, [wMaxHearts]                          ; $4B0C: $FA $5B $DB
     ld   e, a                                     ; $4B0F: $5F
     ld   d, b                                     ; $4B10: $50
     ld   hl, Data_014_4AAD                        ; $4B11: $21 $AD $4A
@@ -545,7 +545,7 @@ jr_014_4CB2:
     sub  [hl]                                     ; $4CBF: $96
     jr   nz, .jr_4CC7                             ; $4CC0: $20 $05
 
-    ld   a, [wDDD6]                               ; $4CC2: $FA $D6 $DD
+    ld   a, [wBGPaletteTransitionEffect]          ; $4CC2: $FA $D6 $DD
     and  a                                        ; $4CC5: $A7
     ret  z                                        ; $4CC6: $C8
 
@@ -574,7 +574,7 @@ jr_014_4CB2:
     ret  nz                                       ; $4CEA: $C0
 
 .jr_4CEB
-    ld   a, [wDDD6]                               ; $4CEB: $FA $D6 $DD
+    ld   a, [wBGPaletteTransitionEffect]          ; $4CEB: $FA $D6 $DD
     and  $80                                      ; $4CEE: $E6 $80
     jr   nz, jr_014_4D0B                          ; $4CF0: $20 $19
 
@@ -624,7 +624,7 @@ jr_014_4D22:
     jr   nz, .jr_4D32                             ; $4D2C: $20 $04
 
     xor  a                                        ; $4D2E: $AF
-    ld   [wDDD6], a                               ; $4D2F: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $4D2F: $EA $D6 $DD
 
 .jr_4D32
     ld   a, [wDDD7]                               ; $4D32: $FA $D7 $DD
@@ -774,7 +774,7 @@ UpdateEntityTimers::
     ; When the flash countdown is active, invert the palette every 4 frames
     sla  a                                        ; $4DE4: $CB $27
     sla  a                                        ; $4DE6: $CB $27
-    and  OAM_DMG_PAL_1                            ; $4DE8: $E6 $10
+    and  OAMF_PAL1                                ; $4DE8: $E6 $10
     ldh  [hActiveEntityFlipAttribute], a          ; $4DEA: $E0 $ED
     ret                                           ; $4DEC: $C9
 
@@ -980,7 +980,7 @@ RenderTransitionEffect::
 
 label_014_5067:
     ldh  a, [rSTAT]                               ; $5067: $F0 $41
-    and  $03                                      ; $5069: $E6 $03
+    and  STATF_LCD                                ; $5069: $E6 $03
     jr   nz, label_014_5067                       ; $506B: $20 $FA
 
     ld   d, $00                                   ; $506D: $16 $00
@@ -1056,7 +1056,7 @@ func_014_50C3::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $50D0: $21 $40 $C3
     add  hl, de                                   ; $50D3: $19
     ld   a, [hl]                                  ; $50D4: $7E
-    and  %00100000                                ; $50D5: $E6 $20
+    and  ENTITY_PHYSICS_GRABBABLE                 ; $50D5: $E6 $20
     jr   z, .continue                             ; $50D7: $28 $38
 
     ; and the wEntitiesPrivateState3Table value != 2…
@@ -1162,16 +1162,16 @@ jr_014_5360:
     ld   d, INVENTORY_BOMBS                       ; $537B: $16 $02
 
 .jr_537D
-    ld   e, $10                                   ; $537D: $1E $10
-    ld   a, [wBButtonSlot]                        ; $537F: $FA $00 $DB
+    ld   e, J_A                                   ; $537D: $1E $10
+    ld   a, [wInventoryItems.BButtonSlot]         ; $537F: $FA $00 $DB
     cp   d                                        ; $5382: $BA
     jr   nz, .jr_5389                             ; $5383: $20 $04
 
-    sla  e                                        ; $5385: $CB $23
+    sla  e ; J_B                                       ; $5385: $CB $23
     jr   jr_014_5391                              ; $5387: $18 $08
 
 .jr_5389
-    ld   a, [wAButtonSlot]                        ; $5389: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $5389: $FA $01 $DB
     cp   d                                        ; $538C: $BA
     jr   z, jr_014_5391                           ; $538D: $28 $02
 
@@ -1187,7 +1187,7 @@ jr_014_5391:
     add  hl, bc                                   ; $539C: $09
     ld   [hl], a                                  ; $539D: $77
     ld   hl, hJingle                              ; $539E: $21 $F2 $FF
-    ld   [hl], JINGLE_JUMP_DOWN                   ; $53A1: $36 $08
+    ld   [hl], JINGLE_FALL_DOWN                   ; $53A1: $36 $08
 
 func_014_53A3::
     ld   hl, wEntitiesStatusTable                 ; $53A3: $21 $80 $C2
@@ -1204,24 +1204,25 @@ func_014_53A3::
 .jr_53B6
     ld   hl, wEntitiesStatusTable                 ; $53B6: $21 $80 $C2
     add  hl, bc                                   ; $53B9: $09
-    cp   $D6                                      ; $53BA: $FE $D6
+    cp   ENTITY_SIDE_VIEW_POT                     ; $53BA: $FE $D6
     jr   z, .jr_53ED                              ; $53BC: $28 $2F
 
-    cp   $D5                                      ; $53BE: $FE $D5
+    cp   ENTITY_ROOSTER                           ; $53BE: $FE $D5
     jr   z, .jr_53ED                              ; $53C0: $28 $2B
 
-    cp   $6C                                      ; $53C2: $FE $6C
+    cp   ENTITY_CUCCO                             ; $53C2: $FE $6C
     jr   z, .jr_53ED                              ; $53C4: $28 $27
 
-    cp   $9D                                      ; $53C6: $FE $9D
+    cp   ENTITY_LIFTABLE_STATUE                   ; $53C6: $FE $9D
     jr   z, .jr_53ED                              ; $53C8: $28 $23
 
-    cp   $A8                                      ; $53CA: $FE $A8
+    cp   ENTITY_WRECKING_BALL                     ; $53CA: $FE $A8
     jr   z, .jr_53ED                              ; $53CC: $28 $1F
 
-    cp   $98                                      ; $53CE: $FE $98
+    cp   ENTITY_HORSE_PIECE                       ; $53CE: $FE $98
     jr   nz, jr_014_53F6                          ; $53D0: $20 $24
 
+    ; Horse head piece specific handling on throwing
     push hl                                       ; $53D2: $E5
     ldh  a, [hLinkDirection]                      ; $53D3: $F0 $9E
     ld   e, a                                     ; $53D5: $5F
@@ -1240,22 +1241,24 @@ func_014_53A3::
     pop  hl                                       ; $53EC: $E1
 
 .jr_53ED
+    ; Set the entity state to 2 for certain throwable objects.
     ld   [hl], $05                                ; $53ED: $36 $05
     call IncrementEntityState                     ; $53EF: $CD $12 $3B
     ld   [hl], $02                                ; $53F2: $36 $02
     jr   jr_014_5409                              ; $53F4: $18 $13
 
 jr_014_53F6:
-    cp   $92                                      ; $53F6: $FE $92
+    cp   ENTITY_SMASHER                           ; $53F6: $FE $92
     jr   nz, .jr_5403                             ; $53F8: $20 $09
 
+    ; Smasher ball throw
     ld   [hl], $05                                ; $53FA: $36 $05
     call IncrementEntityState                     ; $53FC: $CD $12 $3B
     ld   [hl], $03                                ; $53FF: $36 $03
     jr   jr_014_5409                              ; $5401: $18 $06
 
 .jr_5403
-    cp   $05                                      ; $5403: $FE $05
+    cp   ENTITY_LIFTABLE_ROCK                     ; $5403: $FE $05
     jr   z, jr_014_5409                           ; $5405: $28 $02
 
     ld   [hl], $08                                ; $5407: $36 $08
@@ -1683,7 +1686,7 @@ jr_014_5677:
 
 jr_014_5679:
     ld   a, $94                                   ; $5679: $3E $94
-    call func_2BF                                 ; $567B: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $567B: $CD $2F $0B
     call label_2887                               ; $567E: $CD $87 $28
     ldh  a, [hIsGBC]                              ; $5681: $F0 $FE
     and  a                                        ; $5683: $A7
@@ -1842,13 +1845,13 @@ label_014_5743:
     ld   d, $00                                   ; $575E: $16 $00
     ld   hl, wOverworldRoomStatus                 ; $5760: $21 $00 $D8
     add  hl, de                                   ; $5763: $19
-    set  4, [hl]                                  ; $5764: $CB $E6
+    set  OW_ROOM_STATUS_FLAG_CHANGED, [hl]        ; $5764: $CB $E6
     pop  hl                                       ; $5766: $E1
 
 label_014_5767:
     ld   [hl], $C6                                ; $5767: $36 $C6
     ld   a, $94                                   ; $5769: $3E $94
-    call func_2BF                                 ; $576B: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $576B: $CD $2F $0B
     call label_2887                               ; $576E: $CD $87 $28
     ldh  a, [hIsGBC]                              ; $5771: $F0 $FE
     and  a                                        ; $5773: $A7
@@ -1923,7 +1926,7 @@ label_014_57E1:
     add  hl, de                                   ; $57E4: $19
     ld   [hl], $E8                                ; $57E5: $36 $E8
     ld   a, $94                                   ; $57E7: $3E $94
-    call func_2BF                                 ; $57E9: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $57E9: $CD $2F $0B
     call label_2887                               ; $57EC: $CD $87 $28
     ldh  a, [hIsGBC]                              ; $57EF: $F0 $FE
     and  a                                        ; $57F1: $A7

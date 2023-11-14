@@ -1,11 +1,11 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 GopongaFlowerSpriteVariants::
 .variant0
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $52, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $52, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $52, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $52, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 GopongaFlowerEntityHandler::
     ld   de, GopongaFlowerSpriteVariants          ; $63FC: $11 $F4 $63
@@ -14,7 +14,7 @@ GopongaFlowerEntityHandler::
     call ReturnIfNonInteractive_06                ; $6402: $CD $C6 $64
     call DecrementEntityIgnoreHitsCountdown       ; $6405: $CD $56 $0C
     call label_3B70                               ; $6408: $CD $70 $3B
-    call func_006_641A                            ; $640B: $CD $1A $64
+    call PushLinkOutOfEntity_06                   ; $640B: $CD $1A $64
 
     ; Every 48 frame…
     ldh  a, [hFrameCounter]                       ; $640E: $F0 $E7

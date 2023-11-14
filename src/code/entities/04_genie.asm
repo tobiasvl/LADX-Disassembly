@@ -48,7 +48,7 @@ GenieState0Handler::
     add  hl, de                                   ; $4043: $19
     ld   [hl], $08                                ; $4044: $36 $08
     call label_3E34                               ; $4046: $CD $34 $3E
-    ld   a, $29                                   ; $4049: $3E $29
+    ld   a, NOISE_SFX_BREAK                       ; $4049: $3E $29
     ldh  [hNoiseSfx], a                           ; $404B: $E0 $F4
     ret                                           ; $404D: $C9
 
@@ -62,7 +62,7 @@ GenieState0Handler::
     call ReturnIfNonInteractive_04                ; $405B: $CD $A3 $7F
     ld   hl, wEntitiesPhysicsFlagsTable           ; $405E: $21 $40 $C3
     add  hl, bc                                   ; $4061: $09
-    ld   [hl], $81                                ; $4062: $36 $81
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS        ; $4062: $36 $81
     ld   hl, wEntitiesHitboxFlagsTable            ; $4064: $21 $50 $C3
     add  hl, bc                                   ; $4067: $09
     ld   [hl], $80                                ; $4068: $36 $80
@@ -139,7 +139,7 @@ func_004_40A3::
     ld   hl, wEntitiesSpeedZTable                 ; $40D5: $21 $20 $C3
     add  hl, bc                                   ; $40D8: $09
     ld   [hl], $10                                ; $40D9: $36 $10
-    ld   a, JINGLE_BIG_BUMP                       ; $40DB: $3E $20
+    ld   a, JINGLE_BOUNCE                         ; $40DB: $3E $20
     ldh  [hJingle], a                             ; $40DD: $E0 $F2
 
 .jr_40DF
@@ -200,7 +200,7 @@ jr_004_4118:
     ld   hl, wEntitiesTransitionCountdownTable    ; $413A: $21 $E0 $C2
     add  hl, de                                   ; $413D: $19
     ld   [hl], $47                                ; $413E: $36 $47
-    ld   a, JINGLE_ENEMY_MORPH_IN                 ; $4140: $3E $06
+    ld   a, JINGLE_GENIE_APPEAR                   ; $4140: $3E $06
     ldh  [hJingle], a                             ; $4142: $E0 $F2
 
 label_004_4144:
@@ -283,7 +283,7 @@ jr_004_41A9:
 jr_004_41AC:
     call DecrementEntityIgnoreHitsCountdown       ; $41AC: $CD $56 $0C
     call label_3B70                               ; $41AF: $CD $70 $3B
-    call ApplySolidCollision_04                   ; $41B2: $CD $E3 $7B
+    call PushLinkOutOfEntity_04                   ; $41B2: $CD $E3 $7B
     ldh  a, [hActiveEntityPosX]                   ; $41B5: $F0 $EE
     ld   hl, hLinkPositionX                       ; $41B7: $21 $98 $FF
     sub  [hl]                                     ; $41BA: $96
@@ -299,23 +299,23 @@ jr_004_41AC:
     jr   nc, jr_004_4210                          ; $41CB: $30 $43
 
     call ResetPegasusBoots                        ; $41CD: $CD $B6 $0C
-    ld   a, [wBButtonSlot]                        ; $41D0: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $41D0: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $41D3: $FE $03
     jr   nz, .jr_41DF                             ; $41D5: $20 $08
 
     ldh  a, [hPressedButtonsMask]                 ; $41D7: $F0 $CB
-    and  $20                                      ; $41D9: $E6 $20
+    and  J_B                                      ; $41D9: $E6 $20
     jr   nz, jr_004_41EC                          ; $41DB: $20 $0F
 
     jr   jr_004_4210                              ; $41DD: $18 $31
 
 .jr_41DF
-    ld   a, [wAButtonSlot]                        ; $41DF: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $41DF: $FA $01 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $41E2: $FE $03
     jr   nz, jr_004_4210                          ; $41E4: $20 $2A
 
     ldh  a, [hPressedButtonsMask]                 ; $41E6: $F0 $CB
-    and  $10                                      ; $41E8: $E6 $10
+    and  J_A                                      ; $41E8: $E6 $10
     jr   z, jr_004_4210                           ; $41EA: $28 $24
 
 jr_004_41EC:
@@ -334,7 +334,7 @@ jr_004_41EC:
     ldh  a, [hLinkDirection]                      ; $4201: $F0 $9E
     ld   [wC15D], a                               ; $4203: $EA $5D $C1
     ld   hl, hWaveSfx                             ; $4206: $21 $F3 $FF
-    ld   [hl], $02                                ; $4209: $36 $02
+    ld   [hl], WAVE_SFX_LIFT_UP                   ; $4209: $36 $02
     call GetEntityTransitionCountdown             ; $420B: $CD $05 $0C
     ld   [hl], $08                                ; $420E: $36 $08
 
@@ -395,7 +395,7 @@ func_004_4214::
     ld   hl, wEntitiesSpeedZTable                 ; $4269: $21 $20 $C3
     add  hl, bc                                   ; $426C: $09
     ld   [hl], $10                                ; $426D: $36 $10
-    ld   a, JINGLE_BIG_BUMP                       ; $426F: $3E $20
+    ld   a, JINGLE_BOUNCE                         ; $426F: $3E $20
     ldh  [hJingle], a                             ; $4271: $E0 $F2
     ld   a, $0C                                   ; $4273: $3E $0C
     call ApplyVectorTowardsLink_trampoline        ; $4275: $CD $AA $3B
@@ -677,7 +677,7 @@ jr_004_43A6:
     ld   [hl], $0C                                ; $4430: $36 $0C
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4432: $21 $40 $C3
     add  hl, de                                   ; $4435: $19
-    ld   [hl], $42                                ; $4436: $36 $42
+    ld   [hl], 2 | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $4436: $36 $42
 
 jr_004_4438:
     call GetEntityPrivateCountdown1               ; $4438: $CD $00 $0C
@@ -715,7 +715,7 @@ jr_004_4438:
     ld   [hl], $04                                ; $446D: $36 $04
     ld   hl, wEntitiesPhysicsFlagsTable           ; $446F: $21 $40 $C3
     add  hl, de                                   ; $4472: $19
-    ld   [hl], $12                                ; $4473: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $4473: $36 $12
     ld   c, e                                     ; $4475: $4B
     ld   b, d                                     ; $4476: $42
     ld   a, $1F                                   ; $4477: $3E $1F
@@ -724,7 +724,7 @@ jr_004_4438:
     ld   hl, wEntitiesPrivateCountdown2Table      ; $447D: $21 $00 $C3
     add  hl, bc                                   ; $4480: $09
     ld   [hl], $10                                ; $4481: $36 $10
-    ld   a, $28                                   ; $4483: $3E $28
+    ld   a, NOISE_SFX_GENIE_FIREBALL              ; $4483: $3E $28
     ldh  [hNoiseSfx], a                           ; $4485: $E0 $F4
 
 .jr_4487
@@ -817,7 +817,7 @@ func_004_44E9::
     ld   hl, wEntitiesTransitionCountdownTable    ; $450C: $21 $E0 $C2
     add  hl, de                                   ; $450F: $19
     ld   [hl], $C7                                ; $4510: $36 $C7
-    ld   a, JINGLE_ENEMY_MORPH_OUT                ; $4512: $3E $1F
+    ld   a, JINGLE_GENIE_DISAPPEAR                ; $4512: $3E $1F
     ldh  [hJingle], a                             ; $4514: $E0 $F2
 
 .ret_4516
@@ -891,7 +891,7 @@ jr_004_4568:
 func_004_4575::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4575: $21 $40 $C3
     add  hl, bc                                   ; $4578: $09
-    ld   [hl], $41                                ; $4579: $36 $41
+    ld   [hl], 1 | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $4579: $36 $41
     call GetEntityTransitionCountdown             ; $457B: $CD $05 $0C
     jr   nz, jr_004_45F1                          ; $457E: $20 $71
 
@@ -899,7 +899,7 @@ func_004_4575::
     ld   [hl], $04                                ; $4583: $36 $04
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4585: $21 $40 $C3
     add  hl, bc                                   ; $4588: $09
-    ld   [hl], $01                                ; $4589: $36 $01
+    ld   [hl], 1                                  ; $4589: $36 $01
     call GetRandomByte                            ; $458B: $CD $0D $28
     and  $01                                      ; $458E: $E6 $01
     jr   nz, .jr_45A6                             ; $4590: $20 $14
@@ -952,13 +952,13 @@ func_004_4575::
     ld   [hl], $04                                ; $45DC: $36 $04
     ld   hl, wEntitiesPhysicsFlagsTable           ; $45DE: $21 $40 $C3
     add  hl, de                                   ; $45E1: $19
-    ld   [hl], $12                                ; $45E2: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $45E2: $36 $12
     ld   c, e                                     ; $45E4: $4B
     ld   b, d                                     ; $45E5: $42
     ld   a, $1F                                   ; $45E6: $3E $1F
     call ApplyVectorTowardsLink_trampoline        ; $45E8: $CD $AA $3B
     pop  bc                                       ; $45EB: $C1
-    ld   a, $28                                   ; $45EC: $3E $28
+    ld   a, NOISE_SFX_GENIE_FIREBALL              ; $45EC: $3E $28
     ldh  [hNoiseSfx], a                           ; $45EE: $E0 $F4
 
 .ret_45F0
@@ -1201,7 +1201,7 @@ jr_004_486D:
     ld   [hl], $40                                ; $4898: $36 $40
     ld   hl, wEntitiesPhysicsFlagsTable           ; $489A: $21 $40 $C3
     add  hl, de                                   ; $489D: $19
-    ld   [hl], $01                                ; $489E: $36 $01
+    ld   [hl], 1                                  ; $489E: $36 $01
     ld   hl, wEntitiesHitboxFlagsTable            ; $48A0: $21 $50 $C3
     add  hl, de                                   ; $48A3: $19
     ld   [hl], $8C                                ; $48A4: $36 $8C
@@ -1238,11 +1238,11 @@ jr_004_48A6:
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown012SpriteVariants:: ; $48D1
 .variant0
-    db $34, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $34, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $34, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $34, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $34, OAM_GBC_PAL_2 | OAM_DMG_PAL_1
-    db $34, OAM_GBC_PAL_2 | OAM_DMG_PAL_1 | OAM_X_FLIP
+    db $34, OAM_GBC_PAL_2 | OAMF_PAL1
+    db $34, OAM_GBC_PAL_2 | OAMF_PAL1 | OAMF_XFLIP
 
 GenieState3Handler::
     ld   de, Unknown012SpriteVariants             ; $48D9: $11 $D1 $48

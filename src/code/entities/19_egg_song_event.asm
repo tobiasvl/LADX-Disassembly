@@ -165,7 +165,7 @@ func_019_4B6E::
     call SpawnNewEntity_trampoline                ; $4B7D: $CD $86 $3B
     ret  c                                        ; $4B80: $D8
 
-    ld   a, $2B                                   ; $4B81: $3E $2B
+    ld   a, NOISE_SFX_RUMBLE2                     ; $4B81: $3E $2B
     ldh  [hNoiseSfx], a                           ; $4B83: $E0 $F4
     push bc                                       ; $4B85: $C5
     ldh  a, [hMultiPurposeG]                      ; $4B86: $F0 $E8
@@ -223,9 +223,9 @@ Unknown063SpriteVariants:: ; $4BAC
     db $6E, $06
 
 label_019_4BCC::
-    ld   hl, wEntitiesPrivateState1Table          ; $4bcc: $21 $b0 $c2
+    ld   hl, wEntitiesPrivateState1Table          ; $4BCC: $21 $B0 $C2
     add  hl, bc
-    ld   a, [hl]                                  ; $4bd0: $7e
+    ld   a, [hl]                                  ; $4BD0: $7E
     cp   $02                                      ; $4BD1: $FE $02
     jp   z, label_019_4CFF                        ; $4BD3: $CA $FF $4C
 
@@ -292,12 +292,12 @@ jr_019_4C21:
     ld   a, $C1                                   ; $4C37: $3E $C1
     ld   [hl], a                                  ; $4C39: $77
     ld   a, $99                                   ; $4C3A: $3E $99
-    call func_2BF                                 ; $4C3C: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $4C3C: $CD $2F $0B
     ld   hl, wRoomObjects + $35                   ; $4C3F: $21 $46 $D7
     ld   a, $CB                                   ; $4C42: $3E $CB
     ld   [hl], a                                  ; $4C44: $77
     ld   a, $99                                   ; $4C45: $3E $99
-    call func_2BF                                 ; $4C47: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $4C47: $CD $2F $0B
     ld   a, $50                                   ; $4C4A: $3E $50
     ldh  [hIntersectedObjectLeft], a              ; $4C4C: $E0 $CE
     ld   a, $20                                   ; $4C4E: $3E $20
@@ -426,7 +426,7 @@ label_019_4CFF:
 
 .jr_4D1A
     ld   hl, wOverworldRoomStatus + $06           ; $4D1A: $21 $06 $D8
-    set  4, [hl]                                  ; $4D1D: $CB $E6
+    set  OW_ROOM_STATUS_FLAG_CHANGED, [hl]        ; $4D1D: $CB $E6
     ld   a, [hl]                                  ; $4D1F: $7E
     ldh  [hRoomStatus], a                         ; $4D20: $E0 $F8
     jp   ClearEntityStatus_19                     ; $4D22: $C3 $61 $7E

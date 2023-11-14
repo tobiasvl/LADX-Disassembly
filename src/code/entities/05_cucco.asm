@@ -1,17 +1,17 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 CuccoSpriteVariants::
 .variant0
-    db $50, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $52, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $50, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $52, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant1
-    db $54, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $56, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $54, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $56, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant2
-    db $52, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $50, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $52, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $50, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $56, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $54, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $56, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $54, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 CuccoEntityHandler::
     ld   hl, wEntitiesHealthTable                 ; $4524: $21 $60 $C3
@@ -129,7 +129,7 @@ jr_005_45BF:
     and  a                                        ; $45CD: $A7
     jr   nz, jr_005_4611                          ; $45CE: $20 $41
 
-    ld   a, [wBButtonSlot]                        ; $45D0: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $45D0: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $45D3: $FE $03
     jr   nz, .jr_45DF                             ; $45D5: $20 $08
 
@@ -140,7 +140,7 @@ jr_005_45BF:
     jr   jr_005_4611                              ; $45DD: $18 $32
 
 .jr_45DF
-    ld   a, [wAButtonSlot]                        ; $45DF: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $45DF: $FA $01 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $45E2: $FE $03
     jr   nz, jr_005_4611                          ; $45E4: $20 $2B
 
@@ -166,7 +166,7 @@ jr_005_45EC:
     call GetEntityTransitionCountdown             ; $4606: $CD $05 $0C
     ld   [hl], $02                                ; $4609: $36 $02
     ld   hl, hWaveSfx                             ; $460B: $21 $F3 $FF
-    ld   [hl], $02                                ; $460E: $36 $02
+    ld   [hl], WAVE_SFX_LIFT_UP                   ; $460E: $36 $02
     ret                                           ; $4610: $C9
 
 jr_005_4611:
@@ -308,7 +308,7 @@ jr_005_46D2:
     or   [hl]                                     ; $46FC: $B6
     jr   nz, .ret_474D                            ; $46FD: $20 $4E
 
-    ld   a, $6C                                   ; $46FF: $3E $6C
+    ld   a, ENTITY_CUCCO                          ; $46FF: $3E $6C
     ld   e, $07                                   ; $4701: $1E $07
     call SpawnNewEntityInRange_trampoline         ; $4703: $CD $98 $3B
     jr   c, .ret_474D                             ; $4706: $38 $45
@@ -323,7 +323,7 @@ jr_005_46D2:
     ld   [hl], $10                                ; $4716: $36 $10
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4718: $21 $40 $C3
     add  hl, de                                   ; $471B: $19
-    ld   [hl], $12                                ; $471C: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $471C: $36 $12
     ld   hl, wEntitiesHitboxFlagsTable            ; $471E: $21 $50 $C3
     add  hl, de                                   ; $4721: $19
     ld   [hl], $80                                ; $4722: $36 $80

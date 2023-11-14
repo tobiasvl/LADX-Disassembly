@@ -74,7 +74,7 @@ label_007_5E09:
 jr_007_5E12:
     call DecrementEntityIgnoreHitsCountdown       ; $5E12: $CD $56 $0C
     call label_3B70                               ; $5E15: $CD $70 $3B
-    call func_007_7CF0                            ; $5E18: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $5E18: $CD $F0 $7C
     ldh  a, [hActiveEntityState]                  ; $5E1B: $F0 $F0
     JP_TABLE                                      ; $5E1D
 ._00 dw func_007_5E2A                             ; $5E1E
@@ -155,7 +155,7 @@ func_007_5E43::
     ld   [hl], a                                  ; $5E93: $77
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5E94: $21 $40 $C3
     add  hl, de                                   ; $5E97: $19
-    ld   [hl], $C2                                ; $5E98: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $5E98: $36 $C2
     ld   hl, wEntitiesTransitionCountdownTable    ; $5E9A: $21 $E0 $C2
     add  hl, de                                   ; $5E9D: $19
     ld   [hl], $10                                ; $5E9E: $36 $10
@@ -265,7 +265,7 @@ func_007_5F11::
     jr   nz, .ret_5F44                            ; $5F3D: $20 $05
 
     ld   hl, hNoiseSfx                            ; $5F3F: $21 $F4 $FF
-    ld   [hl], $0C                                ; $5F42: $36 $0C
+    ld   [hl], NOISE_SFX_EXPLOSION                ; $5F42: $36 $0C
 
 .ret_5F44
     ret                                           ; $5F44: $C9
@@ -273,11 +273,11 @@ func_007_5F11::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown101SpriteVariants::
 .variant0
-    db $30, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $30, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $30, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $30, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $32, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $32, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $32, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $32, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 label_007_5F4D:
     ld   de, Unknown101SpriteVariants             ; $5F4D: $11 $45 $5F
@@ -301,7 +301,7 @@ func_007_5F61::
     ld   [hl], $02                                ; $5F6C: $36 $02
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5F6E: $21 $40 $C3
     add  hl, de                                   ; $5F71: $19
-    ld   [hl], $D1                                ; $5F72: $36 $D1
+    ld   [hl], 1 | ENTITY_PHYSICS_SHADOW | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $5F72: $36 $D1
     ld   hl, wEntitiesPosZTable                   ; $5F74: $21 $10 $C3
     add  hl, de                                   ; $5F77: $19
     ld   [hl], $70                                ; $5F78: $36 $70

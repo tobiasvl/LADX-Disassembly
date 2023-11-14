@@ -1,11 +1,11 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 BlooperSpriteVariants::
 .variant0
-    db $6A, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $68, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $68, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $68, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $68, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 
 BlooperEntityHandler::
     ld   de, BlooperSpriteVariants                ; $5BF9: $11 $F1 $5B
@@ -47,7 +47,7 @@ func_007_5C35::
     call GetEntityTransitionCountdown             ; $5C35: $CD $05 $0C
     jr   nz, .jr_5C58                             ; $5C38: $20 $1E
 
-    call func_007_7E6D                            ; $5C3A: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $5C3A: $CD $6D $7E
     ld   a, e                                     ; $5C3D: $7B
     cp   $03                                      ; $5C3E: $FE $03
     jr   z, .jr_5C58                              ; $5C40: $28 $16
@@ -55,7 +55,7 @@ func_007_5C35::
     call ClearEntitySpeed                         ; $5C42: $CD $7F $3D
     call GetEntityTransitionCountdown             ; $5C45: $CD $05 $0C
     ld   [hl], $25                                ; $5C48: $36 $25
-    call func_007_7E5D                            ; $5C4A: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $5C4A: $CD $5D $7E
     ld   hl, wEntitiesDirectionTable              ; $5C4D: $21 $80 $C3
     add  hl, bc                                   ; $5C50: $09
     ld   [hl], e                                  ; $5C51: $73

@@ -19,7 +19,7 @@ MamuAndFrogsEntityHandler::
     jp   nz, label_018_4373                       ; $4013: $C2 $73 $43
 
     call func_018_435A                            ; $4016: $CD $5A $43
-    call func_018_7D36                            ; $4019: $CD $36 $7D
+    call PushLinkOutOfEntity_18                   ; $4019: $CD $36 $7D
     ldh  a, [hActiveEntityState]                  ; $401C: $F0 $F0
     JP_TABLE                                      ; $401E
 ._00 dw MamuAndFrogsState0Handler
@@ -56,8 +56,8 @@ MamuAndFrogsState0Handler::
     ldh  [hLinkPositionY], a                      ; $4052: $E0 $99
     call ClearLinkPositionIncrement               ; $4054: $CD $8E $17
     call ResetSpinAttack                          ; $4057: $CD $AF $0C
-    ld   e, INVENTORY_SLOT_COUNT -1               ; $405A: $1E $0B
-    ld   hl, wBButtonSlot                         ; $405C: $21 $00 $DB
+    ld   e, INVENTORY_SLOT_COUNT - 1              ; $405A: $1E $0B
+    ld   hl, wInventoryItems.BButtonSlot          ; $405C: $21 $00 $DB
 
 .loop_405F
     ld   a, [hl+]                                 ; $405F: $2A
@@ -146,7 +146,7 @@ MamuAndFrogsSingingHandler::
     call GetEntityTransitionCountdown             ; $40DE: $CD $05 $0C
     jr   nz, .ret_40F0                            ; $40E1: $20 $0D
 
-    ld   a, MUSIC_MAMU_SONG                       ; $40E3: $3E $35
+    ld   a, MUSIC_MAMU_FROG_SONG                  ; $40E3: $3E $35
     ld   [wMusicTrackToPlay], a                   ; $40E5: $EA $68 $D3
     ld   a, $01                                   ; $40E8: $3E $01
     ld   [wD215], a                               ; $40EA: $EA $15 $D2
@@ -276,7 +276,7 @@ MamuAndFrogsState3Handler::
     ld   [wEntitiesSpriteVariantTable+2], a       ; $424D: $EA $B2 $C3
     ret                                           ; $4250: $C9
 
-IF !__PATCH_0__
+IF !__OPTIMIZATIONS_1__
     ret                                           ; $4251: $C9
 ENDC
 
@@ -289,7 +289,7 @@ MamuAndFrogsGrantSongHandler::
     ld   [wD215], a                               ; $4258: $EA $15 $D2
     call GetEntityTransitionCountdown             ; $425B: $CD $05 $0C
     ld   [hl], $70                                ; $425E: $36 $70
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $4260: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $4260: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $4262: $EA $68 $D3
     call IncrementEntityState                     ; $4265: $CD $12 $3B
 
@@ -386,7 +386,7 @@ label_018_4373:
     ld   [hl], $98                                ; $437D: $36 $98
     call ConfigureEntityHitbox                    ; $437F: $CD $EA $3A
     call func_018_43E3                            ; $4382: $CD $E3 $43
-    call func_018_7D36                            ; $4385: $CD $36 $7D
+    call PushLinkOutOfEntity_18                   ; $4385: $CD $36 $7D
     ldh  a, [hActiveEntityState]                  ; $4388: $F0 $F0
     JP_TABLE                                      ; $438A
 ._00 dw func_018_438F                             ; $438B
@@ -425,28 +425,28 @@ label_018_43B2:
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MamuAndFrogsSpriteVariants::
 .variant0
-    db $58, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $58, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $58, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $58, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $5A, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $5A, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5A, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $5A, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $5C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $5E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $5C, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $5E, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant3
-    db $5E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $5C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5E, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $5C, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 
 MamuAndFrogsSpriteList::
     ;  x    y    n°   OAM
-    db $F0, $00, $50, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $F0, $08, $52, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $00, $00, $54, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $00, $08, $56, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $F0, $00, $52, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $F0, $08, $50, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $00, $00, $56, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $00, $08, $54, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $F0, $00, $50, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $F0, $08, $52, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $00, $00, $54, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $00, $08, $56, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $F0, $00, $52, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $F0, $08, $50, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $00, $00, $56, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $00, $08, $54, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 
 func_018_43E3::
     ldh  a, [hActiveEntitySpriteVariant]          ; $43E3: $F0 $F1

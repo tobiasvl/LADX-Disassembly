@@ -1,65 +1,65 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MarinIndoor2SpriteVariants::
 .variant0
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant1
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $64, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $64, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant3
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $64, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $64, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant4
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant5
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant6
-    db $6A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant7
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MarinCreditsSpriteVariants::
 .variant0
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant1
-    db $6A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant4
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant5
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant6
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant7
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant8
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant9
-    db $64, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $64, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $64, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $64, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant10
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 Data_005_4E56::
     db   $08, $08, $08, $09, $0A, $0A, $0A, $09
@@ -97,7 +97,7 @@ MarinEntityHandler::
     jr   .continue                                ; $4E85: $18 $0F
 .notInAnyVillage
     ld   a, [wOverworldRoomStatus + ROOM_OW_MARIN_BRIDGE] ; $4E87: $FA $08 $D8
-    and  $10                                      ; $4E8A: $E6 $10
+    and  OW_ROOM_STATUS_CHANGED                   ; $4E8A: $E6 $10
     jr   nz, .continue                            ; $4E8C: $20 $08
     ld   a, [wTradeSequenceItem]                  ; $4E8E: $FA $0E $DB
     cp   TRADING_ITEM_PINEAPPLE                   ; $4E91: $FE $07
@@ -213,7 +213,7 @@ jr_005_4F39:
 
     ld   de, MarinCreditsSpriteVariants           ; $4F3D: $11 $2A $4E
     call RenderActiveEntitySpritesPair            ; $4F40: $CD $C0 $3B
-    call func_005_54C3                            ; $4F43: $CD $C3 $54
+    call PushLinkOutOfEntity_05                   ; $4F43: $CD $C3 $54
     ld   a, [wGameplayType]                       ; $4F46: $FA $95 $DB
     cp   GAMEPLAY_WORLD_MAP                       ; $4F49: $FE $07
     ret  z                                        ; $4F4B: $C8
@@ -248,15 +248,15 @@ func_005_4F64::
     ret  nc                                       ; $4F72: $D0
 
     ld   a, [wOverworldRoomStatus + $08]          ; $4F73: $FA $08 $D8
-    and  $10                                      ; $4F76: $E6 $10
+    and  OW_ROOM_STATUS_CHANGED                   ; $4F76: $E6 $10
     jr   z, .jr_005_4FA7                          ; $4F78: $28 $2D
 
     ld   hl, wOverworldRoomStatus + $92           ; $4F7A: $21 $92 $D8
     ld   a, [hl]                                  ; $4F7D: $7E
-    and  $40                                      ; $4F7E: $E6 $40
+    and  OW_ROOM_STATUS_UNKNOWN                   ; $4F7E: $E6 $40
     jr   nz, .jr_4F89                             ; $4F80: $20 $07
 
-    set  6, [hl]                                  ; $4F82: $CB $F6
+    set  OW_ROOM_STATUS_FLAG_UNKNOWN_6, [hl]      ; $4F82: $CB $F6
     jp_open_dialog Dialog194                      ; $4F84
 
 .jr_4F89
@@ -268,8 +268,8 @@ func_005_4F64::
     jp_open_dialog Dialog195                      ; $4F90
 
 .jr_005_4F95
-    ld   e, INVENTORY_SLOT_COUNT -1               ; $4F95: $1E $0B
-    ld   hl, wBButtonSlot                         ; $4F97: $21 $00 $DB
+    ld   e, INVENTORY_SLOT_COUNT - 1              ; $4F95: $1E $0B
+    ld   hl, wInventoryItems.BButtonSlot          ; $4F97: $21 $00 $DB
 
 .loop_4F9A
     ld   a, [hl+]                                 ; $4F9A: $2A
@@ -313,8 +313,8 @@ func_005_4F64::
 
 .jr_4FD0
     push bc                                       ; $4FD0: $C5
-    ld   c, INVENTORY_SLOT_COUNT -1               ; $4FD1: $0E $0B
-    ld   hl, wBButtonSlot                         ; $4FD3: $21 $00 $DB
+    ld   c, INVENTORY_SLOT_COUNT - 1              ; $4FD1: $0E $0B
+    ld   hl, wInventoryItems.BButtonSlot          ; $4FD3: $21 $00 $DB
 
 .jr_005_4FD6
     ld   a, [hl+]                                 ; $4FD6: $2A
@@ -348,7 +348,7 @@ func_005_4F64::
 .openDialog
     ld   a, e                                     ; $4FFB: $7B
     cp   $80                                      ; $4FFC: $FE $80
-    jr   c, .openDialogInTable0                       ; $4FFE: $38 $05
+    jr   c, .openDialogInTable0                   ; $4FFE: $38 $05
     call OpenDialogInTable1                       ; $5000: $CD $73 $23
     jr   .openDialogEnd                           ; $5003: $18 $03
 .openDialogInTable0
@@ -556,7 +556,7 @@ func_005_512B::
 
     ld   a, $01                                   ; $513A: $3E $01
     ld   [wDE00], a                               ; $513C: $EA $00 $DE
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $513F: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $513F: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $5141: $EA $68 $D3
     ld   a, $05                                   ; $5144: $3E $05
     call func_036_703E_trampoline                 ; $5146: $CD $C6 $0A
@@ -646,8 +646,8 @@ func_005_51BC::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MarinIndoor1SpriteVariants::
 .variant0
-    db $5C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $5C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5C, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $5C, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 
 MarinEntityHandler_Indoor::
     ld   a, [wTradeSequenceItem]                  ; $51CE: $FA $0E $DB
@@ -655,7 +655,7 @@ MarinEntityHandler_Indoor::
     jr   c, .jr_51FB                              ; $51D3: $38 $26
 
     ld   a, [wOverworldRoomStatus + $FD]          ; $51D5: $FA $FD $D8
-    and  $30                                      ; $51D8: $E6 $30
+    and  OW_ROOM_STATUS_CHANGED | OW_ROOM_STATUS_OWL_TALKED ; $51D8: $E6 $30
     jp   nz, ClearEntityStatus_05                 ; $51DA: $C2 $4B $7B
 
     ld   hl, wEntitiesPosYTable                   ; $51DD: $21 $10 $C2
@@ -734,26 +734,26 @@ MarinEntityHandler_Indoor::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MarinDropSpriteVariants::
 .variant0
-    db $40, OAM_GBC_PAL_7 | OAM_DMG_PAL_0
-    db $42, OAM_GBC_PAL_7 | OAM_DMG_PAL_0
+    db $40, OAM_GBC_PAL_7 | OAMF_PAL0
+    db $42, OAM_GBC_PAL_7 | OAMF_PAL0
 .variant1
-    db $42, OAM_GBC_PAL_7 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $40, OAM_GBC_PAL_7 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $42, OAM_GBC_PAL_7 | OAMF_PAL0 | OAMF_XFLIP
+    db $40, OAM_GBC_PAL_7 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $44, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $46, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $44, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $46, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant3
-    db $48, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $4A, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $48, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $4A, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant4
-    db $48, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $4C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $48, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $4C, OAM_GBC_PAL_0 | OAMF_PAL0
 
 ; define sprites and there OAM Attributes in a list
 MarinDropGBCSpriteList::
     ;  x    y    n°   OAM
-    db $00, $00, $4E, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $00, $08, $4E, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $00, $00, $4E, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $00, $08, $4E, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 
 Data_005_5274::
     db   $03, $03, $03, $03, $03, $04, $03, $04, $03, $03, $03, $02, $02, $02, $02, $02
@@ -837,7 +837,7 @@ func_005_52DB::
 
 func_005_5312::
     call ReturnIfNonInteractive_05                ; $5312: $CD $3A $7A
-    call func_005_54C3                            ; $5315: $CD $C3 $54
+    call PushLinkOutOfEntity_05                   ; $5315: $CD $C3 $54
     call ShouldLinkTalkToEntity_05                ; $5318: $CD $06 $55
     ret  nc                                       ; $531B: $D0
 
@@ -845,7 +845,7 @@ func_005_5312::
 
 ; Add item to inventory slot (used for assigning the shield)
 AssignItemToSlot:
-    ld   hl, wBButtonSlot                         ; $5321: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $5321: $21 $00 $DB
     ld   e, INVENTORY_SLOT_COUNT                  ; $5324: $1E $0C
 
     ; Search if a matching item exists in inventory
@@ -857,7 +857,7 @@ AssignItemToSlot:
     dec  e                                        ; $532A: $1D
     jr   nz, .searchLoop                          ; $532B: $20 $F9
 
-    ld   hl, wBButtonSlot                         ; $532D: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $532D: $21 $00 $DB
 
     ; Check for first empty slot, add item to it and return
 .assignLoop

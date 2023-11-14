@@ -1,26 +1,26 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Mermaid1SpriteVariants::
 .variant0
-    db $72, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $70, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $70, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $70, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $70, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant2
-    db $76, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $78, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $76, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $78, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant3
-    db $78, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $76, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $78, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $76, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Mermaid2SpriteVariants::
 .variant0
-    db $74, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $74, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $74, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $74, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $74, OAM_GBC_PAL_0 | OAM_DMG_PAL_1
-    db $74, OAM_GBC_PAL_0 | OAM_DMG_PAL_1 | OAM_X_FLIP
+    db $74, OAM_GBC_PAL_0 | OAMF_PAL1
+    db $74, OAM_GBC_PAL_0 | OAMF_PAL1 | OAMF_XFLIP
 
 Data_007_469B::
     db   $00, $FC, $7A, $01, $00, $04, $7C, $01, $00, $0C, $7E, $01, $00, $FC, $7E, $21
@@ -147,16 +147,16 @@ func_007_4759::
     cp   $04                                      ; $4762: $FE $04
     ret  nz                                       ; $4764: $C0
 
-    call func_007_7E5D                            ; $4765: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $4765: $CD $5D $7E
     ld   a, e                                     ; $4768: $7B
     call SetEntitySpriteVariant                   ; $4769: $CD $0C $3B
-    call func_007_7CF0                            ; $476C: $CD $F0 $7C
-    call func_007_7E5D                            ; $476F: $CD $5D $7E
+    call PushLinkOutOfEntity_07                   ; $476C: $CD $F0 $7C
+    call EntityLinkPositionXDifference_07         ; $476F: $CD $5D $7E
     add  $12                                      ; $4772: $C6 $12
     cp   $24                                      ; $4774: $FE $24
     jr   nc, .jr_4793                             ; $4776: $30 $1B
 
-    call func_007_7E6D                            ; $4778: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $4778: $CD $6D $7E
     add  $12                                      ; $477B: $C6 $12
     cp   $24                                      ; $477D: $FE $24
     jr   nc, .jr_4793                             ; $477F: $30 $12
@@ -276,7 +276,7 @@ func_007_480A::
     ldh  [hMultiPurpose1], a                      ; $4828: $E0 $D8
     ldh  a, [hLinkPositionX]                      ; $482A: $F0 $98
     ldh  [hMultiPurpose0], a                      ; $482C: $E0 $D7
-    ld   a, JINGLE_WATER_DIVE                     ; $482E: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $482E: $3E $0E
     ldh  [hJingle], a                             ; $4830: $E0 $F2
     ld   a, TRANSCIENT_VFX_WATER_SPLASH           ; $4832: $3E $01
     call AddTranscientVfx                         ; $4834: $CD $C7 $0C
@@ -420,7 +420,7 @@ func_007_48FD::
     ldh  [hMultiPurpose0], a                      ; $4903: $E0 $D7
     ld   a, TRANSCIENT_VFX_WATER_SPLASH           ; $4905: $3E $01
     call AddTranscientVfx                         ; $4907: $CD $C7 $0C
-    ld   a, JINGLE_WATER_DIVE                     ; $490A: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $490A: $3E $0E
     ldh  [hJingle], a                             ; $490C: $E0 $F2
     ret                                           ; $490E: $C9
 
@@ -496,8 +496,8 @@ func_007_4959::
     jp   SetEntitySpriteVariant                   ; $497F: $C3 $0C $3B
 
 func_007_4982::
-    call func_007_7CF0                            ; $4982: $CD $F0 $7C
-    call func_007_7E5D                            ; $4985: $CD $5D $7E
+    call PushLinkOutOfEntity_07                   ; $4982: $CD $F0 $7C
+    call EntityLinkPositionXDifference_07         ; $4985: $CD $5D $7E
     ld   a, e                                     ; $4988: $7B
     add  $02                                      ; $4989: $C6 $02
     ldh  [hActiveEntitySpriteVariant], a          ; $498B: $E0 $F1

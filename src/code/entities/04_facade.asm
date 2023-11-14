@@ -84,8 +84,9 @@ jr_004_50AD:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $50CB: $21 $40 $C3
     add  hl, de                                   ; $50CE: $19
     ld   a, [hl]                                  ; $50CF: $7E
-    and  $F0                                      ; $50D0: $E6 $F0
-    or   $02                                      ; $50D2: $F6 $02
+    and  ENTITY_PHYSICS_MASK                      ; $50D0: $E6 $F0
+    ; Set the entity's sprite count to 2
+    or   2                                        ; $50D2: $F6 $02
     ld   [hl], a                                  ; $50D4: $77
 
 .jr_50D5
@@ -146,7 +147,7 @@ label_004_510F:
 .jr_5120
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5120: $21 $40 $C3
     add  hl, bc                                   ; $5123: $09
-    ld   [hl], $08                                ; $5124: $36 $08
+    ld   [hl], 8                                  ; $5124: $36 $08
 
     ldh  a, [hActiveEntityState]                  ; $5126: $F0 $F0
     JP_TABLE                                      ; $5128
@@ -304,7 +305,7 @@ jr_004_51FA:
     ld   [hl], $7F                                ; $525E: $36 $7F
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5260: $21 $40 $C3
     add  hl, de                                   ; $5263: $19
-    ld   [hl], $C2                                ; $5264: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $5264: $36 $C2
     ld   hl, wEntitiesHitboxFlagsTable            ; $5266: $21 $50 $C3
     add  hl, de                                   ; $5269: $19
     ld   [hl], $00                                ; $526A: $36 $00
@@ -353,7 +354,7 @@ jr_004_5273:
     ld   [hl], a                                  ; $52AF: $77
     ld   hl, wEntitiesPhysicsFlagsTable           ; $52B0: $21 $40 $C3
     add  hl, de                                   ; $52B3: $19
-    ld   [hl], $12                                ; $52B4: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $52B4: $36 $12
     ld   hl, wEntitiesHitboxFlagsTable            ; $52B6: $21 $50 $C3
     add  hl, de                                   ; $52B9: $19
     ld   [hl], $00                                ; $52BA: $36 $00
@@ -413,7 +414,7 @@ jr_004_5273:
     ldh  [hActiveEntityPosY], a                   ; $530F: $E0 $EF
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5311: $21 $40 $C3
     add  hl, de                                   ; $5314: $19
-    ld   [hl], $12                                ; $5315: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $5315: $36 $12
     ld   hl, wEntitiesHitboxFlagsTable            ; $5317: $21 $50 $C3
     add  hl, de                                   ; $531A: $19
     ld   [hl], $00                                ; $531B: $36 $00
@@ -482,7 +483,7 @@ jr_004_5340:
     call SetEntitySpriteVariant                   ; $5375: $CD $0C $3B
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5378: $21 $40 $C3
     add  hl, bc                                   ; $537B: $09
-    ld   [hl], $48                                ; $537C: $36 $48
+    ld   [hl], 8 | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $537C: $36 $48
 
 .ret_537E
     ret                                           ; $537E: $C9
@@ -522,17 +523,17 @@ func_004_542F::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Facade1SpriteVariants::
 .variant0
-    db $68, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $68, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $68, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $68, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $6A, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $6C, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $6C, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6C, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $6C, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $6E, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 
 Data_004_5456::
     db   $00, $01, $02, $03, $03, $03, $03, $03, $03, $02, $01, $00, $00, $00, $00, $00
@@ -622,20 +623,20 @@ FacadeState1Handler:
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Facade2SpriteVariants::
 .variant0
-    db $40, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $40, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $40, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $40, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $42, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $42, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $42, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $42, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Facade3SpriteVariants::
 .variant0
-    db $70, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $70, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $70, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $70, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $72, OAM_GBC_PAL_6 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_6 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_6 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_6 | OAMF_PAL0 | OAMF_XFLIP
 
 Data_004_5501::
     db   $40, $07, $40, $27, $42, $07, $42, $27
@@ -739,8 +740,8 @@ label_004_5596:
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Facade4SpriteVariants::
 .variant0
-    db $F0, OAM_GBC_PAL_6 | OAM_DMG_PAL_1
-    db $F0, OAM_GBC_PAL_6 | OAM_DMG_PAL_1 | OAM_X_FLIP
+    db $F0, OAM_GBC_PAL_6 | OAMF_PAL1
+    db $F0, OAM_GBC_PAL_6 | OAMF_PAL1 | OAMF_XFLIP
 
 FacadeState3Handler::
     ld   de, Facade4SpriteVariants                ; $559D: $11 $99 $55

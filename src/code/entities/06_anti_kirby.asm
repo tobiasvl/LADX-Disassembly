@@ -49,7 +49,7 @@ AntiKirbyState0Handler::
     ld   [hl], $02                                ; $4288: $36 $02
     call GetEntityTransitionCountdown             ; $428A: $CD $05 $0C
     ld   [hl], $FF                                ; $428D: $36 $FF
-    ld   a, $3B                                   ; $428F: $3E $3B
+    ld   a, NOISE_SFX_KIRBY_INHALE                ; $428F: $3E $3B
     ldh  [hNoiseSfx], a                           ; $4291: $E0 $F4
     ret                                           ; $4293: $C9
 
@@ -313,7 +313,7 @@ jr_006_43F5:
     ld   [wIsLinkInTheAir], a                     ; $4419: $EA $46 $C1
     ld   a, $02                                   ; $441C: $3E $02
     ld   [wSubtractHealthBuffer], a               ; $441E: $EA $94 $DB
-    ld   a, JINGLE_JUMP_DOWN                      ; $4421: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $4421: $3E $08
     ldh  [hJingle], a                             ; $4423: $E0 $F2
     jp   IncrementEntityState                     ; $4425: $C3 $12 $3B
 
@@ -329,29 +329,29 @@ AntiKirbyState4Handler::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 AntiKirbySpriteVariants::
 .variant0
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant3
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant4
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant5
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant6
-    db $60, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant7
-    db $66, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $68, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $66, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $68, OAM_GBC_PAL_1 | OAMF_PAL0
 
 Data_006_4456::
     db   $00, $FC, $62, $21, $00, $04, $6A, $21, $00, $0C, $64, $21, $00, $FC, $64, $01

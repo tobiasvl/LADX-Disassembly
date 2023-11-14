@@ -1,7 +1,8 @@
 ;
 ; Useful definitions
 ;
-include "constants/gbhw.asm"
+include "constants/hardware.inc"
+include "constants/joypad.asm"
 include "constants/defines.asm"
 
 ;
@@ -9,7 +10,7 @@ include "constants/defines.asm"
 ;
 include "constants/animated_tiles.asm"
 include "constants/debug.asm"
-;include "constants/dialogs.asm"
+include "constants/dialog.asm"
 include "constants/directions.asm"
 include "constants/entities.asm"
 include "constants/events.asm"
@@ -29,11 +30,9 @@ include "constants/rooms.asm"
 ;
 ; Character maps for strings
 ;
-include "constants/charmaps/ascii.asm"
-include "constants/charmaps/jp.asm"
+include "constants/charmaps/dialog.asm"
 include "constants/charmaps/name_entry.asm"
 include "constants/charmaps/credits.asm"
-include "constants/charmaps/main.asm"
 
 ;
 ; Memory layout

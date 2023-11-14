@@ -33,10 +33,10 @@ Data_028_4031::
 
 func_028_4033::
     ld   a, [wGameplaySubtype]                    ; $4033: $FA $96 $DB
-    cp   $0D                                      ; $4036: $FE $0D
+    cp   GAMEPLAY_PHOTO_ALBUM                     ; $4036: $FE $0D
     jr   c, .return_408E_28                       ; $4038: $38 $54
 
-    cp   $11                                      ; $403A: $FE $11
+    cp   GAMEPLAY_PHOTO_MARIN_WELL                ; $403A: $FE $11
     jr   nc, .return_408E_28                      ; $403C: $30 $50
 
     ld   b, $00                                   ; $403E: $06 $00
@@ -140,7 +140,7 @@ PhotoAlbumInit1Handler:
     ld   a, $30                                   ; $40CB: PhotoAlbumInit1Handler $3E $30
     ldh  [hVolumeLeft], a                         ; $40CD: PhotoAlbumInit1Handler $E0 $AA
     call func_028_47CB                            ; $40CF: PhotoAlbumInit1Handler $CD $CB $47
-    ld   a, $09                                   ; $40D2: PhotoAlbumInit1Handler $3E $09
+    ld   a, IEF_SERIAL | IEF_VBLANK               ; $40D2: PhotoAlbumInit1Handler $3E $09
     ld   [rIE], a                                 ; $40D4: PhotoAlbumInit1Handler $E0 $FF
     jp   PhotoAlbumIncrementState                 ; $40D6: PhotoAlbumInit1Handler $C3 $DB $44
 
@@ -211,8 +211,7 @@ ENDC
     ld   hl, PhotoAlbumPalettes                   ; $415F: PhotoAlbumInit3Handler $21 $B0 $7C
     ld   de, wBGPal1                              ; $4162: PhotoAlbumInit3Handler $11 $10 $DC
     call func_028_4176                            ; $4165: PhotoAlbumInit3Handler $CD $76 $41
-                                                  ; $4168: PhotoAlbumInit3Handler $3E $C7
-    ld   a, $C7
+    ld   a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; $4168: PhotoAlbumInit3Handler $3E $C7
     ld   [wLCDControl], a                         ; $416A: PhotoAlbumInit3Handler $EA $FD $D6
     ld   [rLCDC], a                               ; $416D: PhotoAlbumInit3Handler $E0 $40
     xor  a                                        ; $416F: PhotoAlbumInit3Handler $AF
@@ -352,7 +351,7 @@ PhotoAlbumInit4Handler:
     ld_dialog_low a, Dialog22C                    ; $4222: PhotoAlbumInit4Handler $3E $2C
     ld   [wDialogIndex], a                        ; $4224: PhotoAlbumInit4Handler $EA $73 $C1
     call OpenDialogInTable2                       ; $4227: PhotoAlbumInit4Handler $CD $7C $23
-    ld   a, $01                                   ; $422A: PhotoAlbumInit4Handler $3E $01
+    ld   a, DIALOG_OPENING_1                      ; $422A: PhotoAlbumInit4Handler $3E $01
     ld   [wDialogState], a                        ; $422C: PhotoAlbumInit4Handler $EA $9F $C1
 .else_422F_28:
     jp   PhotoAlbumIncrementState                 ; $422F: PhotoAlbumInit4Handler $C3 $DB $44
@@ -610,8 +609,7 @@ PhotoAlbumPreparePictureHandler:
     call func_028_43CC                            ; $43B5: PhotoAlbumPreparePictureHandler $CD $CC $43
     call func_028_4411                            ; $43B8: PhotoAlbumPreparePictureHandler $CD $11 $44
     call func_028_442C                            ; $43BB: PhotoAlbumPreparePictureHandler $CD $2C $44
-                                                  ; $43BE: PhotoAlbumPreparePictureHandler $3E $C7
-    ld   a, $C7
+    ld   a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; $43BE: PhotoAlbumPreparePictureHandler $3E $C7
     ld   [wLCDControl], a                         ; $43C0: PhotoAlbumPreparePictureHandler $EA $FD $D6
     ld   [rLCDC], a                               ; $43C3: PhotoAlbumPreparePictureHandler $E0 $40
     xor  a                                        ; $43C5: PhotoAlbumPreparePictureHandler $AF
@@ -1626,44 +1624,44 @@ func_028_48C1::
     jp   func_028_4B6B                            ; $49EF: $C3 $6B $4B
 
 func_028_49F2::
-    ld   a, [wLinkPositionXHistory + 22]        ; $49f2: $fa $6b $d1
-    cp   $01                                    ; $49f5: $fe $01
-    jr   z, .jr_4a04                         ; $49f7: $28 $0b
+    ld   a, [wLinkPositionXHistory + 22]          ; $49F2: $FA $6B $D1
+    cp   $01                                      ; $49F5: $FE $01
+    jr   z, .jr_4a04                              ; $49F7: $28 $0B
 
-    cp   $03                                    ; $49f9: $fe $03
-    jr   z, .jr_4a04                         ; $49fb: $28 $07
+    cp   $03                                      ; $49F9: $FE $03
+    jr   z, .jr_4a04                              ; $49FB: $28 $07
 
-    and  a                                      ; $49fd: $a7
-    ld   a, $ff                                 ; $49fe: $3e $ff
-    ret  z                                      ; $4a00: $c8
+    and  a                                        ; $49FD: $A7
+    ld   a, $ff                                   ; $49FE: $3E $FF
+    ret  z                                        ; $4A00: $C8
 
-    ld   a, $f0                                 ; $4a01: $3e $f0
-    ret                                         ; $4a03: $c9
+    ld   a, $f0                                   ; $4A01: $3E $F0
+    ret                                           ; $4A03: $C9
 
 
 .jr_4a04::
-    ld   a, [wD172]                             ; $4a04: $fa $72 $d1
-    and  a                                      ; $4a07: $a7
-    jr   z, .jr_4a0e                         ; $4a08: $28 $04
+    ld   a, [wD172]                               ; $4A04: $FA $72 $D1
+    and  a                                        ; $4A07: $A7
+    jr   z, .jr_4a0e                              ; $4A08: $28 $04
 
-    call func_028_482E                          ; $4a0a: $cd $2e $48
-    ret  nc                                     ; $4a0d: $d0
+    call func_028_482E                            ; $4A0A: $CD $2E $48
+    ret  nc                                       ; $4A0D: $D0
 
 .jr_4a0e::
-    ld   a, [wD192]                             ; $4a0e: $fa $92 $d1
-    cp   $04                                    ; $4a11: $fe $04
-    jr   nz, .jr_4a19                        ; $4a13: $20 $04
+    ld   a, [wD192]                               ; $4A0E: $FA $92 $D1
+    cp   $04                                      ; $4A11: $FE $04
+    jr   nz, .jr_4a19                             ; $4A13: $20 $04
 
-    call func_028_482E                          ; $4a15: $cd $2e $48
-    ret  nc                                     ; $4a18: $d0
+    call func_028_482E                            ; $4A15: $CD $2E $48
+    ret  nc                                       ; $4A18: $D0
 
 .jr_4a19::
-    ld   a, [wD16D]                             ; $4a19: $fa $6d $d1
-    cp   $ff                                    ; $4a1c: $fe $ff
-    jp   z, func_028_4BA7                       ; $4a1e: $ca $a7 $4b
+    ld   a, [wD16D]                               ; $4A19: $FA $6D $D1
+    cp   $ff                                      ; $4A1C: $FE $FF
+    jp   z, func_028_4BA7                         ; $4A1E: $CA $A7 $4B
 
-    call Call_028_4b43                          ; $4a21: $cd $43 $4b
-    jp   func_028_4B6B                          ; $4a24: $c3 $6b $4b
+    call Call_028_4b43                            ; $4A21: $CD $43 $4B
+    jp   func_028_4B6B                            ; $4A24: $C3 $6B $4B
 
 
 func_028_4A27::
@@ -1825,11 +1823,11 @@ func_028_4B0F::
     ret                                           ; $4B42: $C9
 
 Call_028_4b43::
-    ld   a, $04                                 ; $4b43: $3e $04
-    ld   d, $00                                 ; $4b45: $16 $00
-    ld   hl, Data_028_4A92                      ; $4b47: $21 $92 $4a
-    ld   bc, $08                                ; $4b4a: $01 $08 $00
-    jp   func_028_4A51                          ; $4b4d: $c3 $51 $4a
+    ld   a, $04                                   ; $4B43: $3E $04
+    ld   d, $00                                   ; $4B45: $16 $00
+    ld   hl, Data_028_4A92                        ; $4B47: $21 $92 $4A
+    ld   bc, $08                                  ; $4B4A: $01 $08 $00
+    jp   func_028_4A51                            ; $4B4D: $C3 $51 $4A
 
 func_028_4B50::
     ld   a, $05                                   ; $4B50: $3E $05

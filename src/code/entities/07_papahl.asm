@@ -1,46 +1,46 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Papahl1SpriteVariants::
 .variant0
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $6C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 PapahlDirectionSpriteVariants::
 .right
-    db $70, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $72, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $70, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $72, OAM_GBC_PAL_1 | OAMF_PAL0
 .up
-    db $74, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $74, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_1 | OAMF_PAL0
 .left
-    db $78, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $7A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $78, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $7A, OAM_GBC_PAL_1 | OAMF_PAL0
 .down
-    db $7C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $7C, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_1 | OAMF_PAL0
 
 Papahl2SpriteVariants::
 .variant0
-    db $72, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $70, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $72, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $70, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $76, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $74, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $74, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $7A, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $78, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7A, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $78, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $76, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $7C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $7C, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Papahl4SpriteVariants::
 .variant0
-    db $7E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $7E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7E, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $7E, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 PapahlEntityHandler::
     ld   a, [wIsIndoor]                           ; $4A1B: $FA $A5 $DB
@@ -61,7 +61,7 @@ PapahlEntityHandler::
     cp   $08                                      ; $4A36: $FE $08
     jr   nc, .render                              ; $4A38: $30 $09
 
-    call func_007_7E5D                            ; $4A3A: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $4A3A: $CD $5D $7E
     ld   a, e                                     ; $4A3D: $7B
     ldh  [hActiveEntitySpriteVariant], a          ; $4A3E: $E0 $F1
     ld   de, Papahl1SpriteVariants                ; $4A40: $11 $EF $49
@@ -75,7 +75,7 @@ PapahlEntityHandler::
     rra                                           ; $4A4B: $1F
     and  $01                                      ; $4A4C: $E6 $01
     call SetEntitySpriteVariant                   ; $4A4E: $CD $0C $3B
-    call func_007_7CF0                            ; $4A51: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $4A51: $CD $F0 $7C
     call func_007_7D43                            ; $4A54: $CD $43 $7D
     ret  nc                                       ; $4A57: $D0
 
@@ -122,7 +122,7 @@ jr_007_4A69:
 
 .jr_4AA0
     call ReturnIfNonInteractive_07                ; $4AA0: $CD $96 $7D
-    call func_007_7CF0                            ; $4AA3: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $4AA3: $CD $F0 $7C
     ldh  a, [hActiveEntityState]                  ; $4AA6: $F0 $F0
     JP_TABLE                                      ; $4AA8
 ._00 dw func_007_4AB3                             ; $4AA9
@@ -132,7 +132,7 @@ jr_007_4A69:
 ._04 dw func_007_4B5B                             ; $4AB1
 
 func_007_4AB3::
-    call func_007_7E5D                            ; $4AB3: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $4AB3: $CD $5D $7E
     ld   hl, wEntitiesDirectionTable              ; $4AB6: $21 $80 $C3
     add  hl, bc                                   ; $4AB9: $09
     ld   [hl], e                                  ; $4ABA: $73
@@ -140,7 +140,7 @@ func_007_4AB3::
     cp   $48                                      ; $4ABD: $FE $48
     jr   nc, jr_007_4AE9                          ; $4ABF: $30 $28
 
-    call func_007_7E6D                            ; $4AC1: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $4AC1: $CD $6D $7E
     add  $24                                      ; $4AC4: $C6 $24
     cp   $48                                      ; $4AC6: $FE $48
     jr   nc, jr_007_4AE9                          ; $4AC8: $30 $1F

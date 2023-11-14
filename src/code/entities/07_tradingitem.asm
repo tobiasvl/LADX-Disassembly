@@ -18,59 +18,59 @@ TradingItemDialogs::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 TradingItem1SpriteVariants::
 .variant0
-    db $9A, OAM_GBC_PAL_6 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_6 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_6 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_6 | OAMF_PAL1
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 TradingItem2SpriteVariants::
 .variant0
-    db $74, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $74, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_0 | OAMF_PAL0
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 TradingItem3SpriteVariants::
 .variant0
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 .variant1
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 .variant2
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 .variant3
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 .variant4
-    db $9A, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_4 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_4 | OAMF_PAL1
 .variant5
-    db $9A, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_4 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_4 | OAMF_PAL1
 .variant6
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 .variant7
-    db $9A, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_4 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_4 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_4 | OAMF_PAL1
 .variant8
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 .variant9
-    db $9A, OAM_GBC_PAL_6 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_6 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_6 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_6 | OAMF_PAL1
 .variant10
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 .variant11
-    db $9A, OAM_GBC_PAL_6 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_6 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_6 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_6 | OAMF_PAL1
 .variant12
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 .variant13
-    db $9A, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
-    db $9C, OAM_GBC_PAL_7 | OAM_DMG_PAL_1
+    db $9A, OAM_GBC_PAL_7 | OAMF_PAL1
+    db $9C, OAM_GBC_PAL_7 | OAMF_PAL1
 
 TradingItemEntityHandler::
     ld   a, [wIsIndoor]                           ; $5510: $FA $A5 $DB
@@ -89,7 +89,7 @@ TradingItemEntityHandler::
 
 .jr_007_5528
     ld   a, [wOverworldRoomStatus + MOUNTAIN_CAVE_ROOM_2] ; $5528: $FA $7B $D8
-    and  $10                                      ; $552B: $E6 $10
+    and  OW_ROOM_STATUS_CHANGED                   ; $552B: $E6 $10
     ret  z                                        ; $552D: $C8
 
 .jr_007_552E
@@ -149,7 +149,7 @@ TradingItemEntityHandler::
     call CheckLinkCollisionWithEnemy_trampoline   ; $557A: $CD $5A $3B
     jr   nc, .return                              ; $557D: $30 $1A
 
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $557F: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $557F: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $5581: $EA $68 $D3
     ld   [wC167], a                               ; $5584: $EA $67 $C1
     ldh  a, [hNextDefaultMusicTrack]              ; $5587: $F0 $BF
@@ -175,10 +175,10 @@ TradingItemEntityHandler::
     ld   hl, TradingItemDialogs - 1               ; $55A4: $21 $C1 $54
     add  hl, de                                   ; $55A7: $19
     ld   a, [hl]                                  ; $55A8: $7E
-    cp_dialog_low Dialog09D                                ; $55A9: $FE $9D
+    cp_dialog_low Dialog09D                       ; $55A9: $FE $9D
     jr   z, .openDialogInTable0                   ; $55AB: $28 $04
 
-    cp_dialog_low Dialog044                                ; $55AD: $FE $44
+    cp_dialog_low Dialog044                       ; $55AD: $FE $44
     jr   nz, .openDialogInTable1                  ; $55AF: $20 $05
 .openDialogInTable0
     call OpenDialogInTable0                       ; $55B1: $CD $85 $23

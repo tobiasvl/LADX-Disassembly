@@ -1,11 +1,11 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown005SpriteVariants::
 .variant0 ; $69AA
-    db $36, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $36, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $36, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $36, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant1 ; $69AE
-    db $36, OAM_GBC_PAL_2 | OAM_DMG_PAL_1
-    db $36, OAM_GBC_PAL_2 | OAM_DMG_PAL_1 | OAM_X_FLIP
+    db $36, OAM_GBC_PAL_2 | OAMF_PAL1
+    db $36, OAM_GBC_PAL_2 | OAMF_PAL1 | OAMF_XFLIP
 
 MagicRodFireballEntityHandler::
     ld   hl, wActiveProjectileCount               ; $69B2: $21 $4D $C1
@@ -69,7 +69,7 @@ jr_003_69F8:
     ldh  [hMultiPurpose1], a                      ; $6A12: $E0 $D8
     ld   a, $08                                   ; $6A14: $3E $08
     call AddTranscientVfx                         ; $6A16: $CD $C7 $0C
-    ld   a, $13                                   ; $6A19: $3E $13
+    ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $6A19: $3E $13
     ldh  [hNoiseSfx], a                           ; $6A1B: $E0 $F4
 
 ret_003_6A1D:

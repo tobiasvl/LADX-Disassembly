@@ -71,14 +71,14 @@ func_005_55CA::
     and  $3F                                      ; $55D5: $E6 $3F
     jr   nz, jr_005_561E                          ; $55D7: $20 $45
 
-    ld   a, $65                                   ; $55D9: $3E $65
+    ld   a, ENTITY_ANGLER_FISH                    ; $55D9: $3E $65
     ld   e, $04                                   ; $55DB: $1E $04
     call SpawnNewEntityInRange_trampoline         ; $55DD: $CD $98 $3B
     jr   c, jr_005_5650                           ; $55E0: $38 $6E
 
     ld   hl, wEntitiesPhysicsFlagsTable           ; $55E2: $21 $40 $C3
     add  hl, de                                   ; $55E5: $19
-    ld   [hl], $02                                ; $55E6: $36 $02
+    ld   [hl], 2                                  ; $55E6: $36 $02
     ld   hl, wEntitiesHitboxFlagsTable            ; $55E8: $21 $50 $C3
     add  hl, de                                   ; $55EB: $19
     ld   [hl], $80                                ; $55EC: $36 $80
@@ -116,14 +116,14 @@ jr_005_561E:
     and  $7F                                      ; $5625: $E6 $7F
     jr   nz, jr_005_5650                          ; $5627: $20 $27
 
-    ld   a, $65                                   ; $5629: $3E $65
+    ld   a, ENTITY_ANGLER_FISH                    ; $5629: $3E $65
     ld   e, $04                                   ; $562B: $1E $04
     call SpawnNewEntityInRange_trampoline         ; $562D: $CD $98 $3B
     jr   c, jr_005_5650                           ; $5630: $38 $1E
 
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5632: $21 $40 $C3
     add  hl, de                                   ; $5635: $19
-    ld   [hl], $41                                ; $5636: $36 $41
+    ld   [hl], 1 | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $5636: $36 $41
     ld   hl, wEntitiesPrivateState3Table          ; $5638: $21 $D0 $C2
     add  hl, de                                   ; $563B: $19
     ld   [hl], $02                                ; $563C: $36 $02
@@ -150,7 +150,7 @@ jr_005_5650:
     and  $FF                                      ; $565E: $E6 $FF
     jr   nz, .jr_56B1                             ; $5660: $20 $4F
 
-    ld   a, $65                                   ; $5662: $3E $65
+    ld   a, ENTITY_ANGLER_FISH                    ; $5662: $3E $65
     ld   e, $04                                   ; $5664: $1E $04
     call SpawnNewEntityInRange_trampoline         ; $5666: $CD $98 $3B
     jr   c, .jr_56B1                              ; $5669: $38 $46
@@ -160,7 +160,7 @@ jr_005_5650:
     ld   [hl], d                                  ; $566F: $72
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5670: $21 $40 $C3
     add  hl, de                                   ; $5673: $19
-    ld   [hl], $02                                ; $5674: $36 $02
+    ld   [hl], 2                                  ; $5674: $36 $02
     ld   hl, wEntitiesOptions1Table               ; $5676: $21 $30 $C4
     add  hl, de                                   ; $5679: $19
     ld   [hl], d                                  ; $567A: $72
@@ -293,7 +293,7 @@ func_005_5737::
     jr   nz, .jr_574A                             ; $5743: $20 $05
 
     ld   hl, hWaveSfx                             ; $5745: $21 $F3 $FF
-    ld   [hl], $0D                                ; $5748: $36 $0D
+    ld   [hl], WAVE_SFX_ANGLER_DASH               ; $5748: $36 $0D
 
 .jr_574A
     ret  nc                                       ; $574A: $D0
@@ -447,11 +447,11 @@ func_005_5901::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown013SpriteVariants::
 .variant0
-    db $74, OAM_GBC_PAL_5 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_5 | OAM_DMG_PAL_0
+    db $74, OAM_GBC_PAL_5 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_5 | OAMF_PAL0
 .variant1
-    db $76, OAM_GBC_PAL_5 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $74, OAM_GBC_PAL_5 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_5 | OAMF_PAL0 | OAMF_XFLIP
+    db $74, OAM_GBC_PAL_5 | OAMF_PAL0 | OAMF_XFLIP
 
 func_005_593A::
     ld   de, Unknown013SpriteVariants             ; $593A: $11 $32 $59
@@ -494,11 +494,11 @@ func_005_593A::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown014SpriteVariants::
 .variant0
-    db $78, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $7A, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $78, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $7A, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant1
-    db $7C, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $7E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $7C, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $7E, OAM_GBC_PAL_3 | OAMF_PAL0
 
 Data_005_5980::
     db   $01, $FF
@@ -513,7 +513,7 @@ func_005_5984::
     cpl                                           ; $5989: $2F
     rra                                           ; $598A: $1F
     rra                                           ; $598B: $1F
-    and  OAM_X_FLIP                               ; $598C: $E6 $20
+    and  OAMF_XFLIP                               ; $598C: $E6 $20
     ldh  [hActiveEntityFlipAttribute], a          ; $598E: $E0 $ED
     ld   de, Unknown014SpriteVariants             ; $5990: $11 $78 $59
     call RenderActiveEntitySpritesPair            ; $5993: $CD $C0 $3B

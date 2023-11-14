@@ -1,11 +1,36 @@
 ; constants for graphics
 
+; pixel width of one tile
+TILE_WIDTH          equ 8
+; pixel height of one tile
+TILE_HEIGHT         equ 8
+; number of tiles in one row
+TILES_PER_ROW       equ SCRN_X/(TILE_WIDTH*2)
+; number of tiles in one column
+TILES_PER_COLUMN    equ SCRN_Y/(TILE_HEIGHT*2)
+; number of tiles per map
+TILES_PER_MAP       equ $80
+; Size of a single tile in bytes
+TILE_SIZE           equ $10
+
 ; Number of game objects in one BG map row
-OBJECTS_PER_ROW    equ DISPLAY_WIDTH/(TILE_WIDTH*2)
+OBJECTS_PER_ROW    equ SCRN_X/(TILE_WIDTH*2)
 ; Number of game objects in one BG map column
-OBJECTS_PER_COLUMN equ DISPLAY_HEIGHT/(TILE_HEIGHT*2) - 1
+OBJECTS_PER_COLUMN equ SCRN_Y/(TILE_HEIGHT*2) - 1
 ; Number of game objects in a whole room BG map
 OBJECTS_PER_ROOM   equ OBJECTS_PER_ROW * OBJECTS_PER_COLUMN
+
+; GBC palettes
+OAM_GBC_PAL_0     EQU 0         ; Palette 0 for GBC only
+OAM_GBC_PAL_1     EQU 1         ; Palette 1 for GBC only
+OAM_GBC_PAL_2     EQU 2         ; Palette 2 for GBC only
+OAM_GBC_PAL_3     EQU 3         ; Palette 3 for GBC only
+OAM_GBC_PAL_4     EQU 4         ; Palette 4 for GBC only
+OAM_GBC_PAL_5     EQU 5         ; Palette 5 for GBC only
+OAM_GBC_PAL_6     EQU 6         ; Palette 6 for GBC only
+OAM_GBC_PAL_7     EQU 7         ; Palette 7 for GBC only
+
+OAM_NO_FLIP       EQU 0
 
 ; Drawing modes for draw commands.
 ; See wDrawCommands
@@ -141,6 +166,7 @@ OBJECT_CLIFF_TOP            equ $4D
 OBJECT_BUSH                 equ $5C
 OBJECT_WEATHER_VANE_BASE    equ $5E
 OBJECT_WELL                 equ $61
+OBJECT_HURT_TILE            equ $69 ; overworld: cactus
 OBJECT_ROUNDED_BLOCK        equ $6E
 OBJECT_OWL_STATUE           equ $6F
 OBJECT_WEATHER_VANE_TOP     equ $91
@@ -182,7 +208,11 @@ OBJECT_HIDDEN_BOMBABLE_WALL_BOTTOM equ $48
 OBJECT_HIDDEN_BOMBABLE_WALL_LEFT   equ $49
 OBJECT_HIDDEN_BOMBABLE_WALL_RIGHT  equ $4A
 OBJECT_SIDE_VIEW_SPIKES            equ $4C
+OBJECT_DASHABLE_ROCK_1             equ $4E
+OBJECT_DASHABLE_ROCK_2             equ $4F
+;OBJECT_HURT_TILE                  equ $69 ; same ID as overworld. indoors: spikes
 OBJECT_POT_WITH_SWITCH             equ $8E
+OBJECT_DASHABLE_ROCK_3             equ $88
 OBJECT_CHEST_CLOSED                equ $A0
 OBJECT_CHEST_OPEN                  equ $A1
 OBJECT_PUSHABLE_BLOCK              equ $A7

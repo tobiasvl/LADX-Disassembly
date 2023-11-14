@@ -173,7 +173,7 @@ GameOverInteractiveHandler::
     jr   jr_001_42F5                              ; $42F0: $18 $03 ; $42F0: $18 $03
 
 .jr_42F2::
-    call func_001_5DE6                            ; $42F2: $CD $E6 $5D ; $42F2: $CD $E6 $5D
+    call SaveGameToFile                           ; $42F2: $CD $E6 $5D ; $42F2: $CD $E6 $5D
 
 jr_001_42F5::
     xor  a                                        ; $42F5: $AF ; $42F5: $AF
@@ -191,7 +191,7 @@ jr_001_42F5::
     ldh  [rOBP1], a                               ; $4307: $E0 $49 ; $4307: $E0 $49
     ld   [wBGPalette], a                          ; $4309: $EA $97 $DB ; $4309: $EA $97 $DB
     ldh  [rBGP], a                                ; $430C: $E0 $47 ; $430C: $E0 $47
-    ld   [hSwitchBlocksState], a                  ; $430E: $EA $FB $D6 ; $430E: $EA $FB $D6
+    ld   [wSwitchBlocksState], a                  ; $430E: $EA $FB $D6 ; $430E: $EA $FB $D6
     ld   [wD475], a                               ; $4311: $EA $75 $D4 ; $4311: $EA $75 $D4
     ldh  a, [hLinkPositionX]                      ; $4314: $F0 $98 ; $4314: $F0 $98
     ld   [wMapEntrancePositionX], a               ; $4316: $EA $9D $DB ; $4316: $EA $9D $DB
@@ -205,7 +205,7 @@ jr_001_42F5::
     ret                                           ; $432B: $C9 ; $432B: $C9
 
 jr_001_432C::
-    call func_001_5DE6                            ; $432C: $CD $E6 $5D ; $432C: $CD $E6 $5D
+    call SaveGameToFile                           ; $432C: $CD $E6 $5D ; $432C: $CD $E6 $5D
     xor  a                                        ; $432F: $AF ; $432F: $AF
     ldh  [hActiveEntityTilesOffset], a            ; $4330: $E0 $F5 ; $4330: $E0 $F5
     call func_001_6162                            ; $4332: $CD $62 $61 ; $4332: $CD $62 $61
@@ -220,7 +220,7 @@ Data_001_4336::
 
 func_001_4339::
     ld   hl, wC13F                                ; $4339: $21 $3F $C1 ; $4339: $21 $3F $C1
-    call func_001_6BA8                            ; $433C: $CD $A8 $6B ; $433C: $CD $A8 $6B
+    call MoveSelect                               ; $433C: $CD $A8 $6B
     ldh  a, [hJoypadState]                        ; $433F: $F0 $CC ; $433F: $F0 $CC
     and  J_DOWN                                   ; $4341: $E6 $08 ; $4341: $E6 $08
     jr   z, jr_001_434D                           ; $4343: $28 $08 ; $4343: $28 $08

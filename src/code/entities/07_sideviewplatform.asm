@@ -67,7 +67,7 @@ func_007_639E::
     and  $80                                      ; $63BD: $E6 $80
     jr   nz, .ret_63F6                            ; $63BF: $20 $35
 
-    call func_007_7E6D                            ; $63C1: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $63C1: $CD $6D $7E
     add  $08                                      ; $63C4: $C6 $08
     bit  7, a                                     ; $63C6: $CB $7F
     jr   z, .ret_63F6                             ; $63C8: $28 $2C
@@ -179,7 +179,7 @@ SideViewPlatformEntityHandler::
     cp   $03                                      ; $6470: $FE $03
     jr   nz, .jr_6478                             ; $6472: $20 $04
 
-    ld   a, $11                                   ; $6474: $3E $11
+    ld   a, NOISE_SFX_RUMBLE                      ; $6474: $3E $11
     ldh  [hNoiseSfx], a                           ; $6476: $E0 $F4
 
 .jr_6478

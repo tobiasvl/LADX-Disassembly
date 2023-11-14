@@ -13,14 +13,14 @@ Data_018_4B55::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MrWrite2SpriteVariants::
 .variant0
-    db $7A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $7C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $7A, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $7C, OAM_GBC_PAL_2 | OAMF_PAL0
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MrWrite1SpriteVariants::
 .variant0
-    db $7E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $7E, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7E, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $7E, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 ; Entity handler for both Mr Write and the Goat
 MrWriteEntityHandler::
@@ -71,7 +71,7 @@ jr_018_4BB5:
     call SetEntitySpriteVariant                   ; $4BE1: $CD $0C $3B
 
 .jr_4BE4
-    call func_018_7D36                            ; $4BE4: $CD $36 $7D
+    call PushLinkOutOfEntity_18                   ; $4BE4: $CD $36 $7D
     ldh  a, [hMapRoom]                            ; $4BE7: $F0 $F6
     cp   UNKNOWN_ROOM_A8                          ; $A8 = Mr. Write's house
     jp   z, label_018_4C75                        ; $4BEB: $CA $75 $4C

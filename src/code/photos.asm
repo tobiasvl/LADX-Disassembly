@@ -236,15 +236,15 @@ JumpTable_037_40EC::
     ldh  [hBaseScrollX], a                        ; $4175: $E0 $96
     ldh  [hBaseScrollY], a                        ; $4177: $E0 $97
     ld   [wRoomTransitionState], a                ; $4179: $EA $24 $C1
-    jp   func_037_53FE                            ; $417C: $C3 $FE $53
+    jp   IncrementGameplaySubtype_37              ; $417C: $C3 $FE $53
 
 JumpTable_037_417F::
     call label_27F2                               ; $417F: $CD $F2 $27
-    jp   func_037_53FE                            ; $4182: $C3 $FE $53
+    jp   IncrementGameplaySubtype_37              ; $4182: $C3 $FE $53
 
 JumpTable_037_4185::
     call ClearLowerWRAM                           ; $4185: $CD $C6 $29
-    jp   func_037_53FE                            ; $4188: $C3 $FE $53
+    jp   IncrementGameplaySubtype_37              ; $4188: $C3 $FE $53
 
 func_037_418B::
     ld   h, $37                                   ; $418B: $26 $37
@@ -440,10 +440,10 @@ JumpTable_037_4229::
     jr   .else_42F4_37                            ; $42F2: $18 $00
 
 .else_42F4_37:
-    ld   a, $C7                                   ; $42F4: $3E $C7
+    ld   a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; $42F4: $3E $C7
     ld   [wLCDControl], a                         ; $42F6: $EA $FD $D6
     ldh  [rLCDC], a                               ; $42F9: $E0 $40
-    jp   func_037_53FE                            ; $42FB: $C3 $FE $53
+    jp   IncrementGameplaySubtype_37              ; $42FB: $C3 $FE $53
 
 JumpTable_037_42FE::
     ldh  a, [hFrameCounter]                       ; $42FE: $F0 $E7
@@ -479,7 +479,7 @@ JumpTable_037_42FE::
     cp   $04                                      ; $432B: $FE $04
     ret  nz                                       ; $432D: $C0
 
-    jp   func_037_53FE                            ; $432E: $C3 $FE $53
+    jp   IncrementGameplaySubtype_37              ; $432E: $C3 $FE $53
 
 func_037_4331::
 IF __PATCH_0__
@@ -801,7 +801,7 @@ func_037_4552::
 
     inc  a                                        ; $455B: $3C
     ld   [wEntitiesPosYTable+4], a                ; $455C: $EA $14 $C2
-    ld   a, $40                                   ; $455F: $3E $40
+    ld   a, NOISE_SFX_PHOTO                       ; $455F: $3E $40
     ldh  [hNoiseSfx], a                           ; $4561: $E0 $F4
     ldh  a, [hIsGBC]                              ; $4563: $F0 $FE
     and  a                                        ; $4565: $A7
@@ -926,7 +926,7 @@ func_037_4552::
     ld   b, a                                     ; $4603: $47
     ld   a, [hl]                                  ; $4604: $7E
     call func_037_418B                            ; $4605: $CD $8B $41
-    ld   a, $E5                                   ; $4608: $3E $E5
+    ld   a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_WINON | LCDCF_OBJ16 | LCDCF_BGON ; $4608: $3E $E5
     ld   [wLCDControl], a                         ; $460A: $EA $FD $D6
     ldh  [rLCDC], a                               ; $460D: $E0 $40
     xor  a                                        ; $460F: $AF
@@ -976,7 +976,7 @@ JumpTable_037_462F::
     ld   [wPhotos2], a                            ; $4652: $EA $0D $DC
 
 .else_4655_37:
-    call func_037_53FE                            ; $4655: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $4655: $CD $FE $53
     ret                                           ; $4658: $C9
 
 ; Marin and Link cliffside photo animation.
@@ -1173,7 +1173,7 @@ JumpTable_037_4753::
     xor  a                                        ; $4766: $AF
     ld   [wC16C], a                               ; $4767: $EA $6C $C1
     ld   [wTransitionSequenceCounter], a          ; $476A: $EA $6B $C1
-    call func_037_53FE                            ; $476D: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $476D: $CD $FE $53
     ret                                           ; $4770: $C9
 
 func_037_4771::
@@ -1402,7 +1402,7 @@ JumpTable_037_48CB::
     cp   $04                                      ; $48D8: $FE $04
     jr   nz, .else_48E7_37                        ; $48DA: $20 $0B
 
-    call func_037_53FE                            ; $48DC: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $48DC: $CD $FE $53
     ld   a, [wPhotos1]                            ; $48DF: $FA $0C $DC
     or   $08                                      ; $48E2: $F6 $08
     ld   [wPhotos1], a                            ; $48E4: $EA $0C $DC
@@ -1715,7 +1715,7 @@ JumpTable_037_4AE8::
     xor  a                                        ; $4AFA: $AF
     ld   [wC16C], a                               ; $4AFB: $EA $6C $C1
     ld   [wTransitionSequenceCounter], a          ; $4AFE: $EA $6B $C1
-    call func_037_53FE                            ; $4B01: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $4B01: $CD $FE $53
     ret                                           ; $4B04: $C9
 
 JumpTable_037_4B05::
@@ -2241,7 +2241,7 @@ JumpTable_037_4E5F::
     xor  a                                        ; $4E74: $AF
     ld   [wC16C], a                               ; $4E75: $EA $6C $C1
     ld   [wTransitionSequenceCounter], a          ; $4E78: $EA $6B $C1
-    call func_037_53FE                            ; $4E7B: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $4E7B: $CD $FE $53
     ret                                           ; $4E7E: $C9
 
 func_037_4E7F::
@@ -2414,10 +2414,11 @@ IF !__PATCH_4__
     and  J_START                                  ; $4F5D: $E6 $80
     jr   z, .else_4F6B_37                         ; $4F5F: $28 $0A
 
+    ; If START is pressed, skip a transition
     xor  a                                        ; $4F61: $AF
     ld   [wC16C], a                               ; $4F62: $EA $6C $C1
     ld   [wTransitionSequenceCounter], a          ; $4F65: $EA $6B $C1
-    call func_037_53FE                            ; $4F68: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $4F68: $CD $FE $53
 ENDC
 
 .else_4F6B_37:
@@ -2450,7 +2451,7 @@ JumpTable_037_4F7D::
     ld   a, [wPhotos1]                            ; $4F8C: $FA $0C $DC
     or   $80                                      ; $4F8F: $F6 $80
     ld   [wPhotos1], a                            ; $4F91: $EA $0C $DC
-    call func_037_53FE                            ; $4F94: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $4F94: $CD $FE $53
     call func_037_49CE                            ; $4F97: $CD $CE $49
     ret                                           ; $4F9A: $C9
 
@@ -2467,7 +2468,7 @@ JumpTable_037_4F9B::
     ld   a, [wPhotos2]                            ; $4FAA: $FA $0D $DC
     or   $01                                      ; $4FAD: $F6 $01
     ld   [wPhotos2], a                            ; $4FAF: $EA $0D $DC
-    call func_037_53FE                            ; $4FB2: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $4FB2: $CD $FE $53
     ret                                           ; $4FB5: $C9
 
 JumpTable_037_4FB6::
@@ -2785,7 +2786,7 @@ JumpTable_037_51AB::
     cp   $04                                      ; $51BD: $FE $04
     jr   nz, .else_51D5_37                        ; $51BF: $20 $14
 
-    call func_037_53FE                            ; $51C1: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $51C1: $CD $FE $53
     ld   a, [wPhotos2]                            ; $51C4: $FA $0D $DC
     or   $02                                      ; $51C7: $F6 $02
     ld   [wPhotos2], a                            ; $51C9: $EA $0D $DC
@@ -3011,7 +3012,7 @@ JumpTable_037_530D::
     ld   [hl], a                                  ; $531B: $77
     ld   [wC16C], a                               ; $531C: $EA $6C $C1
     ld   [wTransitionSequenceCounter], a          ; $531F: $EA $6B $C1
-    call func_037_53FE                            ; $5322: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $5322: $CD $FE $53
     ld   a, [wPhotos2]                            ; $5325: $FA $0D $DC
     or   $04                                      ; $5328: $F6 $04
     ld   [wPhotos2], a                            ; $532A: $EA $0D $DC
@@ -3058,7 +3059,7 @@ JumpTable_037_535E::
     xor  a                                        ; $536E: $AF
     ld   [wC16C], a                               ; $536F: $EA $6C $C1
     ld   [wTransitionSequenceCounter], a          ; $5372: $EA $6B $C1
-    call func_037_53FE                            ; $5375: $CD $FE $53
+    call IncrementGameplaySubtype_37              ; $5375: $CD $FE $53
     ret                                           ; $5378: $C9
 
 Data_037_5379::
@@ -3104,7 +3105,7 @@ JumpTable_037_5393.func_037_53C0::
     call CopyDataToVRAM                           ; $53C6: $CD $13 $0A
 
 .else_53C9_37:
-    ld   a, $C7                                   ; $53C9: $3E $C7
+    ld   a, LCDCF_ON | LCDCF_WIN9C00 | LCDCF_OBJ16 | LCDCF_OBJON | LCDCF_BGON ; $53C9: $3E $C7
     ld   [wLCDControl], a                         ; $53CB: $EA $FD $D6
     ldh  [rLCDC], a                               ; $53CE: $E0 $40
     ld   hl, Data_037_5379                        ; $53D0: $21 $79 $53
@@ -3131,7 +3132,7 @@ JumpTable_037_5393.func_037_53C0::
     ld   [wBGMapToLoad], a                        ; $53FA: $EA $FF $D6
     ret                                           ; $53FD: $C9
 
-func_037_53FE::
+IncrementGameplaySubtype_37::
     ld   hl, wGameplaySubtype                     ; $53FE: $21 $96 $DB
     inc  [hl]                                     ; $5401: $34
     ret                                           ; $5402: $C9

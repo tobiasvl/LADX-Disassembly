@@ -217,7 +217,7 @@ func_006_4C91::
     and  $0F                                      ; $4CC4: $E6 $0F
     jr   nz, ret_006_4D3A                         ; $4CC6: $20 $72
 
-    ld   a, $2F                                   ; $4CC8: $3E $2F
+    ld   a, NOISE_SFX_CUEBALL_SPLASH              ; $4CC8: $3E $2F
     ldh  [hNoiseSfx], a                           ; $4CCA: $E0 $F4
     ld   a, $01                                   ; $4CCC: $3E $01
 
@@ -272,7 +272,7 @@ func_006_4C91::
     ld   [hl], $01                                ; $4D1E: $36 $01
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4D20: $21 $40 $C3
     add  hl, de                                   ; $4D23: $19
-    ld   [hl], $C2                                ; $4D24: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $4D24: $36 $C2
     ld   hl, wEntitiesOptions1Table               ; $4D26: $21 $30 $C4
     add  hl, de                                   ; $4D29: $19
     ld   [hl], ENTITY_OPT1_NONE                   ; $4D2A: $36 $00
@@ -354,17 +354,17 @@ func_006_4E64::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 CueBallSpriteVariants::
 .variant0
-    db $6C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant1
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $6C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_Y_FLIP
+    db $6C, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_YFLIP
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_YFLIP
 .variant3
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 
 label_006_4E88:
     ld   de, CueBallSpriteVariants                ; $4E88: $11 $78 $4E

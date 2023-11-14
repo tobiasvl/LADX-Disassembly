@@ -42,7 +42,7 @@ MarinBeachPrepare0::
     call IncrementGameplaySubtype                 ; $623F: $CD $D6 $44
     ldh  a, [hIsGBC]                              ; $6242: $F0 $FE
     and  a                                        ; $6244: $A7
-    jr   z, MarinBeachPrepare1                   ; $6245: $28 $19
+    jr   z, MarinBeachPrepare1                    ; $6245: $28 $19
 
     ld   hl, wBGPal1                              ; $6247: $21 $10 $DC
     ld   c, $80                                   ; $624A: $0E $80
@@ -218,13 +218,13 @@ MarinBeachScroll1::
     jr   z, .jr_63E4                              ; $63CD: $28 $15
     ldh  a, [hFrameCounter]                       ; $63CF: $F0 $E7
     and  $07                                      ; $63D1: $E6 $07
-    jr   nz, MarinBeachScroll2                   ; $63D3: $20 $42
+    jr   nz, MarinBeachScroll2                    ; $63D3: $20 $42
     call func_1A39                                ; $63D5: $CD $39 $1A
     ld   a, [wTransitionSequenceCounter]          ; $63D8: $FA $6B $C1
     cp   $04                                      ; $63DB: $FE $04
-    jr   nz, MarinBeachScroll2                   ; $63DD: $20 $38
+    jr   nz, MarinBeachScroll2                    ; $63DD: $20 $38
     call IncrementGameplaySubtype                 ; $63DF: $CD $D6 $44
-    jr   MarinBeachScroll2                       ; $63E2: $18 $33
+    jr   MarinBeachScroll2                        ; $63E2: $18 $33
 
 .jr_63E4::
     ldh  a, [hFrameCounter]                       ; $63E4: $F0 $E7
@@ -473,16 +473,18 @@ func_001_651E::
     call func_001_658B                            ; $656A: $CD $8B $65
     ld   a, $48                                   ; $656D: $3E $48
     ldh  [hActiveEntityPosX], a                   ; $656F: $E0 $EE
+    ; TUNIC_GREEN
     ld   de, Data_001_6512                        ; $6571: $11 $12 $65
     ld   a, [wTunicType]                          ; $6574: $FA $0F $DC
-    and  $03                                        ; $6577: $A7
-    jr   z, .jr_6584                              ; $6578: $28 $0A
+    and  a                                        ; $6577: $A7
+    jr   z, .loadTunic                            ; $6578: $28 $0A
     ld   de, Data_001_6516                        ; $657A: $11 $16 $65
-    cp   $01                                      ; $657D: $FE $01
-    jr   z, .jr_6584                              ; $657F: $28 $03
+    cp   TUNIC_RED                                ; $657D: $FE $01
+    jr   z, .loadTunic                            ; $657F: $28 $03
+    ; TUNIC_BLUE
     ld   de, Data_001_651A                        ; $6581: $11 $1A $65
 
-.jr_6584::
+.loadTunic::
     ld   hl, wDynamicOAMBuffer+8                  ; $6584: $21 $38 $C0
     call func_001_658B                            ; $6587: $CD $8B $65
     ret                                           ; $658A: $C9

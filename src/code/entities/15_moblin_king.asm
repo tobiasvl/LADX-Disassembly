@@ -36,7 +36,7 @@ MoblinKingEntityHandler::
     set  ENTITY_OPT1_B_SWORD_CLINK_OFF, [hl]      ; $46F1: $CB $F6
     ld   hl, wEntitiesPhysicsFlagsTable           ; $46F3: $21 $40 $C3
     add  hl, bc                                   ; $46F6: $09
-    res  7, [hl]                                  ; $46F7: $CB $BE
+    res  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $46F7: $CB $BE
     call UpdateEntityPosWithSpeed_15              ; $46F9: $CD $88 $7B
     call label_3B23                               ; $46FC: $CD $23 $3B
     call AddEntityZSpeedToPos_15                  ; $46FF: $CD $C1 $7B
@@ -100,7 +100,7 @@ func_015_4750::
     ld   hl, wDialogState                         ; $4759: $21 $9F $C1
 
 .jr_475C
-    res  7, [hl]                                  ; $475C: $CB $BE
+    res  DIALOG_BOX_BOTTOM_BIT, [hl]              ; $475C: $CB $BE
     call IncrementEntityState                     ; $475E: $CD $12 $3B
     call GetEntityDropTimer                       ; $4761: $CD $FB $0B
     ld   [hl], $30                                ; $4764: $36 $30
@@ -138,7 +138,7 @@ func_015_4780::
     call SpawnNewEntity_trampoline                ; $478B: $CD $86 $3B
     jr   c, .jr_47D1                              ; $478E: $38 $41
 
-    ld   a, $0A                                   ; $4790: $3E $0A
+    ld   a, NOISE_SFX_WHOOSH                      ; $4790: $3E $0A
     ldh  [hNoiseSfx], a                           ; $4792: $E0 $F4
     push bc                                       ; $4794: $C5
     ldh  a, [hMultiPurpose2]                      ; $4795: $F0 $D9
@@ -304,7 +304,7 @@ func_015_4873::
     ld   [wC158], a                               ; $4888: $EA $58 $C1
     ld   a, $20                                   ; $488B: $3E $20
     ld   [wC157], a                               ; $488D: $EA $57 $C1
-    ld   a, JINGLE_HUGE_BUMP                      ; $4890: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $4890: $3E $0B
     ldh  [hJingle], a                             ; $4892: $E0 $F2
     ld   hl, wEntitiesSpeedXTable                 ; $4894: $21 $40 $C2
     add  hl, bc                                   ; $4897: $09
@@ -346,7 +346,7 @@ func_015_48CF::
     res  ENTITY_OPT1_B_SWORD_CLINK_OFF, [hl]      ; $48D3: $CB $B6
     ld   hl, wEntitiesPhysicsFlagsTable           ; $48D5: $21 $40 $C3
     add  hl, bc                                   ; $48D8: $09
-    set  7, [hl]                                  ; $48D9: $CB $FE
+    set  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $48D9: $CB $FE
     call GetEntityTransitionCountdown             ; $48DB: $CD $05 $0C
     jr   nz, .jr_48F0                             ; $48DE: $20 $10
 
@@ -493,7 +493,7 @@ func_015_499C::
     ld   a, [wSubtractHealthBuffer]               ; $49B5: $FA $94 $DB
     add  $08                                      ; $49B8: $C6 $08
     ld   [wSubtractHealthBuffer], a               ; $49BA: $EA $94 $DB
-    ld   a, JINGLE_HUGE_BUMP                      ; $49BD: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $49BD: $3E $0B
     ldh  [hJingle], a                             ; $49BF: $E0 $F2
     ret                                           ; $49C1: $C9
 

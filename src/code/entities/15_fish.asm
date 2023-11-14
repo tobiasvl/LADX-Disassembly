@@ -66,7 +66,7 @@ func_015_4500::
 
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4508: $21 $40 $C3
     add  hl, bc                                   ; $450B: $09
-    ld   [hl], $12                                ; $450C: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $450C: $36 $12
     ld   hl, wEntitiesSpeedZTable                 ; $450E: $21 $20 $C3
     add  hl, bc                                   ; $4511: $09
     ld   [hl], $18                                ; $4512: $36 $18
@@ -76,7 +76,7 @@ func_015_4500::
     sla  [hl]                                     ; $451B: $CB $26
 
 func_015_451D::
-    ld   a, JINGLE_WATER_DIVE                     ; $451D: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $451D: $3E $0E
     ldh  [hJingle], a                             ; $451F: $E0 $F2
     ldh  a, [hActiveEntityPosX]                   ; $4521: $F0 $EE
     ldh  [hMultiPurpose0], a                      ; $4523: $E0 $D7
@@ -140,7 +140,7 @@ func_015_4553::
     sra  [hl]                                     ; $457A: $CB $2E
     ld   hl, wEntitiesPhysicsFlagsTable           ; $457C: $21 $40 $C3
     add  hl, bc                                   ; $457F: $09
-    ld   [hl], $52                                ; $4580: $36 $52
+    ld   [hl], 2 | ENTITY_PHYSICS_PROJECTILE_NOCLIP | ENTITY_PHYSICS_SHADOW ; $4580: $36 $52
     call IncrementEntityState                     ; $4582: $CD $12 $3B
     ld   [hl], $01                                ; $4585: $36 $01
     ret                                           ; $4587: $C9

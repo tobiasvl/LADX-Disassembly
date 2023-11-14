@@ -121,11 +121,11 @@ func_015_770A::
     and  $0F                                      ; $7730: $E6 $0F
     jr   nz, .jr_7738                             ; $7732: $20 $04
 
-    ld   a, $02                                   ; $7734: $3E $02
+    ld   a, ENTITY_BOMB                           ; $7734: $3E $02
     jr   jr_015_773A                              ; $7736: $18 $02
 
 .jr_7738
-    ld   a, $E0                                   ; $7738: $3E $E0
+    ld   a, ENTITY_MONKEY                         ; $7738: $3E $E0
 
 jr_015_773A:
     call SpawnNewEntity_trampoline                ; $773A: $CD $86 $3B
@@ -166,11 +166,11 @@ jr_015_773A:
     ld   [hl], $0C                                ; $7774: $36 $0C
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7776: $21 $40 $C3
     add  hl, de                                   ; $7779: $19
-    ld   [hl], $12                                ; $777A: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $777A: $36 $12
     ld   hl, wEntitiesOptions1Table               ; $777C: $21 $30 $C4
     add  hl, de                                   ; $777F: $19
     set  ENTITY_OPT1_B_MOVE_PIT_WATER, [hl]       ; $7780: $CB $C6
-    ld   a, JINGLE_JUMP_DOWN                      ; $7782: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $7782: $3E $08
     ldh  [hJingle], a                             ; $7784: $E0 $F2
     ld   hl, wEntitiesTransitionCountdownTable    ; $7786: $21 $E0 $C2
     add  hl, de                                   ; $7789: $19
@@ -205,7 +205,7 @@ func_015_7793::
     call IncrementEntityState                     ; $77B7: $CD $12 $3B
 
 jr_015_77BA:
-    ld   a, $14                                   ; $77BA: $3E $14
+    ld   a, WAVE_SFX_MONKEY                       ; $77BA: $3E $14
     ldh  [hWaveSfx], a                            ; $77BC: $E0 $F3
 
 ret_015_77BE:
@@ -278,6 +278,7 @@ Data_015_781B::
 Data_015_781D::
     db   $10, $0C, $00, $F4, $F0, $F4, $00, $0C
 
+; Monkey's coconut entity handler
 label_015_7825:
     ld   de, Unknown057SpriteVariants             ; $7825: $11 $13 $78
     call RenderActiveEntitySpritesPair            ; $7828: $CD $C0 $3B

@@ -68,13 +68,13 @@ func_007_72F4::
     call GetEntityTransitionCountdown             ; $72F4: $CD $05 $0C
     jr   nz, ret_007_731F                         ; $72F7: $20 $26
 
-    call func_007_7E5D                            ; $72F9: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $72F9: $CD $5D $7E
     add  $20                                      ; $72FC: $C6 $20
     cp   $40                                      ; $72FE: $FE $40
     jr   nc, ret_007_731F                         ; $7300: $30 $1D
 
 .jr_7302
-    call func_007_7E6D                            ; $7302: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $7302: $CD $6D $7E
     add  $20                                      ; $7305: $C6 $20
     cp   $40                                      ; $7307: $FE $40
     jr   nc, ret_007_731F                         ; $7309: $30 $14
@@ -104,7 +104,7 @@ func_007_7320::
     ld   [hl], $08                                ; $732F: $36 $08
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7331: $21 $40 $C3
     add  hl, bc                                   ; $7334: $09
-    ld   [hl], $12                                ; $7335: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $7335: $36 $12
     ld   a, $03                                   ; $7337: $3E $03
     call SetEntitySpriteVariant                   ; $7339: $CD $0C $3B
     call IncrementEntityState                     ; $733C: $CD $12 $3B
@@ -200,7 +200,7 @@ func_007_73A0::
     ld   [hl], $30                                ; $73CA: $36 $30
     ld   hl, wEntitiesPhysicsFlagsTable           ; $73CC: $21 $40 $C3
     add  hl, bc                                   ; $73CF: $09
-    ld   [hl], $D2                                ; $73D0: $36 $D2
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW | ENTITY_PHYSICS_PROJECTILE_NOCLIP | ENTITY_PHYSICS_HARMLESS ; $73D0: $36 $D2
 
 .jr_73D2
     ld   a, $02                                   ; $73D2: $3E $02

@@ -103,12 +103,12 @@ func_007_535A::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $535F: $21 $40 $C3
     add  hl, bc                                   ; $5362: $09
     set  6, [hl]                                  ; $5363: $CB $F6
-    call func_007_7E5D                            ; $5365: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $5365: $CD $5D $7E
     add  $20                                      ; $5368: $C6 $20
     cp   $40                                      ; $536A: $FE $40
     jr   nc, .jr_537F                             ; $536C: $30 $11
 
-    call func_007_7E6D                            ; $536E: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $536E: $CD $6D $7E
     add  $20                                      ; $5371: $C6 $20
     cp   $40                                      ; $5373: $FE $40
     jr   nc, .jr_537F                             ; $5375: $30 $08
@@ -133,7 +133,7 @@ func_007_5383::
     ld   [hl], $18                                ; $5393: $36 $18
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5395: $21 $40 $C3
     add  hl, bc                                   ; $5398: $09
-    res  6, [hl]                                  ; $5399: $CB $B6
+    res  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $5399: $CB $B6
     jp   IncrementEntityState                     ; $539B: $C3 $12 $3B
 
 .jr_539E
@@ -190,12 +190,12 @@ func_007_53D8::
     ldh  [hLinkPositionY], a                      ; $53EA: $E0 $99
     ld   a, $10                                   ; $53EC: $3E $10
     call ApplyVectorTowardsLink_trampoline        ; $53EE: $CD $AA $3B
-    call func_007_7E5D                            ; $53F1: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $53F1: $CD $5D $7E
     add  $02                                      ; $53F4: $C6 $02
     cp   $04                                      ; $53F6: $FE $04
     jr   nc, .jr_541F                             ; $53F8: $30 $25
 
-    call func_007_7E6D                            ; $53FA: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $53FA: $CD $6D $7E
     add  $02                                      ; $53FD: $C6 $02
     cp   $04                                      ; $53FF: $FE $04
     jr   nc, .jr_541F                             ; $5401: $30 $1C
@@ -226,35 +226,35 @@ func_007_53D8::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown100SpriteVariants::
 .variant0
-    db $FF, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $FF, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $FF, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $FF, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $6C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $6C, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6C, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $6C, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $64, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $62, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $64, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $62, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $68, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $66, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $68, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $66, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant4
-    db $60, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $60, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $60, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $60, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant5
-    db $66, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $68, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $66, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $68, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant6
-    db $62, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $64, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $62, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $64, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant7
-    db $66, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $68, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP
+    db $66, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP
+    db $68, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP
 .variant8
-    db $60, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $60, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $60, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP
+    db $60, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 .variant9
-    db $68, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
-    db $66, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $68, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
+    db $66, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 
 func_007_5453::
     ld   de, Unknown100SpriteVariants             ; $5453: $11 $2B $54

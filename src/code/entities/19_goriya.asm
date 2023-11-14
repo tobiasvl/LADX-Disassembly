@@ -29,10 +29,10 @@ GoriyaSpriteVariants::
 GoriyaEntityHandler::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $45E4: $21 $40 $C3
     add  hl, bc                                   ; $45E7: $09
-    set  6, [hl]                                  ; $45E8: $CB $F6
-    set  7, [hl]                                  ; $45EA: $CB $FE
+    set  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $45E8: $CB $F6
+    set  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $45EA: $CB $FE
     ld   a, [wTradeSequenceItem]                  ; $45EC: $FA $0E $DB
-    cp   $0E                                      ; $45EF: $FE $0E
+    cp   TRADING_ITEM_MAGNIFYING_LENS             ; $45EF: $FE $0E
     jp   nz, ClearEntityStatus_19                 ; $45F1: $C2 $61 $7E
 
     ld   a, [wExchangingTradeSequenceItem]        ; $45F4: $FA $7F $DB
@@ -55,7 +55,7 @@ GoriyaEntityHandler::
     ld   [hl], e                                  ; $4617: $73
 
 .jr_4618
-    call func_019_7CA2                            ; $4618: $CD $A2 $7C
+    call PushLinkOutOfEntity_19                   ; $4618: $CD $A2 $7C
     ldh  a, [hActiveEntityState]                  ; $461B: $F0 $F0
     JP_TABLE                                      ; $461D
 ._00 dw GoriyaState0Handler
@@ -126,7 +126,7 @@ GoriyaState1Handler::
     and  a                                        ; $4699: $A7
     jr   nz, jr_019_46DB                          ; $469A: $20 $3F
 
-    ld   a, [wBButtonSlot]                        ; $469C: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $469C: $FA $00 $DB
     and  a                                        ; $469F: $A7
     jr   z, jr_019_46DB                           ; $46A0: $28 $39
 
@@ -154,7 +154,7 @@ GoriyaState1Handler::
 
     ld   [wBoomerangTradedItem], a                ; $46BE: $EA $7D $DB
     ld   a, INVENTORY_BOOMERANG                   ; $46C1: $3E $0D
-    ld   [wBButtonSlot], a                        ; $46C3: $EA $00 $DB
+    ld   [wInventoryItems.BButtonSlot], a         ; $46C3: $EA $00 $DB
     ld   hl, wEntitiesPrivateState1Table          ; $46C6: $21 $B0 $C2
     add  hl, bc                                   ; $46C9: $09
     ld   [hl], a                                  ; $46CA: $77
@@ -162,7 +162,7 @@ GoriyaState1Handler::
     ld   [hl], $80                                ; $46CE: $36 $80
     ld   a, $01                                   ; $46D0: $3E $01
     ld   [wC167], a                               ; $46D2: $EA $67 $C1
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $46D5: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $46D5: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $46D7: $EA $68 $D3
     ret                                           ; $46DA: $C9
 
@@ -182,7 +182,7 @@ GoriyaState3Handler::
     and  a                                        ; $46F2: $A7
     jr   nz, jr_019_4725                          ; $46F3: $20 $30
 
-    ld   hl, wBButtonSlot                         ; $46F5: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $46F5: $21 $00 $DB
     ld   de, $0000                                ; $46F8: $11 $00 $00
 
 .loop_46FB
@@ -208,7 +208,7 @@ GoriyaState3Handler::
     ld   [hl], $80                                ; $4718: $36 $80
     ld   a, $01                                   ; $471A: $3E $01
     ld   [wC167], a                               ; $471C: $EA $67 $C1
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $471F: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $471F: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $4721: $EA $68 $D3
     ret                                           ; $4724: $C9
 

@@ -118,7 +118,7 @@ SmasherState0Handler::
     ld   [hl], $01                                ; $45CF: $36 $01
     call GetEntityTransitionCountdown             ; $45D1: $CD $05 $0C
     ld   [hl], $1F                                ; $45D4: $36 $1F
-    ld   a, $1C                                   ; $45D6: $3E $1C
+    ld   a, WAVE_SFX_ROVER_CRY                    ; $45D6: $3E $1C
     ldh  [hWaveSfx], a                            ; $45D8: $E0 $F3
 
 .jr_45DA
@@ -301,7 +301,7 @@ SmasherState3Handler::
     ld   hl, wEntitiesSpeedZTable                 ; $46EE: $21 $20 $C3
     add  hl, bc                                   ; $46F1: $09
     ld   [hl], $20                                ; $46F2: $36 $20
-    ld   a, JINGLE_JUMP_DOWN                      ; $46F4: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $46F4: $3E $08
     ldh  [hJingle], a                             ; $46F6: $E0 $F2
     jp   IncrementEntityState                     ; $46F8: $C3 $12 $3B
 
@@ -357,13 +357,13 @@ func_006_4771::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 SmasherSpriteVariants::
 .variant0
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 label_006_4781:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4781: $21 $40 $C3
     add  hl, bc                                   ; $4784: $09
-    ld   [hl], $92                                ; $4785: $36 $92
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_SHADOW ; $4785: $36 $92
     ld   hl, wC5D0                                ; $4787: $21 $D0 $C5
     add  hl, bc                                   ; $478A: $09
     ld   [hl], $FF                                ; $478B: $36 $FF
@@ -456,7 +456,7 @@ jr_006_4806:
     and  a                                        ; $480E: $A7
     jr   nz, ret_006_4852                         ; $480F: $20 $41
 
-    ld   a, [wBButtonSlot]                        ; $4811: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $4811: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $4814: $FE $03
     jr   nz, .jr_4820                             ; $4816: $20 $08
 
@@ -467,7 +467,7 @@ jr_006_4806:
     jr   ret_006_4852                             ; $481E: $18 $32
 
 .jr_4820
-    ld   a, [wAButtonSlot]                        ; $4820: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $4820: $FA $01 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $4823: $FE $03
     jr   nz, ret_006_4852                         ; $4825: $20 $2B
 
@@ -493,7 +493,7 @@ jr_006_482D:
     call GetEntityTransitionCountdown             ; $4848: $CD $05 $0C
     ld   [hl], $02                                ; $484B: $36 $02
     ld   hl, hWaveSfx                             ; $484D: $21 $F3 $FF
-    ld   [hl], $02                                ; $4850: $36 $02
+    ld   [hl], WAVE_SFX_LIFT_UP                   ; $4850: $36 $02
 
 ret_006_4852:
     ret                                           ; $4852: $C9
@@ -554,7 +554,7 @@ func_006_4855::
     inc  a                                        ; $489F: $3C
     sra  a                                        ; $48A0: $CB $2F
     ld   [hl], a                                  ; $48A2: $77
-    ld   a, $07                                   ; $48A3: $3E $07
+    ld   a, WAVE_SFX_BOSS_HURT                    ; $48A3: $3E $07
     ldh  [hWaveSfx], a                            ; $48A5: $E0 $F3
     ld   hl, wEntitiesHealthTable                 ; $48A7: $21 $60 $C3
     add  hl, de                                   ; $48AA: $19
@@ -581,7 +581,7 @@ func_006_4855::
     ld   hl, wEntitiesOptions1Table               ; $48CD: $21 $30 $C4
     add  hl, bc                                   ; $48D0: $09
     res  ENTITY_OPT1_B_IS_BOSS, [hl]              ; $48D1: $CB $BE
-    ld   a, $10                                   ; $48D3: $3E $10
+    ld   a, WAVE_SFX_BOSS_DEATH_CRY               ; $48D3: $3E $10
     ldh  [hWaveSfx], a                            ; $48D5: $E0 $F3
 
 .jr_48D7
@@ -594,11 +594,11 @@ label_006_48DB:
 func_006_48DD::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $48DD: $21 $40 $C3
     add  hl, bc                                   ; $48E0: $09
-    ld   [hl], $12                                ; $48E1: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $48E1: $36 $12
     call label_3B44                               ; $48E3: $CD $44 $3B
     ld   hl, wEntitiesPhysicsFlagsTable           ; $48E6: $21 $40 $C3
     add  hl, bc                                   ; $48E9: $09
-    ld   [hl], $92                                ; $48EA: $36 $92
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_SHADOW ; $48EA: $36 $92
 
 jr_006_48EC:
     ldh  a, [hMultiPurposeG]                      ; $48EC: $F0 $E8

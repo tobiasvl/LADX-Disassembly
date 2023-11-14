@@ -77,7 +77,7 @@ IntroHandlerEntryPoint::
     ld   [wC17E], a                               ; $6E81: $EA $7E $C1
 
     call ResetIntroTimers                         ; $6E84: $CD $9D $73
-    ld   a, MUSIC_TITLE_SCREEN                    ; $6E87: $3E $0D
+    ld   a, MUSIC_TITLE_SCREEN_NO_INTRO           ; $6E87: $3E $0D
     ld   [wMusicTrackToPlay], a                   ; $6E89: $EA $68 $D3
     ld   [wD00F], a                               ; $6E8C: $EA $0F $D0
     call func_001_7D4E                            ; $6E8F: $CD $4E $7D
@@ -97,7 +97,7 @@ IntroHandlerEntryPoint::
     inc  [hl]                                     ; $6EA7: $34
 
 .enableVBlankInterruptAndReturn
-    ld   a, $01                                   ; $6EA8: $3E $01
+    ld   a, IEF_VBLANK                            ; $6EA8: $3E $01
     ld   [rIE], a ; Enable VBlank interrupt only  ; $6EAA: $E0 $FF
     ld   a, $4F                                   ; $6EAC: $3E $4F
     ld   [rLYC], a                                ; $6EAE: $E0 $45
@@ -170,8 +170,9 @@ ENDC
     ldh  [hFrameCounter], a                       ; $6F0E: $E0 $E7
     ld   a, $A2                                   ; $6F10: $3E $A2
     ld   [wRandomSeed], a                         ; $6F12: $EA $3D $C1
+    ; Disable window
     ld   a, [rLCDC]                               ; $6F15: $F0 $40
-    and  $DF                                      ; $6F17: $E6 $DF
+    and  ~LCDCF_WINON                             ; $6F17: $E6 $DF
     ld   [wLCDControl], a                         ; $6F19: $EA $FD $D6
     ld   [rLCDC], a                               ; $6F1C: $E0 $40
     ld   a, $B4                                   ; $6F1E: $3E $B4
@@ -204,7 +205,7 @@ IntroSceneStage2Handler::
     ld   [wOBJ0Palette], a                        ; $6F49: $EA $98 $DB
     ld   a, $E0                                   ; $6F4C: $3E $E0
     ld   [wOBJ1Palette], a                        ; $6F4E: $EA $99 $DB
-    ld   a, $03                                   ; $6F51: $3E $03
+    ld   a, IEF_STAT | IEF_VBLANK                 ; $6F51: $3E $03
     ld   [rIE], a                                 ; $6F53: $E0 $FF
     ld   a, $00                                   ; $6F55: $3E $00
     ld   [rLYC], a                                ; $6F57: $E0 $45
@@ -298,7 +299,7 @@ IntroShipOnSeaHandler::
     ld   [wScrollXOffsetForSection+3], a          ; $7007: $EA $03 $C1
     ld   a, $92                                   ; $700A: $3E $92
     ld   [wScrollXOffsetForSection+1], a          ; $700C: $EA $01 $C1
-    ld   a, $03                                   ; $700F: $3E $03
+    ld   a, IEF_STAT | IEF_VBLANK                 ; $700F: $3E $03
     ld   [rIE], a                                 ; $7011: $E0 $FF
 
 .jp_001_7013
@@ -317,7 +318,7 @@ IntroShipOnSeaHandler::
     ld   [wGameplaySubtype], a                    ; $7021: $EA $96 $DB
     ld   a, TILEMAP_INTRO_LINK_FACE               ; $7024: $3E $0F
     ld   [wBGMapToLoad], a                        ; $7026: $EA $FF $D6
-    ld   a, $01                                   ; $7029: $3E $01
+    ld   a, IEF_VBLANK                            ; $7029: $3E $01
     ld   [rIE], a                                 ; $702B: $E0 $FF
     xor  a                                        ; $702D: $AF
     ldh  [hBaseScrollX], a                        ; $702E: $E0 $96
@@ -455,8 +456,9 @@ IntroLinkFaceHandler::
     ld   [wBGMapToLoad], a                        ; $70E0: $EA $FF $D6
 
     call LoadTileMapZero_trampoline               ; $70E3: $CD $08 $71
-    ld   a, $03                                   ; $70E6: $3E $03
-    ld   [rIE], a ; Enable interrupts on VBlank and LCDStat ; $70E8: $E0 $FF
+    ; Enable interrupts on VBlank and LCDStat
+    ld   a, IEF_STAT | IEF_VBLANK                 ; $70E6: $3E $03
+    ld   [rIE], a                                 ; $70E8: $E0 $FF
     xor  a                                        ; $70EA: $AF
     ld   [wEntitiesStatusTable], a                ; $70EB: $EA $80 $C2
     ld   [wEntitiesStatusTable+1], a              ; $70EE: $EA $81 $C2
@@ -679,74 +681,70 @@ IntroStage8Handler::
 .return
     ret                                           ; $72A4: $C9
 
-Data_001_72A5::
-    db   $9A, $16, $0F, $00, $00, $00, $00, $00   ; $72A5 ; $72A5
-    db   $00, $00, $00, $00, $00, $00, $00, $00   ; $72AD ; $72AD
-    db   $00, $00, $00                            ; $72B5
 
-Data_001_72B8::
-    db   $9A, $36, $0F, $00, $00                  ; $72B8
-    db   $00, $00, $00, $00, $00, $00, $00, $00   ; $72BD ; $72BD
-    db   $00, $00, $00, $00, $00, $00             ; $72C5
 
-Data_001_72CB::
-    db   $9A, $56                                 ; $72CB
-    db   $0F, $00, $00, $00, $00, $00, $00, $00   ; $72CD ; $72CD
-    db   $00, $00, $00, $00, $00, $00, $00, $00   ; $72D5 ; $72D5
-    db   $00                                      ; $72DD
+; Title screen attribute map, encoded
+; This controls the logo palette
 
-IF LANG_JP
-TILE_A = $01
-TILE_B = $02
+TitleAttrMap1::
+    db   $9A, $16, $0F
+    db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+TitleAttrMap2::
+    db   $9A, $36, $0F
+    db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+TitleAttrMap3::
+    db   $9A, $56, $0F
+    db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+IF LANG_JP ;The JP version has a gradient in the logo
+
+TitleAttrMap4::
+    db   $9A, $76, $0F
+    db   $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
+TitleAttrMap5::
+    db   $9A, $96, $0F
+    db   $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
+TitleAttrMap6::
+    db   $9A, $B6, $0F
+    db   $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
+TitleAttrMap7::
+    db   $9A, $D6, $0F
+    db   $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02, $02
+
 ELSE
-TILE_A = $00
-TILE_B = $00
+
+TitleAttrMap4::
+    db   $9A, $76, $0F
+    db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+TitleAttrMap5::
+    db   $9A, $96, $0F
+    db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+TitleAttrMap6::
+    db   $9A, $B6, $0F
+    db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+TitleAttrMap7::
+    db   $9A, $D6, $0F
+    db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
 ENDC
 
-Data_001_72DE::
-    db   $9A, $76, $0F                            ; $72DE
-    db   TILE_A, TILE_A, TILE_A, TILE_A           ; $72E1
-    db   TILE_A, TILE_A, TILE_A, TILE_A           ; $72E5
-    db   TILE_A, TILE_A, TILE_A, TILE_A           ; $72E9
-    db   TILE_A, TILE_A, TILE_A, TILE_A           ; $72ED
+TitleAttrMap::
+    dw   TitleAttrMap4
+    dw   TitleAttrMap3
+    dw   TitleAttrMap5
+    dw   TitleAttrMap2
+    dw   TitleAttrMap6
+    dw   TitleAttrMap1
+    dw   TitleAttrMap7
 
 
-Data_001_72F1::
-    db   $9A, $96, $0F                            ; $72F1
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $72F4
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $72F8
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $72FC
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $7300
-
-Data_001_7304::
-    db   $9A, $B6, $0F                            ; $7304
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $7307
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $730B
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $730F
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $7313
-
-Data_001_7317::
-    db   $9A, $D6, $0F                            ; $7317
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $731A
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $731E
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $7322
-    db   TILE_B, TILE_B, TILE_B, TILE_B           ; $7326
-
-Data_001_732A::
-    dw   Data_001_72DE                            ; $732A
-    dw   Data_001_72CB                            ; $732C
-    dw   Data_001_72F1                            ; $732E
-    dw   Data_001_72B8                            ; $7330
-    dw   Data_001_7304                            ; $7332
-    dw   Data_001_72A5                            ; $7334
-    dw   Data_001_7317                            ; $7336
 
 func_001_7338::
     ld   a, [wIntroSubTimer]                      ; $7338: $FA $02 $D0
     sla  a                                        ; $733B: $CB $27
     ld   e, a                                     ; $733D: $5F
     ld   d, $00                                   ; $733E: $16 $00
-    ld   hl, Data_001_732A                        ; $7340: $21 $2A $73
+    ld   hl, TitleAttrMap                         ; $7340: $21 $2A $73
     add  hl, de                                   ; $7343: $19
     ld   a, [hli]                                 ; $7344: $2A
     ld   d, [hl]                                  ; $7345: $56
@@ -769,19 +767,19 @@ TitleScreenSfxHandler::
     cp   $10                                      ; $7358: $FE $10
     jr   c, .return                               ; $735A: $38 $07
 
-    ld   a, NOISE_SFX_TITLE_APPEARS               ; $735C: $3E $19
+    ld   a, NOISE_SFX_PING                        ; $735C: $3E $19
     ldh  [hNoiseSfx], a                           ; $735E: $E0 $F4
     call IncrementGameplaySubtype                 ; $7360: $CD $D6 $44
 .return
     ret                                           ; $7363: $C9
 
-Data_001_7364::
+TitleScreenCopyrightDrawCommand::
     db   $9B, $B7, $0D, $65, $66, $67, $68, $69   ; $7364 ; $7364
     db   $6A, $6B, $6C, $6D, $6E, $6F, $70, $71   ; $736C ; $736C
     db   $72, $00                                 ; $7374 ; $7374
 
 IntroStageAHandler::
-    ld   de, Data_001_7364                        ; $7376: $11 $64 $73
+    ld   de, TitleScreenCopyrightDrawCommand      ; $7376: $11 $64 $73
     ld   hl, wDrawCommand                         ; $7379: $21 $01 $D6
     ld   c, $12                                   ; $737C: $0E $12
 
@@ -1356,7 +1354,7 @@ IntroMarinState3::
     ld   a, $A0                                   ; $774B: $3E $A0
     ld   [hl], a                                  ; $774D: $77
     ld   [rSCX], a                                ; $774E: $E0 $43
-    ld   a, $01                                   ; $7750: $3E $01
+    ld   a, IEF_VBLANK                            ; $7750: $3E $01
     ld   [rIE], a                                 ; $7752: $E0 $FF
     call GetEntityTransitionCountdown             ; $7754: $CD $05 $0C
     ld   [hl], $E0                                ; $7757: $36 $E0
@@ -1429,29 +1427,29 @@ IntroMarinState4::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown003SpriteVariants::
 .variant0 ; $77BD
-    db $38, OAM_DMG_PAL_0
-    db $38, OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $38, OAMF_PAL0
+    db $38, OAMF_PAL0 | OAMF_XFLIP
 .variant1 ; $77C1
-    db $3A, OAM_DMG_PAL_0
-    db $3A, OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $3A, OAMF_PAL0
+    db $3A, OAMF_PAL0 | OAMF_XFLIP
 .variant2 ; $77C5
-    db $3A, OAM_DMG_PAL_0
-    db $3A, OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $3A, OAMF_PAL0
+    db $3A, OAMF_PAL0 | OAMF_XFLIP
 .variant3 ; $77C9
-    db $3C, OAM_DMG_PAL_0
-    db $3E, OAM_DMG_PAL_0
+    db $3C, OAMF_PAL0
+    db $3E, OAMF_PAL0
 .variant4 ; $77CD
-    db $3C, OAM_DMG_PAL_0
-    db $3E, OAM_DMG_PAL_0
+    db $3C, OAMF_PAL0
+    db $3E, OAMF_PAL0
 .variant5 ; $77D1
-    db $3A, OAM_DMG_PAL_0
-    db $3A, OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $3A, OAMF_PAL0
+    db $3A, OAMF_PAL0 | OAMF_XFLIP
 .variant6 ; $77D5
-    db $3A, OAM_DMG_PAL_0
-    db $3A, OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $3A, OAMF_PAL0
+    db $3A, OAMF_PAL0 | OAMF_XFLIP
 .variant7 ; $77D9
-    db $38, OAM_DMG_PAL_0
-    db $38, OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $38, OAMF_PAL0
+    db $38, OAMF_PAL0 | OAMF_XFLIP
 
 RenderIntroSparkle::
     xor  a                                        ; $77DD: $AF
@@ -1683,6 +1681,8 @@ func_001_7920::
     jr   z, .jr_001_7929                          ; $7925: $28 $02
     dec  [hl]                                     ; $7927: $35
     ret                                           ; $7928: $C9
+
+; Position of the DX logo
 
 IF LANG_JP
 X_POS = $79
@@ -1925,11 +1925,11 @@ jr_001_7A19::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 Unknown004SpriteVariants::
 .variant0 ; $7A27
-    db $10, OAM_DMG_PAL_0
-    db $12, OAM_DMG_PAL_0
+    db $10, OAMF_PAL0
+    db $12, OAMF_PAL0
 .variant1 ; $7A2B
-    db $14, OAM_DMG_PAL_0
-    db $16, OAM_DMG_PAL_0
+    db $14, OAMF_PAL0
+    db $16, OAMF_PAL0
 
 RenderIntroInertLink::
     ldh  a, [hActiveEntityPosX]                   ; $7A2F: $F0 $EE
@@ -2011,7 +2011,7 @@ InertLinkState2Handler::
     ld   a, [wD00A]                               ; $7AA6: $FA $0A $D0
     cp   $0B                                      ; $7AA9: $FE $0B
     jr   nz, .return                              ; $7AAB: $20 $05
-    ld   a, MUSIC_TITLE_SCREEN_INTRO              ; $7AAD: $3E $01
+    ld   a, MUSIC_TITLE_SCREEN                    ; $7AAD: $3E $01
     ld   [wMusicTrackToPlay], a                   ; $7AAF: $EA $68 $D3
 
 .return

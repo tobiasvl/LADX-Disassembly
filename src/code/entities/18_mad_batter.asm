@@ -50,7 +50,7 @@ MadBatterState1Handler::
     ldh  [hMultiPurpose1], a                      ; $4F29: $E0 $D8
     ld   a, TRANSCIENT_VFX_POOF                   ; $4F2B: $3E $02
     call AddTranscientVfx                         ; $4F2D: $CD $C7 $0C
-    ld   a, JINGLE_ENEMY_MORPH_IN                 ; $4F30: $3E $06
+    ld   a, JINGLE_GENIE_APPEAR                   ; $4F30: $3E $06
     ldh  [hJingle], a                             ; $4F32: $E0 $F2
     jp   IncrementEntityState                     ; $4F34: $C3 $12 $3B
 
@@ -165,7 +165,7 @@ MadBatterState6Handler::
 
     ld   a, ENTITY_MAD_BATTER                     ; $4FD8: $3E $CA
     call SpawnNewEntity_trampoline                ; $4FDA: $CD $86 $3B
-    ld   a, $26                                   ; $4FDD: $3E $26
+    ld   a, NOISE_SFX_ELECTRIC_BEAM               ; $4FDD: $3E $26
     ldh  [hNoiseSfx], a                           ; $4FDF: $E0 $F4
     ldh  a, [hMultiPurpose0]                      ; $4FE1: $F0 $D7
     ld   hl, wEntitiesPosXTable                   ; $4FE3: $21 $00 $C2
@@ -305,11 +305,11 @@ RenderMadBatterSprite::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 MadBatterSpriteVariants::
 .variant0
-    db $7E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $7E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7E, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $7E, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $7E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $7E, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $7E, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_YFLIP
+    db $7E, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 
 MadBatterRenderSmallSprite::
     ldh  a, [hFrameCounter]                       ; $50C3: $F0 $E7

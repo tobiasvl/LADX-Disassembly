@@ -1,29 +1,29 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 RaftOwnerIndoorSpriteVariants::
 .variant0
-    db $60, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $62, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $60, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $62, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant1
-    db $62, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $60, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $62, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $60, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $64, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $66, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $64, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $66, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant3
-    db $66, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $64, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $66, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $64, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant4
-    db $68, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $6A, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $68, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $6A, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant5
-    db $6C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0
+    db $6C, OAM_GBC_PAL_0 | OAMF_PAL0
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0
 .variant6
-    db $6A, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $68, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6A, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $68, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 .variant7
-    db $6E, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $6C, OAM_GBC_PAL_0 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $6E, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
+    db $6C, OAM_GBC_PAL_0 | OAMF_PAL0 | OAMF_XFLIP
 
 ; Handler for Raft Owner (and also the raft itself?)
 EntityRaftOwnerHandler::
@@ -45,7 +45,7 @@ EntityRaftOwnerHandler::
     ld   de, RaftOwnerIndoorSpriteVariants        ; $5375: $11 $3E $53
     call RenderActiveEntitySpritesPair            ; $5378: $CD $C0 $3B
     call ReturnIfNonInteractive_05                ; $537B: $CD $3A $7A
-    call func_005_54C3                            ; $537E: $CD $C3 $54
+    call PushLinkOutOfEntity_05                   ; $537E: $CD $C3 $54
     ldh  a, [hActiveEntityState]                  ; $5381: $F0 $F0
     JP_TABLE                                      ; $5383
 ._00 dw func_005_538A                             ; $5384
@@ -106,11 +106,11 @@ func_005_53CB::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 RaftOwnerOnOverworldSpriteVariants:: ; $53D4
 .variant0
-    db $5C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $5C, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5C, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $5C, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $5E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $5E, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5E, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $5E, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 raftOnOverworld:
     ld   hl, wEntitiesPrivateState4Table          ; $53DC: $21 $40 $C4
@@ -148,7 +148,7 @@ jr_005_53E9:
     ld   de, RaftOwnerOnOverworldSpriteVariants   ; $5405: $11 $D4 $53
     call RenderActiveEntitySpritesPair            ; $5408: $CD $C0 $3B
     call ReturnIfNonInteractive_05                ; $540B: $CD $3A $7A
-    jp   func_005_54C3                            ; $540E: $C3 $C3 $54
+    jp   PushLinkOutOfEntity_05                   ; $540E: $C3 $C3 $54
 
 jr_005_5411:
     ldh  a, [hFrameCounter]                       ; $5411: $F0 $E7
@@ -173,7 +173,7 @@ jr_005_5411:
     jr   nc, .jr_5440                             ; $5432: $30 $0C
 
     ld   a, $80                                   ; $5434: $3E $80
-    ld   [wC1AD], a                               ; $5436: $EA $AD $C1
+    ld   [wItemUsageContext], a                   ; $5436: $EA $AD $C1
     ldh  a, [hLinkPositionX]                      ; $5439: $F0 $98
     ld   hl, wEntitiesPosXTable                   ; $543B: $21 $00 $C2
     add  hl, bc                                   ; $543E: $09
@@ -267,7 +267,15 @@ func_005_5490::
 .jr_54C1
     jr   jr_005_5483                              ; $54C1: $18 $C0
 
-func_005_54C3::
+; ----------------------------------------------------------------------
+;
+; ENTITY COMMON HELPERS
+;
+; These helpers are defined (with small variants) in most entity banks.
+;
+; ----------------------------------------------------------------------
+
+PushLinkOutOfEntity_05::
     call CheckLinkCollisionWithEnemy_trampoline   ; $54C3: $CD $5A $3B
     jr   nc, .ret_54E5                            ; $54C6: $30 $1D
 
@@ -369,8 +377,8 @@ ShouldLinkTalkToEntity_05::
     jr   nz, .dontTalk                            ; $5542: $20 $25
 .bowWowEnd
 
-    ld   hl, wC1AD                                ; $5544: $21 $AD $C1
-    ld   [hl], $01                                ; $5547: $36 $01
+    ld   hl, wItemUsageContext                    ; $5544: $21 $AD $C1
+    ld   [hl], ITEM_USAGE_NEAR_NPC                ; $5547: $36 $01
     ld   a, [wDialogState]                        ; $5549: $FA $9F $C1
     ld   hl, wInventoryAppearing                  ; $554C: $21 $4F $C1
     or   [hl]                                     ; $554F: $B6

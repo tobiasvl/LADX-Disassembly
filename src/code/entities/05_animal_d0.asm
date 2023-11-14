@@ -1,17 +1,17 @@
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 AnimalD0SpriteVariants::
 .variant0
-    db $50, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $52, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $50, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $52, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant1
-    db $52, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $50, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $52, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $50, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $54, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $56, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
+    db $54, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $56, OAM_GBC_PAL_1 | OAMF_PAL0
 .variant3
-    db $56, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $54, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $56, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
+    db $54, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 
 AnimalD0EntityHandler::
     ld   a, [wIsMarinInAnimalVillage]             ; $7F2E: $FA $74 $DB
@@ -42,7 +42,7 @@ AnimalD0EntityHandler::
     and  $01                                      ; $7F54: $E6 $01
     add  e                                        ; $7F56: $83
     call SetEntitySpriteVariant                   ; $7F57: $CD $0C $3B
-    call func_005_54C3                            ; $7F5A: $CD $C3 $54
+    call PushLinkOutOfEntity_05                   ; $7F5A: $CD $C3 $54
     call ShouldLinkTalkToEntity_05                ; $7F5D: $CD $06 $55
     ret  nc                                       ; $7F60: $D0
 

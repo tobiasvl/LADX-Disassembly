@@ -66,7 +66,7 @@ InitSaveFiles::
 
     ld   e, $00                                   ; $46C3: $1E $00
     ld   d, $00                                   ; $46C5: $16 $00
-    ld   bc, SaveGame1.main + wBButtonSlot - wOverworldRoomStatus ; $46C7: $01 $05 $A4
+    ld   bc, SaveGame1.main + wInventoryItems.BButtonSlot - wOverworldRoomStatus ; $46C7: $01 $05 $A4
 .loop
     ld   hl, DebugSaveFileData                    ; $46CA: $21 $67 $46
     add  hl, de                                   ; $46CD: $19
@@ -90,10 +90,10 @@ InitSaveFiles::
     ld   hl, SaveGame1.main + wHasInstrument1 - wOverworldRoomStatus ; Dungeon boss flags = 00000010 ; $46E6: $21 $6A $A4
     ld   e, $09 ; POI: Sets 9 flags (but only 8 dungeons...?) ; $46E9: $1E $09
     ld   a, $02 ; Sets 46A~447                    ; $46EB: $3E $02
-.loop2
+.drawEmptyHeartsLoop
     ldi  [hl], a                                  ; $46ED: $22
     dec  e                                        ; $46EE: $1D
-    jr   nz, .loop2                               ; $46EF: $20 $FC
+    jr   nz, .drawEmptyHeartsLoop                 ; $46EF: $20 $FC
 
     ld   a, DEBUG_SAVE_BOMB_COUNT                 ; $46F1: $3E $60
     ld   [SaveGame1.main + wBombCount - wOverworldRoomStatus], a ; 60 bombs                    ; $46F3: $EA $52 $A4
@@ -125,7 +125,7 @@ ENDC
     ld   a, $50                                   ; $4724: $3E $50
     ld   [SaveGame1.main + wHealth - wOverworldRoomStatus], a ; 10 hearts of health         ; $4726: $EA $5F $A4
     ld   a, $0A                                   ; $4729: $3E $0A
-    ld   [SaveGame1.main + wMaxHealth - wOverworldRoomStatus], a ; 10 heart containers         ; $472B: $EA $60 $A4
+    ld   [SaveGame1.main + wMaxHearts - wOverworldRoomStatus], a ; 10 heart containers         ; $472B: $EA $60 $A4
 
     ld   a, [wGameplayType]                       ; $472E: $FA $95 $DB
     cp   GAMEPLAY_FILE_NEW                        ; $4731: $FE $03
@@ -185,7 +185,7 @@ func_001_4794::
     add  hl, de                                   ; $479B: $19
 
 .loop_479C
-    call EnableExternalRAMWriting                 ; $479C: $CD $D0 $27
+    call EnableSRAM                               ; $479C: $CD $D0 $27
     ld   a, [hli]                                 ; $479F: $2A
     cp   c                                        ; $47A0: $B9
     jr   nz, .jr_47AA                             ; $47A1: $20 $07
@@ -205,7 +205,7 @@ func_001_4794::
     ld   de, SaveGame2 - SaveGame1.main           ; $47AF: $11 $A8 $03
 
 .loop_47B2
-    call EnableExternalRAMWriting                 ; $47B2: $CD $D0 $27
+    call EnableSRAM                               ; $47B2: $CD $D0 $27
     xor  a                                        ; $47B5: $AF
     ldi  [hl], a                                  ; $47B6: $22
     dec  de                                       ; $47B7: $1B
@@ -219,7 +219,7 @@ func_001_4794::
 
     ; Store the sequence 1,3,5,7,9 into the prefix.
 .loop_47C3
-    call EnableExternalRAMWriting                 ; $47C3: $CD $D0 $27
+    call EnableSRAM                               ; $47C3: $CD $D0 $27
     ldi  [hl], a                                  ; $47C6: $22
     inc  a                                        ; $47C7: $3C
     inc  a                                        ; $47C8: $3C
@@ -232,9 +232,9 @@ ret_001_47CD::
 include "code/file_menus.asm"
 
 ; Table that determines how much health you have after a game over.
-; New files always start with 3 HP / 3 MAX HP, but after that
+; New files always start with 3 hearts / 3 max hearts, but after that
 ; the health you're provided on respawning depends on your max:
-MaxHealthToStartingHealthTable::
+MaxHeartsToStartingHealthTable::
     db  3 FULL_HEARTS  ;  0 heart containers      ; $5295
     db  3 FULL_HEARTS  ;  1 heart container       ; $5296
     db  3 FULL_HEARTS  ;  2 heart containers      ; $5297
@@ -261,10 +261,10 @@ LoadSavedFile::
     ld   a, [wHealth]                           ; Does the player have any health? ; $52A7: $FA $5A $DB
     and  a                                      ; If yes, skip this ; $52AA: $A7
     jr   nz, .skipHealthReset                     ; $52AB: $20 $0E
-    ld   a, [wMaxHealth]                        ; Otherwise, get their max health... ; $52AD: $FA $5B $DB
+    ld   a, [wMaxHearts]                        ; Otherwise, get their max health... ; $52AD: $FA $5B $DB
     ld   e, a                                     ; $52B0: $5F
     ld   d, $00                                   ; $52B1: $16 $00
-    ld   hl, MaxHealthToStartingHealthTable     ; and use it as an index into the table ; $52B3: $21 $95 $52
+    ld   hl, MaxHeartsToStartingHealthTable     ; and use it as an index into the table ; $52B3: $21 $95 $52
     add  hl, de                                 ; to provide the starting health value. ; $52B6: $19
     ld   a, [hl]                                  ; $52B7: $7E
     ld   [wHealth], a                             ; $52B8: $EA $5A $DB
@@ -281,7 +281,7 @@ LoadSavedFile::
     sla  a                                        ; $52C7: $CB $27
     ld   e, a                                     ; $52C9: $5F
     ld   d, $00                                   ; $52CA: $16 $00
-    ld   hl, Data_001_49F8                        ; $52CC: $21 $F8 $49
+    ld   hl, SaveGameTable                        ; $52CC: $21 $F8 $49
     add  hl, de                                   ; $52CF: $19
     ld   c, [hl]                                  ; $52D0: $4E
     inc  hl                                       ; $52D1: $23
@@ -289,76 +289,76 @@ LoadSavedFile::
     ld   hl, wOverworldRoomStatus                 ; $52D3: $21 $00 $D8
     ld   de, SAVE_MAIN_SIZE                       ; $52D6: $11 $80 $03
 
-.loop_52D9
-    call EnableExternalRAMWriting                 ; $52D9: $CD $D0 $27
+.loopLoadMain
+    call EnableSRAM                               ; $52D9: $CD $D0 $27
     ld   a, [bc]                                  ; $52DC: $0A
     inc  bc                                       ; $52DD: $03
     ldi  [hl], a                                  ; $52DE: $22
     dec  de                                       ; $52DF: $1B
     ld   a, e                                     ; $52E0: $7B
     or   d                                        ; $52E1: $B2
-    jr   nz, .loop_52D9                           ; $52E2: $20 $F5
+    jr   nz, .loopLoadMain                        ; $52E2: $20 $F5
 
-IF __PATCH_4__
-    ld de, wMaxHealth
-    ld hl, wHealth
-    ld a, [de]
-    cp $03
-    jr nc, jr_001_5355
+IF __RECALCULATE_MAX_HEARTS__
+    ; Clamp max health before loading
+    ld   de, wMaxHearts
+    ld   hl, wHealth
+    ld   a, [de]
+    cp   MIN_HEARTS
+    jr   nc, .min
 
-    ld a, $03
+    ld   a, MIN_HEARTS
 
-jr_001_5355:
-    cp $0e
-    jr c, jr_001_535b
+.min:
+    cp   MAX_HEARTS
+    jr   c, .max
 
-    ld a, $0e
+    ld   a, MAX_HEARTS
 
-jr_001_535b:
-    ld [de], a
+.max:
+    ld   [de], a
     swap a
-    srl a
-    cp [hl]
-    jr nc, jr_001_5364
+    srl  a
+    cp   [hl]
+    jr   nc, .prepareLoadDX1
 
-    ld [hl], a
-
-jr_001_5364:
+    ld   [hl], a
 ENDC
 
+.prepareLoadDX1:
     ld   hl, wColorDungeonItemFlags               ; $52E4: $21 $DA $DD
-    ld   de, $05                                  ; $52E7: $11 $05 $00
+    ld   de, SAVE_DX1_SIZE                        ; $52E7: $11 $05 $00
 
-.loop_52EA
-    call EnableExternalRAMWriting                 ; $52EA: $CD $D0 $27
+.loopLoadDX1
+    call EnableSRAM                               ; $52EA: $CD $D0 $27
     ld   a, [bc]                                  ; $52ED: $0A
     inc  bc                                       ; $52EE: $03
     ldi  [hl], a                                  ; $52EF: $22
     dec  de                                       ; $52F0: $1B
     ld   a, e                                     ; $52F1: $7B
     or   d                                        ; $52F2: $B2
-    jr   nz, .loop_52EA                           ; $52F3: $20 $F5
+    jr   nz, .loopLoadDX1                         ; $52F3: $20 $F5
     ld   hl, wColorDungeonRoomStatus              ; $52F5: $21 $E0 $DD
-    ld   de, $20                                  ; $52F8: $11 $20 $00
+    ld   de, SAVE_DX2_SIZE                        ; $52F8: $11 $20 $00
 
-.loop_52FB
-    call EnableExternalRAMWriting                 ; $52FB: $CD $D0 $27
+.loopLoadDX2
+    call EnableSRAM                               ; $52FB: $CD $D0 $27
     ld   a, [bc]                                  ; $52FE: $0A
     inc  bc                                       ; $52FF: $03
     ldi  [hl], a                                  ; $5300: $22
     dec  de                                       ; $5301: $1B
     ld   a, e                                     ; $5302: $7B
     or   d                                        ; $5303: $B2
-    jr   nz, .loop_52FB                           ; $5304: $20 $F5
-    call EnableExternalRAMWriting                 ; $5306: $CD $D0 $27
+    jr   nz, .loopLoadDX2                         ; $5304: $20 $F5
+    call EnableSRAM                               ; $5306: $CD $D0 $27
     ld   a, [bc]                                  ; $5309: $0A
     ld   [wTunicType], a                          ; $530A: $EA $0F $DC
     inc  bc                                       ; $530D: $03
-    call EnableExternalRAMWriting                 ; $530E: $CD $D0 $27
+    call EnableSRAM                               ; $530E: $CD $D0 $27
     ld   a, [bc]                                  ; $5311: $0A
     ld   [wPhotos1], a                            ; $5312: $EA $0C $DC
     inc  bc                                       ; $5315: $03
-    call EnableExternalRAMWriting                 ; $5316: $CD $D0 $27
+    call EnableSRAM                               ; $5316: $CD $D0 $27
     ld   a, [bc]                                  ; $5319: $0A
     ld   [wPhotos2], a                            ; $531A: $EA $0D $DC
 
@@ -587,7 +587,7 @@ CreateMinimapTilemap::
 .jr_001_5543
     pop  hl                                       ; $5543: $E1
 
-.loop2
+.drawEmptyHeartsLoop
     push hl                                       ; $5544: $E5
     ld   hl, Data_001_53D8                        ; $5545: $21 $D8 $53
     add  hl, bc                                   ; $5548: $09
@@ -615,7 +615,7 @@ CreateMinimapTilemap::
     pop  hl                                       ; $556C: $E1
     inc  hl                                       ; $556D: $23
     cp   $FF                                      ; $556E: $FE $FF
-    jr   nz, .loop2                               ; $5570: $20 $D2
+    jr   nz, .drawEmptyHeartsLoop                 ; $5570: $20 $D2
 
     xor  a                                        ; $5572: $AF
     ld   [hl], a                                  ; $5573: $77
@@ -824,13 +824,17 @@ func_001_5888::
     cp   $0C                                      ; $5891: $FE $0C
     jr   nz, .loop_588D                           ; $5893: $20 $F8
 
-func_001_5895::
+InitializeInventoryBar::
+    ; Set the window to the bottom of the screen
     ld   a, $80                                   ; $5895: $3E $80
     ld   [wWindowY], a                            ; $5897: $EA $9A $DB
     ld   a, $07                                   ; $589A: $3E $07
     ld   [rWX], a                                 ; $589C: $E0 $4B
+    ; Set wSubscreenScrollIncrement to be $08 (closing/closed), so it's
+    ; ready to be flipped to $F8 if inventory is opened
     ld   a, $08                                   ; $589E: $3E $08
-    ld   [wC150], a                               ; $58A0: $EA $50 $C1
+    ld   [wSubscreenScrollIncrement], a           ; $58A0: $EA $50 $C1
+    ; Inventory is not currently appearing
     xor  a                                        ; $58A3: $AF
     ld   [wInventoryAppearing], a                 ; $58A4: $EA $4F $C1
 
@@ -976,7 +980,7 @@ jr_001_5AA0::
     jr   label_001_5B3F                           ; $5AF3: $18 $4A
 
 .jr_5AF5::
-    call func_001_6BAE                            ; $5AF5: $CD $AE $6B
+    call MoveSelect.playMoveSelectionJingle       ; $5AF5: $CD $AE $6B
     ld   hl, MapSpecialLocationNamesTable         ; $5AF8: $21 $59 $59
     add  hl, de                                   ; $5AFB: $19
     ld   a, [hl]                                  ; $5AFC: $7E
@@ -1257,102 +1261,172 @@ jr_001_5C7B::
 label_001_5D13::
     ret                                           ; $5D13: $C9
 
-Data_001_5D14::
-    db  $98, $CB, $06, $7E, $7E, $7E, $7E, $7E, $7E, $7E ; $5D14
-    db  $98, $EB, $06, $7E, $7E, $7E, $7E, $7E, $7E, $7E ; $5D1E
-    db  $00                                       ; $5D28
+SaveSlot1HeartsDrawData::
+    ; First row:
+    db  $98 ; wDrawCommand.destinationHigh
+    db  $CB ; wDrawCommand.destinationLow
+    db  $06 ; wDrawCommand.length
+    db  $7E, $7E, $7E, $7E, $7E, $7E, $7E ; wDrawCommand.data, empty tiles
+    ; Second row:
+    db  $98 ; wDrawCommand.destinationHigh
+    db  $EB ; wDrawCommand.destinationLow
+    db  $06 ; wDrawCommand.length
+    db  $7E, $7E, $7E, $7E, $7E, $7E, $7E ; wDrawCommand.data, empty tiles
+.end
+    db  $00
 
-Data_001_5D29::
-    db  $99, $2B, $06, $7E, $7E, $7E, $7E, $7E, $7E, $7E ; $5D29
-    db  $99, $4B, $06, $7E, $7E, $7E, $7E, $7E, $7E, $7E ; $5D33
-    db  $00                                       ; $5D3D
+SaveSlot2HeartsDrawData::
+    ; First row:
+    db  $99 ; wDrawCommand.destinationHigh
+    db  $2B ; wDrawCommand.destinationLow
+    db  $06 ; wDrawCommand.length
+    db  $7E, $7E, $7E, $7E, $7E, $7E, $7E ; wDrawCommand.data, empty tiles
+    ; Second row:
+    db  $99 ; wDrawCommand.destinationHigh
+    db  $4B ; wDrawCommand.destinationLow
+    db  $06 ; wDrawCommand.length
+    db  $7E, $7E, $7E, $7E, $7E, $7E, $7E ; wDrawCommand.data, empty tiles
+.end
+    db  $00
 
-Data_001_5D3E::
-    db  $99, $8B, $06, $7E, $7E, $7E, $7E, $7E, $7E, $7E ; $5D3E
-    db  $99, $AB, $06, $7E, $7E, $7E, $7E, $7E, $7E, $7E ; $5D48
-    db  $00                                       ; $5D52
+SaveSlot3HeartsDrawData::
+    ; First row:
+    db  $99 ; wDrawCommand.destinationHigh
+    db  $8B ; wDrawCommand.destinationLow
+    db  $06 ; wDrawCommand.length
+    db  $7E, $7E, $7E, $7E, $7E, $7E, $7E ; wDrawCommand.data, empty tiles
+    ; Second row:
+    db  $99 ; wDrawCommand.destinationHigh
+    db  $AB ; wDrawCommand.destinationLow
+    db  $06 ; wDrawCommand.length
+    db  $7E, $7E, $7E, $7E, $7E, $7E, $7E ; wDrawCommand.data, empty tiles
+.end
+    db  $00
 
-label_001_5D53::
+; Builds a wDrawCommand to draw hearts next to the save files.
+;
+; Draws one full heart per full heart remaining in the actual health,
+; then one full heart if there's half a heart remaining of the actual health,
+; then one full heart per empty heart of the max health.
+;
+; This seems to have originally supported drawing the actual health of the
+; player at the time of saving, but the final code (in all revisions of both
+; the original game and DX) simply draws full hearts for all Heart Containers.
+;
+; Arguments:
+; - hMultiPurpose2 = Health
+; - hMultiPurpose3 = Max health
+; - hMultiPurpose4 = Save slot
+BuildSaveSlotHeartsDrawCommand::
+    ; Set up draw command
     ld   a, [wDrawCommandsSize]                   ; $5D53: $FA $00 $D6
     ld   e, a                                     ; $5D56: $5F
     ld   d, $00                                   ; $5D57: $16 $00
-    add  a, $14                                   ; $5D59: $C6 $14
+    add  a, SaveSlot1HeartsDrawData.end - SaveSlot1HeartsDrawData ; $5D59: $C6 $14
     ld   [wDrawCommandsSize], a                   ; $5D5B: $EA $00 $D6
     ld   hl, wDrawCommand                         ; $5D5E: $21 $01 $D6
     add  hl, de                                   ; $5D61: $19
     push de                                       ; $5D62: $D5
-    ld   bc, Data_001_5D14                        ; $5D63: $01 $14 $5D
+
+    ; Select correct save slot
+    ld   bc, SaveSlot1HeartsDrawData              ; $5D63: $01 $14 $5D
     ldh  a, [hMultiPurpose4]                      ; $5D66: $F0 $DB
     and  a                                        ; $5D68: $A7
-    jr   z, .jr_5D75                              ; $5D69: $28 $0A
-    ld   bc, Data_001_5D29                        ; $5D6B: $01 $29 $5D
+    jr   z, .initCopyDrawDataLoop                 ; $5D69: $28 $0A
+    ld   bc, SaveSlot2HeartsDrawData              ; $5D6B: $01 $29 $5D
     cp   $01                                      ; $5D6E: $FE $01
-    jr   z, .jr_5D75                              ; $5D70: $28 $03
-    ld   bc, Data_001_5D3E                        ; $5D72: $01 $3E $5D
+    jr   z, .initCopyDrawDataLoop                 ; $5D70: $28 $03
+    ld   bc, SaveSlot3HeartsDrawData              ; $5D72: $01 $3E $5D
 
-.jr_5D75::
-    ld   e, $15                                   ; $5D75: $1E $15
+.initCopyDrawDataLoop::
+    ld   e, $15 ; loop counter                    ; $5D75: $1E $15
 
-.loop_5D77
+.copyDrawDataLoop
+    ; Copy draw data to wDrawCommand
     ld   a, [bc]                                  ; $5D77: $0A
     inc  bc                                       ; $5D78: $03
     ldi  [hl], a                                  ; $5D79: $22
     dec  e                                        ; $5D7A: $1D
-    jr   nz, .loop_5D77                           ; $5D7B: $20 $FA
+    jr   nz, .copyDrawDataLoop                    ; $5D7B: $20 $FA
+
+    ; Prepare replacing empty tiles in draw command with hearts
     pop  de                                       ; $5D7D: $D1
     ld   hl, wDrawCommand.data                    ; $5D7E: $21 $04 $D6
     add  hl, de                                   ; $5D81: $19
-    ld   c, $00                                   ; $5D82: $0E $00
+    ld   c, 0 ; loop counter                      ; $5D82: $0E $00
     ldh  a, [hMultiPurpose2]                      ; $5D84: $F0 $D9
     and  a                                        ; $5D86: $A7
-    jr   z, jr_001_5DAB                           ; $5D87: $28 $22
+    jr   z, .drawEmptyHeartsLoop                  ; $5D87: $28 $22
     ldh  [hMultiPurpose0], a                      ; $5D89: $E0 $D7
 
-jr_001_5D8B::
+    ; Replace empty tiles in wDrawCommand with heart tiles
+    ; corresponding to the save file's max health
+.drawFullHeartsLoop::
+    ; Decrement health (one heart = 8 health)
+    ; to see if there's just half a heart left of it
     ldh  a, [hMultiPurpose0]                      ; $5D8B: $F0 $D7
-    sub  a, $08                                   ; $5D8D: $D6 $08
+    sub  a, ONE_HEART                             ; $5D8D: $D6 $08
     ldh  [hMultiPurpose0], a                      ; $5D8F: $E0 $D7
-    jr   c, jr_001_5DA2                           ; $5D91: $38 $0F
-    ld   a, $AE                                   ; $5D93: $3E $AE
+    jr   c, .drawHalfHeart                        ; $5D91: $38 $0F
+
+    ; Draw one full heart
+    ld   a, $AE ; Heart tile                      ; $5D93: $3E $AE
     ldi  [hl], a                                  ; $5D95: $22
+
+    ; Increment loop counter
     inc  c                                        ; $5D96: $0C
     ld   a, c                                     ; $5D97: $79
-    cp   $07                                      ; $5D98: $FE $07
-    jr   nz, .jr_5DA0                             ; $5D9A: $20 $04
+    cp   7                                        ; $5D98: $FE $07
+    jr   nz, .drawFullHeartsLoopContinue          ; $5D9A: $20 $04
+
+    ; End of first row (we've drawn 7 hearts),
+    ; go to next wDrawCommand.data by skipping the three
+    ; bytes of metadata
     ld   a, l                                     ; $5D9C: $7D
-    add  a, $03                                   ; $5D9D: $C6 $03
+    add  a, wDrawCommand.data - wDrawCommand      ; $5D9D: $C6 $03
     ld   l, a                                     ; $5D9F: $6F
 
-.jr_5DA0::
-    jr   jr_001_5D8B                              ; $5DA0: $18 $E9
+.drawFullHeartsLoopContinue::
+    jr   .drawFullHeartsLoop                      ; $5DA0: $18 $E9
 
-jr_001_5DA2::
-    add  a, $08                                   ; $5DA2: $C6 $08
-    jr   z, jr_001_5DAB                           ; $5DA4: $28 $05
-    ld   a, $AE                                   ; $5DA6: $3E $AE
+.drawHalfHeart::
+    add  a, ONE_HEART                             ; $5DA2: $C6 $08
+    jr   z, .drawEmptyHeartsLoop                  ; $5DA4: $28 $05
+
+    ; Draw full heart; this was presumably originally
+    ; the half heart tile $CE
+    ld   a, $AE ; Heart tile                      ; $5DA6: $3E $AE
     ldi  [hl], a                                  ; $5DA8: $22
-    jr   jr_001_5DB3                              ; $5DA9: $18 $08
+    jr   .nextEmptyHeart                          ; $5DA9: $18 $08
 
-jr_001_5DAB::
+.drawEmptyHeartsLoop::
     ldh  a, [hMultiPurpose3]                      ; $5DAB: $F0 $DA
     cp   c                                        ; $5DAD: $B9
-    jr   z, ret_001_5DBF                          ; $5DAE: $28 $0F
-    ld   a, $AE                                   ; $5DB0: $3E $AE
+    jr   z, .return                               ; $5DAE: $28 $0F
+
+    ; Draw full heart; this was presumably originally
+    ; the empty heart tile $CD
+    ld   a, $AE ; Heart tile                      ; $5DB0: $3E $AE
     ldi  [hl], a                                  ; $5DB2: $22
 
-jr_001_5DB3::
+.nextEmptyHeart::
+    ; Increment loop counter
     inc  c                                        ; $5DB3: $0C
     ld   a, c                                     ; $5DB4: $79
-    cp   $07                                      ; $5DB5: $FE $07
-    jr   nz, .jr_5DBD                             ; $5DB7: $20 $04
+    cp   7                                        ; $5DB5: $FE $07
+    jr   nz, .drawEmptyHeartsLoopContinue         ; $5DB7: $20 $04
+
+    ; End of first row (we've drawn 7 hearts),
+    ; go to next wDrawCommand.data by skipping the three
+    ; bytes of metadata
     ld   a, l                                     ; $5DB9: $7D
-    add  a, $03                                   ; $5DBA: $C6 $03
+    add  a, wDrawCommand.data - wDrawCommand      ; $5DBA: $C6 $03
     ld   l, a                                     ; $5DBC: $6F
 
-.jr_5DBD::
-    jr   jr_001_5DAB                              ; $5DBD: $18 $EC
+.drawEmptyHeartsLoopContinue::
+    jr   .drawEmptyHeartsLoop                     ; $5DBD: $18 $EC
 
-ret_001_5DBF::
+.return::
     ret                                           ; $5DBF: $C9
 
 func_5DC0::
@@ -1388,18 +1462,23 @@ jr_001_5DCC::
     jr   nz, jr_001_5DCC                          ; $5DE3: $20 $E7
     ret                                           ; $5DE5: $C9
 
-func_001_5DE6::
-IF __PATCH_4__
-    call Call_001_5eca
+SaveGameToFile::
+IF __RECALCULATE_MAX_HEARTS__
+    ; Recalculate max health before saving
+    call RecalculateMaxHearts
 ENDC
-    ld   a, [wHealth]                           ; Does the player have any health? ; $5DE6: $FA $5A $DB
-    and  a                                      ; If yes, skip this ; $5DE9: $A7
+    ; Does the player have any health?
+    ld   a, [wHealth]                             ; $5DE6: $FA $5A $DB
+    and  a                                        ; $5DE9: $A7
     jr   nz, .skipHealthReset                     ; $5DEA: $20 $0E
-    ld   a, [wMaxHealth]                        ; Otherwise, get their max health... ; $5DEC: $FA $5B $DB
+    ; If not, get the current max health
+    ld   a, [wMaxHearts]                          ; $5DEC: $FA $5B $DB
     ld   e, a                                     ; $5DEF: $5F
     ld   d, $00                                   ; $5DF0: $16 $00
-    ld   hl, MaxHealthToStartingHealthTable     ; and use it as an index into the table ; $5DF2: $21 $95 $52
-    add  hl, de                                 ; to provide the starting health value. ; $5DF5: $19
+    ; and use it as an index into the table
+    ld   hl, MaxHeartsToStartingHealthTable       ; $5DF2: $21 $95 $52
+    add  hl, de                                   ; $5DF5: $19
+    ; to provide the starting health value.
     ld   a, [hl]                                  ; $5DF6: $7E
     ld   [wHealth], a                             ; $5DF7: $EA $5A $DB
 
@@ -1409,7 +1488,7 @@ ENDC
     sla  a                                        ; $5E00: $CB $27
     ld   e, a                                     ; $5E02: $5F
     ld   d, $00                                   ; $5E03: $16 $00
-    ld   hl, Data_001_49F8                        ; $5E05: $21 $F8 $49
+    ld   hl, SaveGameTable                        ; $5E05: $21 $F8 $49
     add  hl, de                                   ; $5E08: $19
     ld   a, [hli]                                 ; $5E09: $2A
     ld   h, [hl]                                  ; $5E0A: $66
@@ -1417,64 +1496,64 @@ ENDC
     ld   bc, wOverworldRoomStatus                 ; $5E0C: $01 $00 $D8
     ld   de, SAVE_MAIN_SIZE                       ; $5E0F: $11 $80 $03
 
-.loop_5E12
-    call EnableExternalRAMWriting                 ; $5E12: $CD $D0 $27
+.loopSaveMain
+    call EnableSRAM                               ; $5E12: $CD $D0 $27
     ld   a, [bc]                                  ; $5E15: $0A
     inc  bc                                       ; $5E16: $03
-    call EnableExternalRAMWriting                 ; $5E17: $CD $D0 $27
+    call EnableSRAM                               ; $5E17: $CD $D0 $27
     ldi  [hl], a                                  ; $5E1A: $22
     dec  de                                       ; $5E1B: $1B
     ld   a, e                                     ; $5E1C: $7B
     or   d                                        ; $5E1D: $B2
-    jr   nz, .loop_5E12                           ; $5E1E: $20 $F2
+    jr   nz, .loopSaveMain                        ; $5E1E: $20 $F2
     ld   bc, wColorDungeonItemFlags               ; $5E20: $01 $DA $DD
-    ld   de, $05                                  ; $5E23: $11 $05 $00
+    ld   de, SAVE_DX1_SIZE                        ; $5E23: $11 $05 $00
 
-.loop_5E26
-    call EnableExternalRAMWriting                 ; $5E26: $CD $D0 $27
+.loopSaveDX1
+    call EnableSRAM                               ; $5E26: $CD $D0 $27
     ld   a, [bc]                                  ; $5E29: $0A
     inc  bc                                       ; $5E2A: $03
-    call EnableExternalRAMWriting                 ; $5E2B: $CD $D0 $27
+    call EnableSRAM                               ; $5E2B: $CD $D0 $27
     ldi  [hl], a                                  ; $5E2E: $22
     dec  de                                       ; $5E2F: $1B
     ld   a, e                                     ; $5E30: $7B
     or   d                                        ; $5E31: $B2
-    jr   nz, .loop_5E26                           ; $5E32: $20 $F2
+    jr   nz, .loopSaveDX1                         ; $5E32: $20 $F2
     ld   bc, wColorDungeonRoomStatus              ; $5E34: $01 $E0 $DD
-    ld   de, $20                                  ; $5E37: $11 $20 $00
+    ld   de, SAVE_DX2_SIZE                        ; $5E37: $11 $20 $00
 
-.loop_5E3A
-    call EnableExternalRAMWriting                 ; $5E3A: $CD $D0 $27
+.loopSaveDX2
+    call EnableSRAM                               ; $5E3A: $CD $D0 $27
     ld   a, [bc]                                  ; $5E3D: $0A
     inc  bc                                       ; $5E3E: $03
-    call EnableExternalRAMWriting                 ; $5E3F: $CD $D0 $27
+    call EnableSRAM                               ; $5E3F: $CD $D0 $27
     ldi  [hl], a                                  ; $5E42: $22
     dec  de                                       ; $5E43: $1B
     ld   a, e                                     ; $5E44: $7B
     or   d                                        ; $5E45: $B2
-    jr   nz, .loop_5E3A                           ; $5E46: $20 $F2
-    call EnableExternalRAMWriting                 ; $5E48: $CD $D0 $27
+    jr   nz, .loopSaveDX2                         ; $5E46: $20 $F2
+    call EnableSRAM                               ; $5E48: $CD $D0 $27
     ld   a, [wTunicType]                          ; $5E4B: $FA $0F $DC
-    call EnableExternalRAMWriting                 ; $5E4E: $CD $D0 $27
+    call EnableSRAM                               ; $5E4E: $CD $D0 $27
     ldi  [hl], a                                  ; $5E51: $22
-    call EnableExternalRAMWriting                 ; $5E52: $CD $D0 $27
+    call EnableSRAM                               ; $5E52: $CD $D0 $27
     ld   a, [wPhotos1]                            ; $5E55: $FA $0C $DC
-    call EnableExternalRAMWriting                 ; $5E58: $CD $D0 $27
+    call EnableSRAM                               ; $5E58: $CD $D0 $27
     ldi  [hl], a                                  ; $5E5B: $22
-    call EnableExternalRAMWriting                 ; $5E5C: $CD $D0 $27
+    call EnableSRAM                               ; $5E5C: $CD $D0 $27
     ld   a, [wPhotos2]                            ; $5E5F: $FA $0D $DC
-    call EnableExternalRAMWriting                 ; $5E62: $CD $D0 $27
+    call EnableSRAM                               ; $5E62: $CD $D0 $27
     ldi  [hl], a                                  ; $5E65: $22
     ret                                           ; $5E66: $C9
 
-IF __PATCH_4__
+IF __RECALCULATE_MAX_HEARTS__
 ;
 ; Recalculates player's Max HP based on two tables; one for boss rooms,
 ; one for piece of heart rooms. Checks the save data's room flags to check
 ; if the boss has been defeated or the heart piece was collected,
 ; then resets max HP to 3 + (bosses) + (PoH / 4).
 ;
-Data_001_5ea2:
+BossRoomTable:
     dw wIndoorARoomStatus + $06 ; moldorm
     dw wIndoorARoomStatus + $2b ; genie
     dw wIndoorARoomStatus + $5a
@@ -1484,7 +1563,7 @@ Data_001_5ea2:
     dw wIndoorBRoomStatus + $e8
     dw wIndoorBRoomStatus + $34 ; hothead
 
-Data_001_5eb2:
+PieceOfHeartRoomTable:
     dw wIndoorBRoomStatus + $a4
     dw wIndoorBRoomStatus + $b1
     dw wOverworldRoomStatus + $44
@@ -1498,94 +1577,92 @@ Data_001_5eb2:
     dw wIndoorBRoomStatus + $ba
     dw wOverworldRoomStatus + $00
 
-Call_001_5eca:
+RecalculateMaxHearts:
     ; full heart containers
-    ld a, $03                                     ; $5eca: $3e $03
-    ldh [hMultiPurpose0], a                            ; $5ecc: $e0 $d7
-    xor a                                         ; $5ece: $af
-    ldh [hMultiPurpose1], a                            ; $5ecf: $e0 $d8
-    ld c, $08                                     ; $5ed1: $0e $08
-    ld hl, Data_001_5ea2                                   ; $5ed3: $21 $a2 $5e
+    ld a, $03                                     ; $5ECA: $3E $03
+    ldh [hMultiPurpose0], a                       ; $5ECC: $E0 $D7
+    xor a                                         ; $5ECE: $AF
+    ldh [hMultiPurpose1], a                       ; $5ECF: $E0 $D8
+    ld c, $08                                     ; $5ED1: $0E $08
+    ld hl, BossRoomTable                          ; $5ED3: $21 $A2 $5E
 
 .bossLoop
-    ld a, [hl+]                                   ; $5ed6: $2a
-    ld e, a                                       ; $5ed7: $5f
-    ld a, [hl+]                                   ; $5ed8: $2a
-    ld d, a                                       ; $5ed9: $57
-    ld a, [de]                                    ; $5eda: $1a
-    and $20 ; ROOM_STATUS_BOSS_DEFEATED
-    jr z, .endIfBossDefeated                             ; $5edd: $28 $05
-    ldh a, [hMultiPurpose0]                            ; $5edf: $f0 $d7
-    inc a                                         ; $5ee1: $3c
-    ldh [hMultiPurpose0], a                            ; $5ee2: $e0 $d7
+    ld a, [hl+]                                   ; $5ED6: $2A
+    ld e, a                                       ; $5ED7: $5F
+    ld a, [hl+]                                   ; $5ED8: $2A
+    ld d, a                                       ; $5ED9: $57
+    ld a, [de]                                    ; $5EDA: $1A
+    and ROOM_STATUS_EVENT_2 ; Boss defeated
+    jr z, .endIfBossDefeated                      ; $5EDD: $28 $05
+    ldh a, [hMultiPurpose0]                       ; $5EDF: $F0 $D7
+    inc a                                         ; $5EE1: $3C
+    ldh [hMultiPurpose0], a                       ; $5EE2: $E0 $D7
 .endIfBossDefeated:
 
-    dec c                                         ; $5ee4: $0d
-    jr nz, .bossLoop                                   ; $5ee5: $20 $ef
+    dec c                                         ; $5EE4: $0D
+    jr nz, .bossLoop                              ; $5EE5: $20 $EF
 
-    ld c, $0c                                     ; $5ee7: $0e $0c
-    ld hl, Data_001_5eb2                                  ; $5ee9: $21 $b2 $5e
+    ld c, $0c                                     ; $5EE7: $0E $0C
+    ld hl, PieceOfHeartRoomTable                  ; $5EE9: $21 $B2 $5E
 
 .heartPieceLoop
-    ld a, [hl+]                                   ; $5eec: $2a
-    ld e, a                                       ; $5eed: $5f
-    ld a, [hl+]                                   ; $5eee: $2a
-    ld d, a                                       ; $5eef: $57
-    ld a, [de]                                    ; $5ef0: $1a
-    and OW_ROOM_STATUS_CHANGED                       ; $5ef1: $e6 $10
-    jr z, .endIfHeartPieceTaken                             ; $5ef3: $28 $0f
+    ld a, [hl+]                                   ; $5EEC: $2A
+    ld e, a                                       ; $5EED: $5F
+    ld a, [hl+]                                   ; $5EEE: $2A
+    ld d, a                                       ; $5EEF: $57
+    ld a, [de]                                    ; $5EF0: $1A
+    and OW_ROOM_STATUS_CHANGED                    ; $5EF1: $E6 $10
+    jr z, .endIfHeartPieceTaken                   ; $5EF3: $28 $0F
 
-    ldh a, [hMultiPurpose1]                            ; $5ef5: $f0 $d8
-    inc a                                         ; $5ef7: $3c
-    cp $04                                        ; $5ef8: $fe $04
-    jr nz, .endIf4heartPieces                            ; $5efa: $20 $06
+    ldh a, [hMultiPurpose1]                       ; $5EF5: $F0 $D8
+    inc a                                         ; $5EF7: $3C
+    cp $04                                        ; $5EF8: $FE $04
+    jr nz, .endIf4heartPieces                     ; $5EFA: $20 $06
 
-    ldh a, [hMultiPurpose0]                            ; $5efc: $f0 $d7
-    inc a                                         ; $5efe: $3c
-    ldh [hMultiPurpose0], a                            ; $5eff: $e0 $d7
-    xor a                                         ; $5f01: $af
+    ldh a, [hMultiPurpose0]                       ; $5EFC: $F0 $D7
+    inc a                                         ; $5EFE: $3C
+    ldh [hMultiPurpose0], a                       ; $5EFF: $E0 $D7
+    xor a                                         ; $5F01: $AF
 .endIf4heartPieces
 
-    ldh [hMultiPurpose1], a                            ; $5f02: $e0 $d8
+    ldh [hMultiPurpose1], a                       ; $5F02: $E0 $D8
 
 .endIfHeartPieceTaken
-    dec c                                         ; $5f04: $0d
-    jr nz, .heartPieceLoop                            ; $5f05: $20 $e5
+    dec c                                         ; $5F04: $0D
+    jr nz, .heartPieceLoop                        ; $5F05: $20 $E5
 
-    ldh a, [hMultiPurpose0]                            ; $5f07: $f0 $d7
-    call Call_001_5f1c                            ; $5f09: $cd $1c $5f
-    ld [wMaxHealth], a                            ; $5f0c: $ea $5b $db
-    cp $0e                                        ; $5f0f: $fe $0e
-    jr nz, jr_001_5f16                            ; $5f11: $20 $03
+    ldh a, [hMultiPurpose0]                       ; $5F07: $F0 $D7
+    call ClampMaxHearts                           ; $5F09: $CD $1C $5F
+    ld [wMaxHearts], a                            ; $5F0C: $EA $5B $DB
+    cp $0e                                        ; $5F0F: $FE $0E
+    jr nz, jr_001_5f16                            ; $5F11: $20 $03
 
-    xor a                                         ; $5f13: $af
-    jr jr_001_5f18                                ; $5f14: $18 $02
+    xor a                                         ; $5F13: $AF
+    jr jr_001_5f18                                ; $5F14: $18 $02
 
 jr_001_5f16:
-    ldh a, [hMultiPurpose1]                            ; $5f16: $f0 $d8
+    ldh a, [hMultiPurpose1]                       ; $5F16: $F0 $D8
 
 jr_001_5f18:
-    ld [wHeartPiecesCount], a                     ; $5f18: $ea $5c $db
-    ret                                           ; $5f1b: $c9
+    ld [wHeartPiecesCount], a                     ; $5F18: $EA $5C $DB
+    ret                                           ; $5F1B: $C9
 
 
 ; clamps max health between 3 and 14
-Call_001_5f1c:
-    cp $03                                        ; $5f1c: $fe $03
-    jr nc, jr_001_5f23                            ; $5f1e: $30 $03
+ClampMaxHearts:
+    cp $03                                        ; $5F1C: $FE $03
+    jr nc, .upperBound                            ; $5F1E: $30 $03
 
-    ld a, $03                                     ; $5f20: $3e $03
-    ret                                           ; $5f22: $c9
+    ld a, $03                                     ; $5F20: $3E $03
+    ret                                           ; $5F22: $C9
 
+.upperBound:
+    cp $0e                                        ; $5F23: $FE $0E
+    jr c, .return                                 ; $5F25: $38 $02
+    ld a, $0e                                     ; $5F27: $3E $0E
 
-jr_001_5f23:
-    cp $0e                                        ; $5f23: $fe $0e
-    jr c, jr_001_5f29                             ; $5f25: $38 $02
-
-    ld a, $0e                                     ; $5f27: $3e $0e
-
-jr_001_5f29:
-    ret                                           ; $5f29: $c9
+.return:
+    ret                                           ; $5F29: $C9
 ENDC
 
 
@@ -1806,25 +1883,30 @@ UpdateRecentRoomsList::
     ret                                           ; $5F2D: $C9
 
 HideAllSprites::
-    ; $0000 controls whether to enable external RAM writing
-    ld   hl, MBC3SRamEnable                       ; $5F2E: $21 $00 $00
+    ; $0000 controls whether to enable external RAM
+    ld   hl, rRAMG                                ; $5F2E: $21 $00 $00
 
     ; If CGB…
     ldh  a, [hIsGBC]                              ; $5F31: $F0 $FE
     and  a                                        ; $5F33: $A7
-    jr   z, .enableExternalRAMWriting             ; $5F34: $28 $04
-    ; disable external RAM writing
+    jr   z, .enableSRAM                           ; $5F34: $28 $04
+    ; disable external RAM
     ; (probably because an extra RAM bank available on CGB can be used)
-    ld   [hl], SRAM_DISABLE                       ; $5F36: $36 $00
+    ld   [hl], CART_SRAM_DISABLE                  ; $5F36: $36 $00
     jr   .endIf                                   ; $5F38: $18 $02
 
-.enableExternalRAMWriting
-    ; else enable external RAM writing
+.enableSRAM
+    ; else write $FF to rRAMG, which also should disable
+    ; external RAM; only a value of $0A enables external
+    ; RAM (SRAM) on MBC5 according to Pandocs. SRAM is also
+    ; not used in this subroutine. What's actually going on
+    ; here? Stubbed out code that hasn't been removed even
+    ; though it's run every frame?
     ld   [hl], $FF                                ; $5F3A: $36 $FF
 .endIf
 
     ; loop counter
-    ld   b, $28                                   ; $5F3C: $06 $28
+    ld   b, OAM_COUNT                             ; $5F3C: $06 $28
     ; value to write
     ld   a, $F4                                   ; $5F3E: $3E $F4
     ; address
@@ -1841,83 +1923,125 @@ HideAllSprites::
     jr   nz, .loop                                ; $5F48: $20 $F9
     ret                                           ; $5F4A: $C9
 
-UpdateWindowPosition::
+; Hide sprites that should be obscured by the inventory window
+; or the dialog box.
+; 
+; Note that this code checks if wInventoryAppearing is true, and if
+; so, it hides sprites based on wWindowY, ie. the window's Y position.
+; This is likely a remnant from the DMG version of the game, where
+; the inventory screen scrolled in from the bottom, and wWindowY could
+; have many different values. In DX, wWindowY can only be 0 (ie. fully
+; open inventory) while wInventoryAppearing is true.
+HideSprites::
+    ; Is the inventory window currently opening?
     ld   a, [wInventoryAppearing]                 ; $5F4B: $FA $4F $C1
     and  a                                        ; $5F4E: $A7
-    jr   z, jr_001_5F6A                           ; $5F4F: $28 $19
+    jr   z, HideSpritesUnderDialog                ; $5F4F: $28 $19
+    ; If so, calculate what sprites should be hidden
     ld   hl, wOAMBuffer                           ; $5F51: $21 $00 $C0
+    ; Sprites are 16 pixels tall, and their Y position
+    ; is 16 less than actual screen position, so check if
+    ; at least half of the sprite overlaps the window
     ld   a, [wWindowY]                            ; $5F54: $FA $9A $DB
-    add  a, $08                                   ; $5F57: $C6 $08
+    add  a, OAM_Y_OFS / 2                         ; $5F57: $C6 $08
     ld   d, a                                     ; $5F59: $57
-    ld   e, $28                                   ; $5F5A: $1E $28
+    ; Loop counter
+    ld   e, OAM_COUNT                             ; $5F5A: $1E $28
 
-jr_001_5F5C::
+.hideSpritesLoop::
     ld   a, [hl]                                  ; $5F5C: $7E
     cp   d                                        ; $5F5D: $BA
-    jr   c, .jr_5F62                              ; $5F5E: $38 $02
+    jr   c, .nextSprite                           ; $5F5E: $38 $02
+    ; Set sprite's Y position to 0 (off-screen)
     ld   [hl], $00                                ; $5F60: $36 $00
 
-.jr_5F62::
+.nextSprite
     inc  hl                                       ; $5F62: $23
     inc  hl                                       ; $5F63: $23
     inc  hl                                       ; $5F64: $23
     inc  hl                                       ; $5F65: $23
     dec  e                                        ; $5F66: $1D
-    jr   nz, jr_001_5F5C                          ; $5F67: $20 $F3
+    jr   nz, .hideSpritesLoop                     ; $5F67: $20 $F3
     ret                                           ; $5F69: $C9
 
-jr_001_5F6A::
+; The window is not opening, so we potentially need to hide sprites
+; under a dialog box instead.
+HideSpritesUnderDialog::
+    ; If wWindowY == 0, the inventory window is fully open, so
+    ; there is no dialog box
     ld   a, [wWindowY]                            ; $5F6A: $FA $9A $DB
     and  a                                        ; $5F6D: $A7
     ret  z                                        ; $5F6E: $C8
+    ; If wDialogState == 0 (DIALOG_CLOSED),
+    ; there is no dialog box
     ld   a, [wDialogState]                        ; $5F6F: $FA $9F $C1
     and  a                                        ; $5F72: $A7
     ret  z                                        ; $5F73: $C8
-    ld   d, $3E                                   ; $5F74: $16 $3E
+    ; Compare sprites' Y positions with either the bottom of
+    ; the dialog box at the top of the screen (but allow two
+    ; pixels of the sprite to overlap)...
+    ld   d, DIALOG_BOX_TOP_Y + DIALOG_BOX_HEIGHT + OAM_Y_OFS - 2 ; $5F74: $16 $3E
     ld   a, [wDialogState]                        ; $5F76: $FA $9F $C1
-    and  $80                                      ; $5F79: $E6 $80
-    jr   z, .jr_5F7F                              ; $5F7B: $28 $02
-    ld   d, $58                                   ; $5F7D: $16 $58
+    ; ... or the top of the dialog box at the bottom of the screen
+    ; (allow up to half the sprite to overlap here)
+    and  DIALOG_BOX_BOTTOM_FLAG                   ; $5F79: $E6 $80
+    jr   z, .hideSpritesUnderDialog               ; $5F7B: $28 $02
+    ld   d, DIALOG_BOX_BOTTOM_Y - (OAM_Y_OFS / 2) ; $5F7D: $16 $58
 
-.jr_5F7F::
-    ld   e, $1F                                   ; $5F7F: $1E $1F
-    ld   hl, wOAMBuffer+$24                       ; $5F81: $21 $24 $C0
+.hideSpritesUnderDialog::
+    ; Skip the first 9 OAM entries, as those include parts of wLinkOAMBuffer
+    ; (Link will never be on top of the dialog box) which is also used for
+    ; sprites that should be on top of the dialog box (like the prompt arrow)
+    ld   e, OAM_COUNT - 9 ; loop counter          ; $5F7F: $1E $1F
+    ld   hl, wOAMBuffer + (sizeof_OAM_ATTRS * 9)  ; $5F81: $21 $24 $C0
 
-jr_001_5F84::
+.hideSpritesLoop::
+    ; Check if the sprite's Y position is sufficiently more
+    ; than the comparison value (below)...
     ld   a, [hl]                                  ; $5F84: $7E
     cp   d                                        ; $5F85: $BA
+    ; ...or, if the dialog box is on the bottom of the screen...
     ld   a, [wDialogState]                        ; $5F86: $FA $9F $C1
-    bit  7, a                                     ; $5F89: $CB $7F
-    jr   nz, .jr_5F8E                             ; $5F8B: $20 $01
+    bit  DIALOG_BOX_BOTTOM_BIT, a                 ; $5F89: $CB $7F
+    jr   nz, .checkPieceOfHeart                   ; $5F8B: $20 $01
+    ; ...if the sprite's Y position is sufficiently less (above)...
     ccf                                           ; $5F8D: $3F
 
-.jr_5F8E::
-    jr   c, jr_001_5FAB                           ; $5F8E: $38 $1B
+.checkPieceOfHeart::
+    ; ...then don't hide the sprite.
+    jr   c, .nextSprite                           ; $5F8E: $38 $1B
+    ; Check if the dialog being displayed is Dialog04F,
+    ; ie. the "You've got a Piece of Heart" text
     ld   a, [wDialogIndex]                        ; $5F90: $FA $73 $C1
-    cp   $4F                                      ; $5F93: $FE $4F
-    jr   nz, .jr_5FA9                             ; $5F95: $20 $12
+    cp_dialog_low Dialog04F                       ; $5F93: $FE $4F
+    jr   nz, .hideSprite                          ; $5F95: $20 $12
     ld   a, [wDialogIndexHi]                      ; $5F97: $FA $12 $C1
     and  a                                        ; $5F9A: $A7
-    jr   nz, .jr_5FA9                             ; $5F9B: $20 $0C
+    jr   nz, .hideSprite                          ; $5F9B: $20 $0C
+    ; Get the sprite's tile number
     inc  hl                                       ; $5F9D: $23
     inc  hl                                       ; $5F9E: $23
-    db   $3A ; ldd  a, [hl]                       ; $5F9F
+    ld   a, [hl-]                                 ; $5F9F
     dec  hl                                       ; $5FA0: $2B
+    ; If the sprite is the Piece of Heart graphic, ie. tile numbers
+    ; $9A to $9F, which is supposed to overlay the relevant dialog,
+    ; don't hide it
     cp   $9A                                      ; $5FA1: $FE $9A
-    jr   c, .jr_5FA9                              ; $5FA3: $38 $04
+    jr   c, .hideSprite                           ; $5FA3: $38 $04
     cp   $A0                                      ; $5FA5: $FE $A0
-    jr   c, jr_001_5FAB                           ; $5FA7: $38 $02
+    jr   c, .nextSprite                           ; $5FA7: $38 $02
 
-.jr_5FA9::
+.hideSprite::
+    ; Set sprite's Y position to 0 (off-screen)
     ld   [hl], $00                                ; $5FA9: $36 $00
 
-jr_001_5FAB::
+.nextSprite::
     inc  hl                                       ; $5FAB: $23
     inc  hl                                       ; $5FAC: $23
     inc  hl                                       ; $5FAD: $23
     inc  hl                                       ; $5FAE: $23
     dec  e                                        ; $5FAF: $1D
-    jr   nz, jr_001_5F84                          ; $5FB0: $20 $D2
+    jr   nz, .hideSpritesLoop                     ; $5FB0: $20 $D2
     ret                                           ; $5FB2: $C9
 
 ; Create the entity for the NPC currently following Link (if any).
@@ -2158,7 +2282,7 @@ CreateFollowingNpcEntity::
     ldh  a, [hMapId]                              ; $60E4: $F0 $F7
     cp   MAP_CAVE_C                               ; $60E6: $FE $11
     jr   nz, .marinFallEnd                        ; $60E8: $20 $0D
-    ld   a, JINGLE_JUMP_DOWN                      ; $60EA: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $60EA: $3E $08
     ldh  [hJingle], a                             ; $60EC: $E0 $F2
     ld   [wC167], a                               ; $60EE: $EA $67 $C1
     ld   hl, wEntitiesPrivateCountdown2Table      ; $60F1: $21 $00 $C3
@@ -2265,7 +2389,7 @@ func_001_6162::
     ld   [rOBP1], a                               ; $6179: $E0 $49
     ldh  [hBaseScrollY], a                        ; $617B: $E0 $97
     ldh  [hBaseScrollX], a                        ; $617D: $E0 $96
-    ld   [hSwitchBlocksState], a                  ; $617F: $EA $FB $D6
+    ld   [wSwitchBlocksState], a                  ; $617F: $EA $FB $D6
     ld   [wSwitchableObjectAnimationStage], a     ; $6182: $EA $F8 $D6
     ld   a, $18                                   ; $6185: $3E $18
     ldh  [hButtonsInactiveDelay], a               ; $6187: $E0 $B5
@@ -2729,18 +2853,20 @@ func_6A7C::
 
 include "code/face_shrine_mural.asm"
 
-func_001_6BA8::
+; Move selection marker and play the corresponding jingle
+; This only checks for movement up/down, but several places
+; in the code checks for left/right separately and then calls
+; into MoveSelect.playMoveSelectionJingle to just play the jingle
+MoveSelect::
     ldh  a, [hJoypadState]                        ; $6BA8: $F0 $CC
     and  J_UP | J_DOWN                            ; $6BAA: $E6 $0C
-    jr   z, ret_001_6BB4                          ; $6BAC: $28 $06
-
-func_001_6BAE::
+    jr   z, .return                               ; $6BAC: $28 $06
+.playMoveSelectionJingle::
     push af                                       ; $6BAE: $F5
     ld   a, JINGLE_MOVE_SELECTION                 ; $6BAF: $3E $0A
     ldh  [hJingle], a                             ; $6BB1: $E0 $F2
     pop  af                                       ; $6BB3: $F1
-
-ret_001_6BB4::
+.return::
     ret                                           ; $6BB4: $C9
 
 ; Copy the tiles and BG map for the inventory Siren Instruments to VRAM.

@@ -90,38 +90,6 @@ ROOM_TRANSITION_CONFIGURE_SCROLL equ $03
 ROOM_TRANSITION_FIRST_HALF       equ $04
 ROOM_TRANSITION_SECOND_HALF      equ $05
 
-; Values for wDialogState
-DIALOG_CLOSED              equ $00
-DIALOG_OPENING_1           equ $01
-DIALOG_OPENING_2           equ $02
-DIALOG_OPENING_3           equ $03
-DIALOG_OPENING_4           equ $04
-DIALOG_OPENING_5           equ $05
-DIALOG_LETTER_IN_1         equ $06
-DIALOG_LETTER_IN_2         equ $07
-DIALOG_LETTER_IN_3         equ $08
-DIALOG_BREAK               equ $09 ; press A to continue
-DIALOG_SCROLLING_1         equ $0A
-DIALOG_SCROLLING_2         equ $0B
-DIALOG_END                 equ $0C ; press A to close
-DIALOG_CHOICE              equ $0D ; press A to choose
-DIALOG_CLOSING_1           equ $0E
-DIALOG_CLOSING_2           equ $0F
-
-; Tiles used as the dialog background color
-DIALOG_BG_TILE_DARK        equ $7E
-DIALOG_BG_TILE_LIGHT       equ $7F
-
-; Values for wDialogGotItem
-DIALOG_GOT_PIECE_OF_POWER equ $01
-DIALOG_GOT_TOADSTOOL      equ $02
-DIALOG_GOT_MAGIC_POWDER   equ $03
-DIALOG_GOT_ROD            equ $04
-DIALOG_GOT_GUARDIAN_ACORN equ $05
-
-; Cooldown time for dialog boxes
-DIALOG_COOLDOWN              equ $18
-
 ; Cooldown time after closing photo album
 PHOTO_ALBUM_COOLDOWN         equ $18
 
@@ -344,7 +312,7 @@ TRADING_ITEM_BROOM             equ $0A
 TRADING_ITEM_FISHING_HOOK      equ $0B
 TRADING_ITEM_NECKLACE          equ $0C
 TRADING_ITEM_SCALE             equ $0D
-TRADING_ITEM_MAGNIFIYING_GLASS equ $0E
+TRADING_ITEM_MAGNIFYING_LENS   equ $0E
 
 ; Values for hRoomStatus and wOverworldRoomStatus
 ;
@@ -368,7 +336,15 @@ OW_ROOM_STATUS_UNVISITED    equ $00
 OW_ROOM_STATUS_OPENED       equ $04 ; door or bombable entrance opened
 OW_ROOM_STATUS_CHANGED      equ $10 ; e.g. sword taken on the beach
 OW_ROOM_STATUS_OWL_TALKED   equ $20
+OW_ROOM_STATUS_UNKNOWN      equ $40
 OW_ROOM_STATUS_VISITED      equ $80
+
+OW_ROOM_STATUS_FLAG_UNVISITED    equ 0
+OW_ROOM_STATUS_FLAG_OPENED       equ 2 ; door or bombable entrance opened
+OW_ROOM_STATUS_FLAG_CHANGED      equ 4 ; e.g. sword taken on the beach
+OW_ROOM_STATUS_FLAG_OWL_TALKED   equ 5
+OW_ROOM_STATUS_FLAG_UNKNOWN_6    equ 6
+OW_ROOM_STATUS_FLAG_VISITED      equ 7
 
 ; Values for hStaircase
 STAIRCASE_NONE     equ $00 ; no staircase in the room
@@ -395,13 +371,16 @@ LOW_MAX_HEALTH    equ $07
 MEDIUM_MAX_HEALTH equ $0B
 ;HIGH_MAX_HEALTH   equ
 
+MIN_HEARTS          equ $03
+MAX_HEARTS          equ $0E
+
 ; how much time has to pass until the player can receive damage again
 DAMAGE_COOLDOWN_TIME equ $A0
 
 ; power up values
 POWER_UP_NONE             equ 0
 POWER_UP_PIECE_OF_POWER   equ 1
-POWER_UP_GUARDIAN_ACCORN  equ 2
+POWER_UP_GUARDIAN_ACORN   equ 2
 
 ; arrow values
 ARROW_MAX_ACTIVE_COUNT    equ 2 ; maximun amount of arrows in the air
@@ -413,9 +392,9 @@ HOOKSHOT_CHAIN_SPEED      equ $30
 ; Values for wActivePowerUp
 ACTIVE_POWER_UP_NONE            equ 0
 ACTIVE_POWER_UP_PIECE_OF_POWER  equ 1
-ACTIVE_POWER_UP_GUARDIAN_ACCORN equ 2
+ACTIVE_POWER_UP_GUARDIAN_ACORN  equ 2
 
-GUARDIAN_ACCORN_COUNTER_MAX                  equ $0C ; defines after how many random drops a guardian accorn is dropped
+GUARDIAN_ACORN_COUNTER_MAX                   equ $0C ; defines after how many random drops a guardian acorn is dropped
 PIECE_OF_POWER_COUNTER_MAX_LOW_MAX_HEALTH    equ $1E ; defines after how many random drops a piece of power is dropped
 PIECE_OF_POWER_COUNTER_MAX_MEDIUM_MAX_HEALTH equ $23
 PIECE_OF_POWER_COUNTER_MAX_HIGH_MAX_HEALTH   equ $28
@@ -449,3 +428,13 @@ SWORD_RECOIL_DEFAULT            equ $30
 BOW_WOW_AT_HOME   equ $00
 BOW_WOW_FOLLOWING equ $01
 BOW_WOW_KIDNAPPED equ $80
+
+; values for wTunicType
+TUNIC_GREEN  equ $00
+TUNIC_RED    equ $01
+TUNIC_BLUE   equ $02
+
+; Values for wItemUsageContext
+ITEM_USAGE_NEAR_NPC     equ $01 ; set when near an NPC, to stop item usage
+ITEM_USAGE_READING_TEXT equ $02 ; set when reading non-dialog text, to stop item usage
+ITEM_USAGE_ON_RAFT      equ $80 ; set when on the raft, to freeze the raft when using an item

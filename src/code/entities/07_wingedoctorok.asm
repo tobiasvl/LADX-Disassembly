@@ -7,29 +7,29 @@ Data_007_5629::
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 WingedOctorokSpriteVariants::
 .variant0
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant1
-    db $52, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $52, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $52, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $52, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $50, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP
+    db $50, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 .variant3
-    db $52, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $52, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $52, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP
+    db $52, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 .variant4
-    db $54, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $56, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $54, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $56, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant5
-    db $58, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
-    db $5A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0
+    db $58, OAM_GBC_PAL_2 | OAMF_PAL0
+    db $5A, OAM_GBC_PAL_2 | OAMF_PAL0
 .variant6
-    db $56, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $54, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $56, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $54, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 .variant7
-    db $5A, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $58, OAM_GBC_PAL_2 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $5A, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
+    db $58, OAM_GBC_PAL_2 | OAMF_PAL0 | OAMF_XFLIP
 
 WingedOctorokEntityHandler::
     ld   de, WingedOctorokSpriteVariants          ; $564D: $11 $2D $56
@@ -173,17 +173,17 @@ label_007_5721:
     and  a                                        ; $5726: $A7
     jr   nz, jr_007_5777                          ; $5727: $20 $4E
 
-    call func_007_7E5D                            ; $5729: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $5729: $CD $5D $7E
     add  $20                                      ; $572C: $C6 $20
     cp   $40                                      ; $572E: $FE $40
     jr   nc, jr_007_5777                          ; $5730: $30 $45
 
-    call func_007_7E6D                            ; $5732: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $5732: $CD $6D $7E
     add  $20                                      ; $5735: $C6 $20
     cp   $40                                      ; $5737: $FE $40
     jr   nc, jr_007_5777                          ; $5739: $30 $3C
 
-    ld   a, [wBButtonSlot]                        ; $573B: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $573B: $FA $00 $DB
     cp   INVENTORY_SWORD                          ; $573E: $FE $01
     jr   nz, .jr_574A                             ; $5740: $20 $08
 
@@ -194,7 +194,7 @@ label_007_5721:
     jr   jr_007_5777                              ; $5748: $18 $2D
 
 .jr_574A
-    ld   a, [wAButtonSlot]                        ; $574A: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $574A: $FA $01 $DB
     cp   INVENTORY_SWORD                          ; $574D: $FE $01
     jr   nz, jr_007_5777                          ; $574F: $20 $26
 

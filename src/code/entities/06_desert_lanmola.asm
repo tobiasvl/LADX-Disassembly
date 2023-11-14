@@ -145,7 +145,7 @@ jr_006_56BB:
     ldh  [hMultiPurpose1], a                      ; $56BB: $E0 $D8
     ld   a, TRANSCIENT_VFX_POOF                   ; $56BD: $3E $02
     call AddTranscientVfx                         ; $56BF: $CD $C7 $0C
-    ld   a, $13                                   ; $56C2: $3E $13
+    ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $56C2: $3E $13
     ldh  [hNoiseSfx], a                           ; $56C4: $E0 $F4
 
 ret_006_56C6:
@@ -204,7 +204,7 @@ label_006_56C8:
     ld   [hl], $02                                ; $5718: $36 $02
     ld   hl, wEntitiesPhysicsFlagsTable           ; $571A: $21 $40 $C3
     add  hl, de                                   ; $571D: $19
-    ld   [hl], $C1                                ; $571E: $36 $C1
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $571E: $36 $C1
     pop  bc                                       ; $5720: $C1
     ldh  a, [hMultiPurposeG]                      ; $5721: $F0 $E8
     dec  a                                        ; $5723: $3D
@@ -401,7 +401,7 @@ func_006_5835::
     ld   [wC1CE], a                               ; $584C: $EA $CE $C1
     call GetEntityPrivateCountdown1               ; $584F: $CD $00 $0C
     ld   [hl], $60                                ; $5852: $36 $60
-    ld   a, $23                                   ; $5854: $3E $23
+    ld   a, NOISE_SFX_LANMOLA_BURROW              ; $5854: $3E $23
     ldh  [hNoiseSfx], a                           ; $5856: $E0 $F4
 
 .jr_5858
@@ -468,32 +468,32 @@ jr_006_5888:
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
 DesertLanmolaSpriteVariants::
 .variant0
-    db $72, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $74, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
+    db $72, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $74, OAM_GBC_PAL_3 | OAMF_PAL0
 .variant1
-    db $74, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
-    db $72, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $74, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
+    db $72, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant2
-    db $70, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $70, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $70, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $70, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant3
-    db $70, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $70, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $70, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_YFLIP
+    db $70, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 .variant4
-    db $76, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $76, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $76, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $76, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 .variant5
-    db $7A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0
-    db $7A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $7A, OAM_GBC_PAL_1 | OAMF_PAL0
+    db $7A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 .variant6
-    db $7A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $7A, OAM_GBC_PAL_1 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $7A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_YFLIP
+    db $7A, OAM_GBC_PAL_1 | OAMF_PAL0 | OAMF_XFLIP
 .variant7
-    db $78, OAM_GBC_PAL_3 | OAM_DMG_PAL_0
-    db $78, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_Y_FLIP | OAM_X_FLIP
+    db $78, OAM_GBC_PAL_3 | OAMF_PAL0
+    db $78, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_YFLIP | OAMF_XFLIP
 .variant8
-    db $78, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_Y_FLIP
-    db $78, OAM_GBC_PAL_3 | OAM_DMG_PAL_0 | OAM_X_FLIP
+    db $78, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_YFLIP
+    db $78, OAM_GBC_PAL_3 | OAMF_PAL0 | OAMF_XFLIP
 
 Data_006_58C3::
     db   $0C, $18, $24, $30, $3C, $48
