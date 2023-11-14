@@ -107,7 +107,7 @@ ENDC
 
     ld   a, [wIsLinkInTheAir]                     ; $4254: $FA $46 $C1
     and  a                                        ; $4257: $A7
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jr   nz, .return                              ; $4258: $20 $2C
@@ -115,7 +115,7 @@ ENDC
 
     ld   a, ENTITY_HOOKSHOT_CHAIN                 ; $425A: $3E $03
     call SpawnPlayerProjectile                    ; $425C: $CD $2F $14
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  c
 ELSE
     jr   c, .return                               ; $425F: $38 $25
@@ -441,7 +441,7 @@ jr_002_43F4:
 jr_002_4402:
     ld   a, [wIsLinkInTheAir]                     ; $4402: $FA $46 $C1
     and  a                                        ; $4405: $A7
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     jr   nz, label_002_4464
 ELSE
     jp   nz, label_002_4464                       ; $4406: $C2 $64 $44
@@ -761,7 +761,7 @@ shallowWaterVfx:
     ldh  [hMultiPurpose1], a                      ; $45AF: $E0 $D8
     ldh  a, [hLinkPositionX]                      ; $45B1: $F0 $98
     ldh  [hMultiPurpose0], a                      ; $45B3: $E0 $D7
-    ld   a, JINGLE_WATER_DIVE                     ; $45B5: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $45B5: $3E $0E
     ldh  [hJingle], a                             ; $45B7: $E0 $F2
     ld   a, TRANSCIENT_VFX_PEGASUS_SPLASH         ; $45B9: $3E $0C
     jp   AddTranscientVfx                         ; $45BB: $C3 $C7 $0C
@@ -1551,7 +1551,7 @@ LinkDirectionToLinkAnimationState2::
     db   $71, $72, $6F, $70, $73, $74, $6D, $6E
 
 func_002_4B49::
-    ld   a, [wC1C7]                               ; $4B49: $FA $C7 $C1
+    ld   a, [wLinkUsingShovel]                    ; $4B49: $FA $C7 $C1
     and  a                                        ; $4B4C: $A7
     jr   z, .return                               ; $4B4D: $28 $70
 
@@ -1577,9 +1577,9 @@ func_002_4B49::
     ld   [wSwordAnimationState], a                ; $4B6C: $EA $37 $C1
     ld   [wIsUsingSpinAttack], a                  ; $4B6F: $EA $21 $C1
     ld   [wSwordCharge], a                        ; $4B72: $EA $22 $C1
-    ld   a, [wC1C8]                               ; $4B75: $FA $C8 $C1
+    ld   a, [wLinkUsingShovelTimer]               ; $4B75: $FA $C8 $C1
     inc  a                                        ; $4B78: $3C
-    ld   [wC1C8], a                               ; $4B79: $EA $C8 $C1
+    ld   [wLinkUsingShovelTimer], a               ; $4B79: $EA $C8 $C1
     cp   $10                                      ; $4B7C: $FE $10
     jr   nz, .jr_002_4B85                         ; $4B7E: $20 $05
 
@@ -1591,7 +1591,7 @@ func_002_4B49::
     cp   $18                                      ; $4B85: $FE $18
     jr   nz, .jr_002_4BA9                         ; $4B87: $20 $20
 
-    ld   a, [wC1C7]                               ; $4B89: $FA $C7 $C1
+    ld   a, [wLinkUsingShovel]                    ; $4B89: $FA $C7 $C1
     cp   $02                                      ; $4B8C: $FE $02
     jr   nz, .jr_002_4BA1                         ; $4B8E: $20 $11
 
@@ -1607,7 +1607,7 @@ func_002_4B49::
 
 .jr_002_4BA1
     xor  a                                        ; $4BA1: $AF
-    ld   [wC1C7], a                               ; $4BA2: $EA $C7 $C1
+    ld   [wLinkUsingShovel], a                    ; $4BA2: $EA $C7 $C1
     ld   [wC1AC], a                               ; $4BA5: $EA $AC $C1
     ret                                           ; $4BA8: $C9
 
@@ -1652,7 +1652,7 @@ func_002_4BC8::
     ret  c                                        ; $4BCB: $D8
 
     ld   a, $02                                   ; $4BCC: $3E $02
-    ld   [wC1C7], a                               ; $4BCE: $EA $C7 $C1
+    ld   [wLinkUsingShovel], a                    ; $4BCE: $EA $C7 $C1
     jp   label_002_4C92                           ; $4BD1: $C3 $92 $4C
 
 func_002_4BD4::
@@ -1812,7 +1812,7 @@ label_002_4C92:
     add  hl, de                                   ; $4C9A: $19
     ld   [hl], $CC                                ; $4C9B: $36 $CC
     ld   a, $82                                   ; $4C9D: $3E $82
-    call func_2BF                                 ; $4C9F: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $4C9F: $CD $2F $0B
     call label_2887                               ; $4CA2: $CD $87 $28
     ld   hl, wDrawCommand                         ; $4CA5: $21 $01 $D6
     ld   a, [wDrawCommandsSize]                   ; $4CA8: $FA $00 $D6
@@ -2217,7 +2217,7 @@ func_002_4EDD::
     ld   [wC167], a                               ; $4EE1: $EA $67 $C1
 
 IF !__PATCH_0__
-    ld   [wDDD6], a                               ; $4EE4: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $4EE4: $EA $D6 $DD
     ld   [wDDD7], a                               ; $4EE7: $EA $D7 $DD
 ENDC
 
@@ -2320,7 +2320,7 @@ label_002_4F6D:
     and  J_A                                      ; $4F94: $E6 $10
     jr   z, jr_002_4FA1                           ; $4F96: $28 $09
 
-    ld   a, JINGLE_WATER_SWIM                     ; $4F98: $3E $0F
+    ld   a, JINGLE_SWIM                           ; $4F98: $3E $0F
     ldh  [hJingle], a                             ; $4F9A: $E0 $F2
     ld   a, $20                                   ; $4F9C: $3E $20
     ld   [wC183], a                               ; $4F9E: $EA $83 $C1
@@ -2484,7 +2484,7 @@ jr_002_5015:
     ld   [hl], $03                                ; $5071: $36 $03
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5073: $21 $40 $C3
     add  hl, de                                   ; $5076: $19
-    res  4, [hl]                                  ; $5077: $CB $A6
+    res  ENTITY_PHYSICS_B_SHADOW, [hl]            ; $5077: $CB $A6
 
 .return
     ret                                           ; $5079: $C9
@@ -3548,7 +3548,7 @@ RenderTranscientRumble::
     jr   nz, .jr_566D                             ; $5666: $20 $05
 
     ld   hl, hNoiseSfx                            ; $5668: $21 $F4 $FF
-    ld   [hl], NOISE_SFX_DOOR_RUMBLE              ; $566B: $36 $2A
+    ld   [hl], NOISE_SFX_OPEN_KEY_CAVERN          ; $566B: $36 $2A
 
 .jr_566D
     cp   $0A                                      ; $566D: $FE $0A
@@ -3650,7 +3650,7 @@ jr_002_568C:
 .jr_56FC
     ld   [hl], $E3                                ; $56FC: $36 $E3
     ld   a, $82                                   ; $56FE: $3E $82
-    call func_2BF                                 ; $5700: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $5700: $CD $2F $0B
     ld   a, JINGLE_DUNGEON_OPENED                 ; $5703: $3E $23
     ldh  [hJingle], a                             ; $5705: $E0 $F2
 
@@ -3969,7 +3969,7 @@ func_002_5928::
     ldh  [hMultiPurpose1], a                      ; $5928: $E0 $D8
     ldh  a, [hLinkPositionX]                      ; $592A: $F0 $98
     ldh  [hMultiPurpose0], a                      ; $592C: $E0 $D7
-    ld   a, JINGLE_WATER_DIVE                     ; $592E: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $592E: $3E $0E
     ldh  [hJingle], a                             ; $5930: $E0 $F2
     ld   a, TRANSCIENT_VFX_WATER_SPLASH           ; $5932: $3E $01
     jp   AddTranscientVfx                         ; $5934: $C3 $C7 $0C
@@ -3979,7 +3979,7 @@ Data_002_5937::
 
 ; Execute active room events, and do some other stuff
 label_002_593B:
-    ; If not dialog, no inventory, no map transition, return
+    ; If not dialog, no subscreen, no map transition, return
     ld   hl, wDialogState                         ; $593B: $21 $9F $C1
     ld   a, [wRoomTransitionState]                ; $593E: $FA $24 $C1
     or   [hl]                                     ; $5941: $B6
@@ -4638,21 +4638,24 @@ func_002_60E0::
 
     ld   a, [wDialogState]                        ; $60FB: $FA $9F $C1
     and  a                                        ; $60FE: $A7
-    jp   nz, label_002_61F5                       ; $60FF: $C2 $F5 $61
+    jp   nz, label_002_61E7.inventoryFullyClosed2 ; $60FF: $C2 $F5 $61
 
     ld   a, [wRoomTransitionState]                ; $6102: $FA $24 $C1
     and  a                                        ; $6105: $A7
     ret  nz                                       ; $6106: $C0
 
-    ld   a, [wInventoryAppearing]                 ; Handles subscreen transition state?
+    ; Handles subscreen transition state
+    ld   a, [wInventoryAppearing]
     and  a                                        ; $610A: $A7
-    jp   nz, label_002_61A9                       ; $610B: $C2 $A9 $61
+    jp   nz, .scrollSubscreen                     ; $610B: $C2 $A9 $61
 
-    ldh  a, [hPressedButtonsMask]                 ; Checks if map should be opened?
+    ; Checks if map should be opened
+    ldh  a, [hPressedButtonsMask]
     and  J_SELECT                                 ; $6110: $E6 $40
     jp   nz, label_002_61E7                       ; $6112: $C2 $E7 $61
 
-    ldh  a, [hJoypadState]                        ; Checks if subscreen should be opened?
+    ; Checks if subscreen should be opened?
+    ldh  a, [hJoypadState]
     and  J_START                                  ; $6117: $E6 $80
     jp   z, label_002_61E7                        ; $6119: $CA $E7 $61
 
@@ -4690,52 +4693,69 @@ ENDC
 
     ld   a, $01                                   ; $614B: $3E $01
     ld   [wInventoryAppearing], a                 ; $614D: $EA $4F $C1
-    ld   [wC151], a                               ; $6150: $EA $51 $C1
+    ld   [wInventoryShouldScroll], a              ; $6150: $EA $51 $C1
     ld   a, JINGLE_CLOSE_INVENTORY                ; $6153: $3E $12
     ldh  [hJingle], a                             ; $6155: $E0 $F2
-    ld   a, [wC150]                               ; $6157: $FA $50 $C1
+    ld   a, [wSubscreenScrollIncrement]           ; $6157: $FA $50 $C1
+    ; Two's complement; flip wSubscreenScrollIncrement
+    ; from 8 ($08) to -8 ($F8) or vice versa
     cpl                                           ; $615A: $2F
     inc  a                                        ; $615B: $3C
-    ld   [wC150], a                               ; $615C: $EA $50 $C1
+    ld   [wSubscreenScrollIncrement], a           ; $615C: $EA $50 $C1
+    ; Check if wSubscreenScrollIncrement is now positive, ie. the subscreen
+    ; should scroll down (ie. it should close). This will never
+    ; be true in DX, because when the subscreen is open
+    ; we will never be at this point! Instead, it sets wGameplayType
+    ; here and handles the rest of the subscreen with 
+    ; InventoryHandler.
     and  $80                                      ; POI: Zeroing this restores the scroll up/down subscreen????
-    jr   z, jr_002_619F                           ; $6161: $28 $3C
+    jr   z, .subscreenClosing                     ; $6161: $28 $3C
 
+    ; Subscreen should open
     xor  a                                        ; $6163: $AF
     ld   [wTransitionSequenceCounter], a          ; $6164: $EA $6B $C1
     ld   [wC16C], a                               ; $6167: $EA $6C $C1
     ldh  [hPressedButtonsMask], a                 ; $616A: $E0 $CB
     ldh  [hJoypadState], a                        ; $616C: $E0 $CC
+    ; Set wGameplaySubtype to GAMEPLAY_INVENTORY_INITIAL
+    ; which means that after this subroutine returns,
+    ; InventoryHandler will take care of the rest of the
+    ; steps needed to open the subscreen
     ld   [wGameplaySubtype], a                    ; $616E: $EA $96 $DB
     ld   a, GAMEPLAY_INVENTORY                    ; $6171: $3E $0C
     ld   [wGameplayType], a                       ; $6173: $EA $95 $DB
     ld   a, JINGLE_OPEN_INVENTORY                 ; $6176: $3E $11
     ldh  [hJingle], a                             ; $6178: $E0 $F2
     xor  a                                        ; $617A: $AF
-    ld   [wC151], a                               ; $617B: $EA $51 $C1
+    ld   [wInventoryShouldScroll], a              ; $617B: $EA $51 $C1
     ld   a, $0B                                   ; $617E: $3E $0B
     ld   [wC154], a                               ; $6180: $EA $54 $C1
     ld   a, [wIsIndoor]                           ; $6183: $FA $A5 $DB
     and  a                                        ; $6186: $A7
     ld   a, TILESET_LOAD_INVENTORY                ; $6187: $3E $07
-    jr   z, jr_002_619C                           ; Partially determines if subscreen dungeon map should be drawn
+    ; Partially determines if subscreen dungeon map should be drawn
+    jr   z, .loadTileSet
 
     ldh  a, [hMapId]                              ; $618B: $F0 $F7
     cp   MAP_COLOR_DUNGEON                        ; $618D: $FE $FF
-    jr   z, .jr_6197                              ; $618F: $28 $06
+    jr   z, .loadMiniMap                          ; $618F: $28 $06
 
     cp   MAP_WINDFISHS_EGG                        ; $6191: $FE $08
     ld   a, TILESET_LOAD_INVENTORY                ; $6193: $3E $07
-    jr   nc, jr_002_619C                          ; $6195: $30 $05
+    jr   nc, .loadTileSet                         ; $6195: $30 $05
 
-.jr_6197
+.loadMiniMap
     call LoadMinimap                              ; $6197: $CD $09 $67
     ld   a, TILESET_LOAD_DUNGEON_MINIMAP          ; $619A: $3E $02
 
-jr_002_619C:
+.loadTileSet
     ldh  [hNeedsUpdatingBGTiles], a               ; $619C: $E0 $90
     ret                                           ; $619E: $C9
 
-jr_002_619F:
+.subscreenClosing:
+    ; Subscreen should close
+    ; This code is never executed on DX, handled by
+    ; InventoryHandler instead
     ld   a, $07                                   ; $619F: $3E $07
     ldh  [hVolumeRight], a                        ; $61A1: $E0 $A9
     ld   a, $70                                   ; $61A3: $3E $70
@@ -4743,8 +4763,9 @@ jr_002_619F:
     pop  af                                       ; $61A7: $F1
     ret                                           ; $61A8: $C9
 
-label_002_61A9:
-    ld   a, [wC151]                               ; $61A9: $FA $51 $C1
+; Actually scroll the subscreen
+.scrollSubscreen:
+    ld   a, [wInventoryShouldScroll]              ; $61A9: $FA $51 $C1
     and  a                                        ; $61AC: $A7
     jr   nz, jr_002_61C6                          ; $61AD: $20 $17
 
@@ -4752,7 +4773,7 @@ label_002_61A9:
     and  a                                        ; $61B2: $A7
     jr   nz, .jr_61B9                             ; $61B3: $20 $04
 
-    ld   hl, wC151                                ; $61B5: $21 $51 $C1
+    ld   hl, wInventoryShouldScroll               ; $61B5: $21 $51 $C1
     inc  [hl]                                     ; $61B8: $34
 
 .jr_61B9
@@ -4765,42 +4786,48 @@ func_002_61BA::
     jp   AnimateEntitiesAndRestoreBank02          ; $61C3: $C3 $05 $0F
 
 jr_002_61C6:
-    ld   a, [wC150]                               ; $61C6: $FA $50 $C1
+    ; Get the increment value for the scrolling subscreen
+    ; and apply it to wWindowY
+    ld   a, [wSubscreenScrollIncrement]           ; $61C6: $FA $50 $C1
     ld   hl, wWindowY                             ; $61C9: $21 $9A $DB
     add  [hl]                                     ; $61CC: $86
     ld   [hl], a                                  ; $61CD: $77
+    ; Is the window/subscreen now at the bottom of the screen?
     cp   $80                                      ; $61CE: $FE $80
-    jr   z, .jr_61DE                              ; $61D0: $28 $0C
+    jr   z, .subscreenClosed                      ; $61D0: $28 $0C
 
+    ; Is the window/subscreen now at the top of the screen?
     cp   $00                                      ; $61D2: $FE $00
-    jr   nz, jr_002_61E4                          ; $61D4: $20 $0E
+    jr   nz, .subscreenScrolling                  ; $61D4: $20 $0E
 
+    ; Subscreen fully open:
     ld   a, $03                                   ; $61D6: $3E $03
     ldh  [hVolumeRight], a                        ; $61D8: $E0 $A9
     ld   a, $30                                   ; $61DA: $3E $30
     ldh  [hVolumeLeft], a                         ; $61DC: $E0 $AA
 
-.jr_61DE
+.subscreenClosed
     xor  a                                        ; $61DE: $AF
     ld   [wInventoryAppearing], a                 ; $61DF: $EA $4F $C1
-    jr   label_002_61E7                           ; $61E2: $18 $03
+    jr   label_002_61E7                      ; .inventoryNotScrolling                           ; $61E2: $18 $03
 
-jr_002_61E4:
+.subscreenScrolling:
     call func_002_61BA                            ; $61E4: $CD $BA $61
 
+;.inventoryNotScrolling:
 label_002_61E7:
     ld   a, [wWindowY]                            ; $61E7: $FA $9A $DB
     cp   $80                                      ; $61EA: $FE $80
-    jr   z, label_002_61F5                        ; $61EC: $28 $07
+    jr   z, .inventoryFullyClosed2                ; $61EC: $28 $07
 
     ld   a, [wInventoryAppearing]                 ; $61EE: $FA $4F $C1
     and  a                                        ; $61F1: $A7
-    jr   nz, .jr_61F4                             ; $61F2: $20 $00
+    jr   nz, .inventoryScrolling2                 ; $61F2: $20 $00
 
-.jr_61F4
+.inventoryScrolling2
     pop  af                                       ; $61F4: $F1
 
-label_002_61F5:
+.inventoryFullyClosed2:
     ld   a, [wDialogState]                        ; $61F5: $FA $9F $C1
     and  ~DIALOG_BOX_BOTTOM_FLAG                  ; $61F8: $E6 $7F
     jr   z, .dialogClosed                         ; $61FA: $28 $07
@@ -5726,7 +5753,7 @@ jr_002_6B34:
     jr   z, jr_002_6B55                           ; $6B43: $28 $10
 
     ld   e, $20                                   ; $6B45: $1E $20
-    ld   a, [wBButtonSlot]                        ; $6B47: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $6B47: $FA $00 $DB
     cp   INVENTORY_ROCS_FEATHER                   ; $6B4A: $FE $0A
     jr   z, .jr_6B50                              ; $6B4C: $28 $02
 
@@ -5882,7 +5909,7 @@ jr_002_6BEB:
     and  DIRECTION_VERTICAL_MASK                  ; $6C23: $E6 $02
     sla  a                                        ; $6C25: $CB $27
     ld   [wC158], a                               ; $6C27: $EA $58 $C1
-    ld   a, JINGLE_HUGE_BUMP                      ; $6C2A: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $6C2A: $3E $0B
     ldh  [hJingle], a                             ; $6C2C: $E0 $F2
     ret                                           ; $6C2E: $C9
 
@@ -6246,7 +6273,7 @@ CheckPositionForMapTransition::
     ld   [wIsRunningWithPegasusBoots], a          ; $6DF4: $EA $4A $C1
     ld   [wC188], a                               ; $6DF7: $EA $88 $C1
 IF __PATCH_0__
-    ld   [wDDD6], a
+    ld   [wBGPaletteTransitionEffect], a
     ld   [wDDD7], a
 ENDC
 
@@ -6370,12 +6397,12 @@ CheckForLedgeJumpAndReturn::
     cp   LINK_MOTION_UNSTUCKING                   ; $6E9F: $FE $02
     jr   z, jr_002_6EDD                           ; $6EA1: $28 $3A
 
-    ld   a, JINGLE_JUMP_DOWN                      ; $6EA3: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $6EA3: $3E $08
     ldh  [hJingle], a                             ; $6EA5: $E0 $F2
     jr   jr_002_6EB5                              ; $6EA7: $18 $0C
 
 func_002_6EA9::
-    ld   a, JINGLE_JUMP_DOWN                      ; $6EA9: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $6EA9: $3E $08
     ldh  [hJingle], a                             ; $6EAB: $E0 $F2
 
 func_002_6EAD::
@@ -6547,7 +6574,7 @@ func_002_6F2C::
     jp   nz, label_002_703B                       ; $6FA6: $C2 $3B $70
 
     ldh  a, [hRoomStatus]                         ; $6FA9: $F0 $F8
-    bit  4, a                                     ; $6FAB: $CB $67
+    bit  OW_ROOM_STATUS_FLAG_CHANGED, a           ; $6FAB: $CB $67
     jp   nz, label_002_703B                       ; $6FAD: $C2 $3B $70
 
     ldh  a, [hMapRoom]                            ; $6FB0: $F0 $F6
@@ -6559,7 +6586,7 @@ func_002_6F2C::
     jr   jr_002_6FC6                              ; $6FBB: $18 $09
 
 .jr_6FBD
-    cp   $8C                                      ; $6FBD: $FE $8C
+    cp   ROOM_OW_FACE_SHRINE_ENTRANCE             ; $6FBD: $FE $8C
     jr   nz, jr_002_6FE3                          ; $6FBF: $20 $22
 
     ld   a, [wHasFaceKey]                         ; $6FC1: $FA $13 $DB
@@ -6589,7 +6616,7 @@ jr_002_6FD7:
     jr   jr_002_702C                              ; $6FE1: $18 $49
 
 jr_002_6FE3:
-    cp   $2B                                      ; $6FE3: $FE $2B
+    cp   ROOM_OW_ANGLERS_TUNNEL_ENTRANCE          ; $6FE3: $FE $2B
     jr   nz, .jr_6FFE                             ; $6FE5: $20 $17
 
     ld   a, [wHasAnglerKey]                       ; $6FE7: $FA $12 $DB
@@ -6608,7 +6635,7 @@ jr_002_6FE3:
     jr   jr_002_702C                              ; $6FFC: $18 $2E
 
 .jr_6FFE
-    cp   $B5                                      ; $6FFE: $FE $B5
+    cp   ROOM_OW_KEY_CAVERN_ENTRANCE              ; $6FFE: $FE $B5
     jr   nz, .jr_700D                             ; $7000: $20 $0B
 
     ld   a, [wGoldenLeavesCount]                  ; $7002: $FA $15 $DB
@@ -6750,7 +6777,7 @@ ENDC
     ld   [wIsLinkInTheAir], a                     ; $70CC: $EA $46 $C1
     ld   a, $01                                   ; $70CF: $3E $01
     ld   [wC10A], a                               ; $70D1: $EA $0A $C1
-    ld   a, JINGLE_JUMP_DOWN                      ; $70D4: $3E $08
+    ld   a, JINGLE_FALL_DOWN                      ; $70D4: $3E $08
     ldh  [hJingle], a                             ; $70D6: $E0 $F2
 
 label_002_70D8:
@@ -6992,23 +7019,23 @@ jr_002_722C:
     jp   ApplyMapFadeOutTransitionWithNoise       ; $723A: $C3 $7D $0C
 
 label_002_723D:
-    ld   a, [wD6F9]                               ; $723D: $FA $F9 $D6
+    ld   a, [wLinkStandingOnSwitchBlock]          ; $723D: $FA $F9 $D6
     and  a                                        ; $7240: $A7
     jp   nz, label_002_7461                       ; $7241: $C2 $61 $74
 
     ldh  a, [hObjectUnderEntity]                  ; $7244: $F0 $AF
-    cp   $DB                                      ; $7246: $FE $DB
+    cp   OBJECT_LOWERED_BLOCK                     ; $7246: $FE $DB
     jr   c, label_002_7277                        ; $7248: $38 $2D
 
-    cp   $DD                                      ; $724A: $FE $DD
+    cp   OBJECT_RAISED_BLOCK + 1                  ; $724A: $FE $DD
     jr   nc, label_002_7277                       ; $724C: $30 $29
 
-    sub  $DB                                      ; $724E: $D6 $DB
+    sub  OBJECT_LOWERED_BLOCK                     ; $724E: $D6 $DB
     ld   e, a                                     ; $7250: $5F
     ld   d, $00                                   ; $7251: $16 $00
-    ld   hl, Data_002_787B                        ; $7253: $21 $7B $78
+    ld   hl, SwitchBlocksStateTable               ; $7253: $21 $7B $78
     add  hl, de                                   ; $7256: $19
-    ld   a, [hSwitchBlocksState]                  ; $7257: $FA $FB $D6
+    ld   a, [wSwitchBlocksState]                  ; $7257: $FA $FB $D6
     xor  [hl]                                     ; $725A: $AE
     jr   nz, label_002_7277                       ; $725B: $20 $1A
 
@@ -7031,7 +7058,7 @@ label_002_726A:
 
 label_002_7277:
     ldh  a, [hObjectUnderEntity]                  ; $7277: $F0 $AF
-    cp   $69                                      ; $7279: $FE $69
+    cp   OBJECT_HURT_TILE                         ; $7279: $FE $69
     jr   nz, jr_002_728E                          ; $727B: $20 $11
 
     ld   hl, hMultiPurposeC                       ; $727D: $21 $E3 $FF
@@ -7050,72 +7077,80 @@ jr_002_728E:
     ld   hl, hMultiPurposeC                       ; $728E: $21 $E3 $FF
     ldh  a, [hLinkDirection]                      ; $7291: $F0 $9E
     cp   [hl]                                     ; $7293: $BE
-    jr   nz, jr_002_72FA                          ; $7294: $20 $64
+    jr   nz, .checkPegasusBoots                   ; $7294: $20 $64
 
     ld   a, [wIgnoreLinkCollisionsCountdown]      ; $7296: $FA $3E $C1
     ld   hl, wIsLinkInTheAir                      ; $7299: $21 $46 $C1
     or   [hl]                                     ; $729C: $B6
-    jr   nz, jr_002_72FA                          ; $729D: $20 $5B
+    jr   nz, .checkPegasusBoots                   ; $729D: $20 $5B
 
     ld   a, [wIsIndoor]                           ; $729F: $FA $A5 $DB
     and  a                                        ; $72A2: $A7
     ldh  a, [hObjectUnderEntity]                  ; $72A3: $F0 $AF
-    jr   z, jr_002_72D1                           ; $72A5: $28 $2A
+    jr   z, .checkOverworldObjects                ; $72A5: $28 $2A
 
     ld_dialog_low e, Dialog08A ; "This rock has many cracks" ; $72A7: $1E $8A
-    cp   $A9                                      ; $72A9: $FE $A9
-    jr   z, jr_002_72EC                           ; $72AB: $28 $3F
+    cp   OBJECT_BOMBABLE_BLOCK                    ; $72A9: $FE $A9
+    jr   z, .jr_002_72EC                          ; $72AB: $28 $3F
 
     ld_dialog_low e, Dialog08B ; "What a weird object" ; $72AD: $1E $8B
-    cp   $4F                                      ; $72AF: $FE $4F
+    cp   OBJECT_DASHABLE_ROCK_2                   ; $72AF: $FE $4F
     jr   z, .jr_72BB                              ; $72B1: $28 $08
 
-    cp   $4E                                      ; $72B3: $FE $4E
+    cp   OBJECT_DASHABLE_ROCK_1                   ; $72B3: $FE $4E
     jr   z, .jr_72BB                              ; $72B5: $28 $04
 
-    cp   $88                                      ; $72B7: $FE $88
-    jr   nz, jr_002_72C3                          ; $72B9: $20 $08
+    cp   OBJECT_DASHABLE_ROCK_3                   ; $72B7: $FE $88
+    jr   nz, .jr_002_72C3                         ; $72B9: $20 $08
 
 .jr_72BB
     ld   a, [wIsRunningWithPegasusBoots]          ; $72BB: $FA $4A $C1
     and  a                                        ; $72BE: $A7
-    jr   nz, jr_002_72FA                          ; $72BF: $20 $39
+    jr   nz, .checkPegasusBoots                   ; $72BF: $20 $39
 
-    jr   jr_002_72EC                              ; $72C1: $18 $29
+    jr   .jr_002_72EC                             ; $72C1: $18 $29
 
-jr_002_72C3:
-    cp   $DE                                      ; $72C3: $FE $DE
-    jr   nz, jr_002_72D1                          ; $72C5: $20 $0A
+.jr_002_72C3:
+    cp   OBJECT_KEYHOLE_BLOCK                     ; $72C3: $FE $DE
+    jr   nz, .checkOverworldObjects               ; $72C5: $20 $0A
 
     ld   a, [wSmallKeysCount]                     ; $72C7: $FA $D0 $DB
     and  a                                        ; $72CA: $A7
-    jr   nz, jr_002_72FA                          ; $72CB: $20 $2D
+    jr   nz, .checkPegasusBoots                   ; $72CB: $20 $2D
 
     ld_dialog_low e, Dialog08C ; "This rock has a key hole" ; $72CD: $1E $8C
-    jr   jr_002_72EC                              ; $72CF: $18 $1B
+    jr   .jr_002_72EC                             ; $72CF: $18 $1B
 
-jr_002_72D1:
-    cp   $20                                      ; $72D1: $FE $20
-    jr   nz, jr_002_72FA                          ; $72D3: $20 $25
+; Check whether Link is touching an object in the
+; overworld that should print an informational message
+.checkOverworldObjects
+    cp   OBJECT_LIFTABLE_ROCK                     ; $72D1: $FE $20
+    jr   nz, .checkPegasusBoots                   ; $72D3: $20 $25
 
-    ld   a, [wAButtonSlot]                        ; $72D5: $FA $01 $DB
-    cp   $03                                      ; $72D8: $FE $03
-    jr   z, jr_002_72FA                           ; $72DA: $28 $1E
+    ; If you have the Power Bracelet equippped, don't
+    ; show the "This looks pretty heavy" dialog when
+    ; touching an OBJECT_LIFTABLE_ROCK
+    ld   a, [wInventoryItems.AButtonSlot]         ; $72D5: $FA $01 $DB
+    cp   INVENTORY_POWER_BRACELET                 ; $72D8: $FE $03
+    jr   z, .checkPegasusBoots                    ; $72DA: $28 $1E
 
-    ld   a, [wBButtonSlot]                        ; $72DC: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $72DC: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $72DF: $FE $03
-    jr   z, jr_002_72FA                           ; $72E1: $28 $17
+    jr   z, .checkPegasusBoots                    ; $72E1: $28 $17
 
+    ; If you have instrument #2, don't show the
+    ; "This looks pretty heavy" dialog when touching
+    ; an OBJECT_LIFTABLE_ROCK ever again
     ld   a, [wHasInstrument2]                     ; $72E3: $FA $66 $DB
     and  $02                                      ; $72E6: $E6 $02
-    jr   nz, jr_002_72FA                          ; $72E8: $20 $10
+    jr   nz, .checkPegasusBoots                   ; $72E8: $20 $10
 
     ld_dialog_low e, Dialog08D ; "This looks pretty heavy" ; $72EA: $1E $8D
 
-jr_002_72EC:
+.jr_002_72EC:
     ld   a, [wC5A6]                               ; $72EC: $FA $A6 $C5
     and  a                                        ; $72EF: $A7
-    jr   nz, jr_002_72FA                          ; $72F0: $20 $08
+    jr   nz, .checkPegasusBoots                   ; $72F0: $20 $08
 
     inc  a                                        ; $72F2: $3C
     ld   [wC5A6], a                               ; $72F3: $EA $A6 $C5
@@ -7123,7 +7158,10 @@ jr_002_72EC:
     ld   a, e                                     ; $72F6: $7B
     call OpenDialogInTable0AndClearIncrement      ; $72F7: $CD $FE $74
 
-jr_002_72FA:
+; Check whether Link is currently dashing with
+; the Pegasus Boots, in which case he should collide
+; and not interact
+.checkPegasusBoots
     ld   a, [wIsRunningWithPegasusBoots]          ; $72FA: $FA $4A $C1
     and  a                                        ; $72FD: $A7
     jr   nz, .jr_7330                             ; $72FE: $20 $30
@@ -7168,13 +7206,13 @@ jr_002_72FA:
     ldh  a, [hObjectUnderEntity]                  ; $733E: $F0 $AF
     jr   z, label_002_73AD                        ; $7340: $28 $6B
 
-    cp   $88                                      ; $7342: $FE $88
+    cp   OBJECT_DASHABLE_ROCK_3                   ; $7342: $FE $88
     jr   z, .jr_734F                              ; $7344: $28 $09
 
-    cp   $4E                                      ; $7346: $FE $4E
+    cp   OBJECT_DASHABLE_ROCK_1                   ; $7346: $FE $4E
     jr   z, .jr_734F                              ; $7348: $28 $05
 
-    cp   $4F                                      ; $734A: $FE $4F
+    cp   OBJECT_DASHABLE_ROCK_2                   ; $734A: $FE $4F
     jp   nz, label_002_73AD                       ; $734C: $C2 $AD $73
 
 .jr_734F
@@ -7193,7 +7231,7 @@ jr_002_72FA:
     ld   d, $00                                   ; $7365: $16 $00
     call func_014_5526_trampoline                 ; $7367: $CD $78 $21
 
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $736A: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $736A: $3E $05
     call SpawnNewEntity_trampoline                ; $736C: $CD $86 $3B
     jp   c, collisionEnd                          ; $736F: $DA $54 $74
 
@@ -7220,7 +7258,7 @@ jr_002_72FA:
     ld   [hl], $0F                                ; $7398: $36 $0F
     ld   hl, wEntitiesPhysicsFlagsTable           ; $739A: $21 $40 $C3
     add  hl, de                                   ; $739D: $19
-    ld   [hl], $C4                                ; $739E: $36 $C4
+    ld   [hl], 4 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $739E: $36 $C4
     jp   label_002_7461                           ; $73A0: $C3 $61 $74
 
 Data_002_73A3::
@@ -7305,7 +7343,7 @@ IF __PATCH_0__
     jr   nz, collisionEnd
 ENDC
 
-    ld   hl, wBButtonSlot                         ; $73F3: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $73F3: $21 $00 $DB
 
 .loop_73F6
     ld   a, [hl+]                                 ; $73F6: $2A
@@ -7372,7 +7410,7 @@ interactiveBlock:
     cp   ROOM_OW_COLOR_DUNGEON_ENTRANCE           ; $744B: $FE $77
     jr   nz, collisionEnd                         ; $744D: $20 $05
 
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ld   hl, wFarcallParams
     ld   a, BANK(CheckPushedTombStone)
     ld   [hl+], a
@@ -7496,7 +7534,7 @@ label_002_74AD:
     and  $02                                      ; $74F0: $E6 $02
     sla  a                                        ; $74F2: $CB $27
     ld   [wC158], a                               ; $74F4: $EA $58 $C1
-    ld   a, JINGLE_HUGE_BUMP                      ; $74F7: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $74F7: $3E $0B
     ldh  [hJingle], a                             ; $74F9: $E0 $F2
     jp   func_1828                                ; $74FB: $C3 $28 $18
 
@@ -7578,7 +7616,7 @@ func_002_755B::
     jr   z, .jr_7582                              ; $7565: $28 $1B
 
     ld   c, $FC                                   ; $7567: $0E $FC
-    ld   a, [wD6F9]                               ; $7569: $FA $F9 $D6
+    ld   a, [wLinkStandingOnSwitchBlock]          ; $7569: $FA $F9 $D6
     and  a                                        ; $756C: $A7
     jr   nz, .jr_7582                             ; $756D: $20 $13
 
@@ -7841,7 +7879,7 @@ ApplyLinkGroundPhysics_part2::
     ld   a, [wLinkGroundVfx]                      ; $76B5: $FA $81 $C1
     ld   [wDBCB], a                               ; $76B8: $EA $CB $DB
 
-    ld   a, WAVE_SFX_LINK_FALLS                   ; $76BB: $3E $0C
+    ld   a, WAVE_SFX_LINK_FALL                    ; $76BB: $3E $0C
     ldh  [hWaveSfx], a                            ; $76BD: $E0 $F3
 
 .return
@@ -8015,7 +8053,7 @@ IF __PATCH_0__
     jr   z, .jr_779A
 ENDC
 
-    ld   a, JINGLE_WATER_DIVE                     ; $7796: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $7796: $3E $0E
     ldh  [hJingle], a                             ; $7798: $E0 $F2
 
 .jr_779A
@@ -8051,9 +8089,9 @@ ApplyLinkGroundPhysics_Default::
     sub  $DB                                      ; $77C3: $D6 $DB
     ld   e, a                                     ; $77C5: $5F
     ld   d, $00                                   ; $77C6: $16 $00
-    ld   hl, Data_002_787B                        ; $77C8: $21 $7B $78
+    ld   hl, SwitchBlocksStateTable               ; $77C8: $21 $7B $78
     add  hl, de                                   ; $77CB: $19
-    ld   a, [hSwitchBlocksState]                  ; $77CC: $FA $FB $D6
+    ld   a, [wSwitchBlocksState]                  ; $77CC: $FA $FB $D6
     xor  [hl]                                     ; $77CF: $AE
     jr   z, .grassVfxEnd                          ; $77D0: $28 $17
 
@@ -8066,18 +8104,18 @@ ApplyLinkGroundPhysics_Default::
     add  [hl]                                     ; $77DF: $86
     ld   [wC13B], a                               ; $77E0: $EA $3B $C1
     ld   a, $01                                   ; $77E3: $3E $01
-    ld   [wD6F9], a                               ; $77E5: $EA $F9 $D6
+    ld   [wLinkStandingOnSwitchBlock], a          ; $77E5: $EA $F9 $D6
     ret                                           ; $77E8: $C9
 .grassVfxEnd
 
-    ld   a, [wD6F9]                               ; $77E9: $FA $F9 $D6
+    ld   a, [wLinkStandingOnSwitchBlock]          ; $77E9: $FA $F9 $D6
     and  a                                        ; $77EC: $A7
     jr   z, .jr_002_77F7                          ; $77ED: $28 $08
 
     ld   a, NOISE_SFX_FOOTSTEP                    ; $77EF: $3E $07
     ldh  [hNoiseSfx], a                           ; $77F1: $E0 $F4
     xor  a                                        ; $77F3: $AF
-    ld   [wD6F9], a                               ; $77F4: $EA $F9 $D6
+    ld   [wLinkStandingOnSwitchBlock], a          ; $77F4: $EA $F9 $D6
 
 .jr_002_77F7
     ld   a, [wIsIndoor]                           ; $77F7: $FA $A5 $DB
@@ -8109,7 +8147,7 @@ ApplyLinkGroundPhysics_Default::
     ld   a, $60                                   ; $781B: $3E $60
     ld   [wSwitchButtonPressed], a                ; $781D: $EA $CB $C1
 
-    ld   a, WAVE_SFX_SWITCH_BUTTON                ; $7820: $3E $0E
+    ld   a, WAVE_SFX_FLOOR_SWITCH                 ; $7820: $3E $0E
     ldh  [hWaveSfx], a                            ; $7822: $E0 $F3
 
     ld   a, REPLACE_TILES_BUTTON_PRESSED          ; $7824: $3E $03
@@ -8120,7 +8158,7 @@ ApplyLinkGroundPhysics_Default::
     cp   ROOM_INDOOR_B_KANALET_GATE_SWITCH        ; $782A: $FE $C3
     jr   nz, .kanaletGateEnd                      ; $782C: $20 $05
     ld   hl, wOverworldRoomStatus + ROOM_OW_KANALET_GATE ; $782E: $21 $79 $D8
-    set  4, [hl]                                  ; $7831: $CB $E6
+    set  OW_ROOM_STATUS_FLAG_CHANGED, [hl]        ; $7831: $CB $E6
 .kanaletGateEnd
 
     ld   a, [wC13B]                               ; $7833: $FA $3B $C1
@@ -8156,7 +8194,7 @@ ApplyLinkGroundPhysics_Default::
     cp   $28                                      ; $7861: $FE $28
     jr   c, .return                               ; $7863: $38 $09
 
-    ld   a, NOISE_SFX_ROCK_RUMBLE                 ; $7865: $3E $2B
+    ld   a, NOISE_SFX_RUMBLE2                     ; $7865: $3E $2B
     ldh  [hNoiseSfx], a                           ; $7867: $E0 $F4
     jp   label_002_4D97                           ; $7869: $C3 $97 $4D
 
@@ -8169,7 +8207,7 @@ ApplyLinkGroundPhysics_Default::
 Data_002_786F::
     db   $FC, $FF, $FF, $FE, $FE, $FE, $FD, $FD, $FD, $FC, $FC, $FC
 
-Data_002_787B::
+SwitchBlocksStateTable::
     db   $00, $02
 
 label_002_787D:

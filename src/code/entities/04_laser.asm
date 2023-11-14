@@ -51,7 +51,7 @@ LaserEntityHandler::
     call SpawnNewEntity_trampoline                ; $6C81: $CD $86 $3B
     jr   c, .ret_6CB3                             ; $6C84: $38 $2D
 
-    ld   a, $08                                   ; $6C86: $3E $08
+    ld   a, NOISE_SFX_BEAMOS_LASER                ; $6C86: $3E $08
     ldh  [hNoiseSfx], a                           ; $6C88: $E0 $F4
     ldh  a, [hMultiPurpose0]                      ; $6C8A: $F0 $D7
     ld   hl, wEntitiesPosXTable                   ; $6C8C: $21 $00 $C2
@@ -120,7 +120,7 @@ jr_004_6CB4:
     ld   [hl], c                                  ; $6CEE: $71
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6CEF: $21 $40 $C3
     add  hl, de                                   ; $6CF2: $19
-    ld   [hl], $C0                                ; $6CF3: $36 $C0
+    ld   [hl], ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $6CF3: $36 $C0
     push bc                                       ; $6CF5: $C5
     ldh  a, [hMultiPurpose2]                      ; $6CF6: $F0 $D9
     ld   c, a                                     ; $6CF8: $4F

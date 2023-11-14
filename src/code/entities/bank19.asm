@@ -58,7 +58,7 @@ func_019_5D7D::
     ; … then teleport Link
     ld   a, $01                                   ; $5D82: $3E $01
     ldh  [hLinkPhysicsModifier], a                ; $5D84: $E0 $9C
-    ld   a, JINGLE_OVERWORLD_WARP                 ; $5D86: $3E $25
+    ld   a, JINGLE_OVERWORLD_WARP_HOLE            ; $5D86: $3E $25
     ldh  [hJingle], a                             ; $5D88: $E0 $F2
 
 .return
@@ -110,7 +110,7 @@ func_019_5DAC::
     ld   hl, wOverworldRoomStatus                 ; $5DC6: $21 $00 $D8
     add  hl, de                                   ; $5DC9: $19
     ld   a, [hl]                                  ; $5DCA: $7E
-    and  $80                                      ; $5DCB: $E6 $80
+    and  OW_ROOM_STATUS_VISITED                   ; $5DCB: $E6 $80
     jr   z, .loop                                 ; $5DCD: $28 $F2
 
     ; Warp Link
@@ -591,7 +591,7 @@ jr_019_7C90:
 ;
 ; ----------------------------------------------------------------------
 
-func_019_7CA2::
+PushLinkOutOfEntity_19::
     call CheckLinkCollisionWithEnemy_trampoline   ; $7CA2: $CD $5A $3B
     jr   nc, jr_019_7CCE                          ; $7CA5: $30 $27
 
@@ -891,7 +891,7 @@ AddEntityZSpeedToPos_19::
     jr   AddEntitySpeedToPos_19.updatePosition    ; $7E09: $18 $D2
 
 ; Get the difference between link's position and this entities position in X.
-entityLinkPositionXDifference::
+EntityLinkPositionXDifference_19::
     ld   e, $00                                   ; $7E0B: $1E $00
     ldh  a, [hLinkPositionX]                      ; $7E0D: $F0 $98
     ld   hl, wEntitiesPosXTable                   ; $7E0F: $21 $00 $C2
@@ -907,7 +907,7 @@ entityLinkPositionXDifference::
     ret                                           ; $7E1A: $C9
 
 ; Get the difference between link's position and this entities position in Y.
-entityLinkPositionYDifference::
+EntityLinkPositionYDifference_19::
     ld   e, $02                                   ; $7E1B: $1E $02
     ldh  a, [hLinkPositionY]                      ; $7E1D: $F0 $99
     ld   hl, wEntitiesPosYTable                   ; $7E1F: $21 $10 $C2
@@ -936,7 +936,7 @@ entityLinkPositionYDifference::
     ret                                           ; $7E39: $C9
 
 func_019_7E3A::
-    call entityLinkPositionXDifference            ; $7E3A: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $7E3A: $CD $0B $7E
     ld   a, e                                     ; $7E3D: $7B
     ldh  [hMultiPurpose0], a                      ; $7E3E: $E0 $D7
     ld   a, d                                     ; $7E40: $7A
@@ -948,7 +948,7 @@ func_019_7E3A::
 
 .jr_7E47
     push af                                       ; $7E47: $F5
-    call entityLinkPositionYDifference            ; $7E48: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $7E48: $CD $1B $7E
     ld   a, e                                     ; $7E4B: $7B
     ldh  [hMultiPurpose1], a                      ; $7E4C: $E0 $D8
     ld   a, d                                     ; $7E4E: $7A
@@ -979,15 +979,17 @@ ClearEntityStatus_19::
     ld   [hl], b                                  ; $7E65: $70
     ret                                           ; $7E66: $C9
 
+; Kill boss or mini-boss with explosions animation (unused in this bank)
+AnimateBossAgony_19::
     ld   hl, wEntitiesPrivateState2Table          ; $7E67: $21 $C0 $C2
     add  hl, bc                                   ; $7E6A: $09
     ld   a, [hl]                                  ; $7E6B: $7E
     JP_TABLE                                      ; $7E6C
-._00 dw func_019_7E73                             ; $7E6D
-._01 dw func_019_7E84                             ; $7E6F
-._02 dw func_019_7E93                             ; $7E71
+._00 dw AnimateBossAgonyInit_19                             ; $7E6D
+._01 dw AnimateBossAgonyFlashing_19                             ; $7E6F
+._02 dw AnimateBossAgonyExploding_19                             ; $7E71
 
-func_019_7E73::
+AnimateBossAgonyInit_19::
     call GetEntityTransitionCountdown             ; $7E73: $CD $05 $0C
     ld   [hl], $A0                                ; $7E76: $36 $A0
     ld   hl, wEntitiesFlashCountdownTable         ; $7E78: $21 $20 $C4
@@ -1000,7 +1002,7 @@ IncrementEntityPrivateState2_19:
     inc  [hl]                                     ; $7E82: $34
     ret                                           ; $7E83: $C9
 
-func_019_7E84::
+AnimateBossAgonyFlashing_19::
     call GetEntityTransitionCountdown             ; $7E84: $CD $05 $0C
     ret  nz                                       ; $7E87: $C0
 
@@ -1010,18 +1012,18 @@ func_019_7E84::
     ld   [hl], $FF                                ; $7E8E: $36 $FF
     jp   IncrementEntityPrivateState2_19          ; $7E90: $C3 $7E $7E
 
-func_019_7E93::
+AnimateBossAgonyExploding_19::
+    ; When the explosions end, make the boss die
     call GetEntityTransitionCountdown             ; $7E93: $CD $05 $0C
-    jr   nz, .jr_7EA1                             ; $7E96: $20 $09
-
+    jr   nz, .notDeadYet                          ; $7E96: $20 $09
     call PlayBombExplosionSfx                     ; $7E98: $CD $4B $0C
     call label_27DD                               ; $7E9B: $CD $DD $27
     jp   DidKillEnemy                             ; $7E9E: $C3 $50 $3F
 
-.jr_7EA1
-    jp   label_019_7EA4                           ; $7EA1: $C3 $A4 $7E
+.notDeadYet
+    jp   .animateExplosions                       ; $7EA1: $C3 $A4 $7E
 
-label_019_7EA4:
+.animateExplosions
     and  $07                                      ; $7EA4: $E6 $07
     ret  nz                                       ; $7EA6: $C0
 
@@ -1049,7 +1051,7 @@ label_019_7EC4:
     ldh  [hMultiPurpose1], a                      ; $7ECD: $E0 $D8
     ld   a, TRANSCIENT_VFX_POOF                   ; $7ECF: $3E $02
     call AddTranscientVfx                         ; $7ED1: $CD $C7 $0C
-    ld   a, $13                                   ; $7ED4: $3E $13
+    ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $7ED4: $3E $13
     ldh  [hNoiseSfx], a                           ; $7ED6: $E0 $F4
     ret                                           ; $7ED8: $C9
 
@@ -1083,7 +1085,7 @@ label_019_7EC4:
 jr_019_7F05:
     call ClearEntityStatus_19                     ; $7F05: $CD $61 $7E
     ld   hl, hNoiseSfx                            ; $7F08: $21 $F4 $FF
-    ld   [hl], $1A                                ; $7F0B: $36 $1A
+    ld   [hl], NOISE_SFX_BOSS_EXPLOSION           ; $7F0B: $36 $1A
     ret                                           ; $7F0D: $C9
 
 func_019_7F0E::

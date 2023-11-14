@@ -57,12 +57,12 @@ label_007_6523:
     ld   [wBGOriginLow], a                        ; $6528: $EA $2F $C1
     ld   [wBGOriginHigh], a                       ; $652B: $EA $2E $C1
     ld   hl, wLCDControl                          ; $652E: $21 $FD $D6
-    res  5, [hl]                                  ; $6531: $CB $AE
+    res  LCDCB_WINON, [hl]                        ; $6531: $CB $AE
     ld   hl, wEntitiesInertiaTable                ; $6533: $21 $D0 $C3
     add  hl, bc                                   ; $6536: $09
     ld   a, [hl]                                  ; $6537: $7E
     cp   $09                                      ; $6538: $FE $09
-if __PATCH_0__
+if __OPTIMIZATIONS_1__
     jp   z, jr_007_659D                           ; $653A: $28 $61
 ELSE
     jr   z, jr_007_659D                           ; $653A: $28 $61
@@ -318,7 +318,7 @@ label_007_6660:
 func_007_666B::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $666B: $21 $40 $C3
     add  hl, bc                                   ; $666E: $09
-    ld   [hl], $C2                                ; $666F: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $666F: $36 $C2
     call GetEntityTransitionCountdown             ; $6671: $CD $05 $0C
     jr   nz, .jr_668E                             ; $6674: $20 $18
 
@@ -333,7 +333,7 @@ func_007_666B::
     ld   [hl], $01                                ; $6686: $36 $01
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6688: $21 $40 $C3
     add  hl, bc                                   ; $668B: $09
-    ld   [hl], $04                                ; $668C: $36 $04
+    ld   [hl], 4                                  ; $668C: $36 $04
 
 .jr_668E
     ld   a, $02                                   ; $668E: $3E $02
@@ -352,7 +352,7 @@ label_007_6693:
 ._01 dw func_007_66B8                             ; $66A4
 
 func_007_66A6::
-    call func_007_7E5D                            ; $66A6: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $66A6: $CD $5D $7E
     ld   a, $08                                   ; $66A9: $3E $08
     dec  e                                        ; $66AB: $1D
     jr   nz, .jr_66B0                             ; $66AC: $20 $02

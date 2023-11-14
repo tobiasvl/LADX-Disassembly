@@ -56,7 +56,7 @@ func_019_4DBC::
     inc  [hl]                                     ; $4DF0: $34
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4DF1: $21 $40 $C3
     add  hl, de                                   ; $4DF4: $19
-    ld   [hl], $C1                                ; $4DF5: $36 $C1
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $4DF5: $36 $C1
     ld   a, MUSIC_ROOSTER_REVIVAL                 ; $4DF7: $3E $55
     ld   [wMusicTrackToPlay], a                   ; $4DF9: $EA $68 $D3
     jp   IncrementEntityState                     ; $4DFC: $C3 $12 $3B
@@ -66,7 +66,7 @@ func_019_4DBC::
 func_019_4E00::
     ld   de, Unknown064SpriteVariants             ; $4E00: $11 $B8 $4D
     call RenderActiveEntitySpritesPair            ; $4E03: $CD $C0 $3B
-    jp   func_019_7CA2                            ; $4E06: $C3 $A2 $7C
+    jp   PushLinkOutOfEntity_19                   ; $4E06: $C3 $A2 $7C
 
 func_019_4E09::
     ld   a, $02                                   ; $4E09: $3E $02
@@ -112,7 +112,7 @@ func_019_4E43::
     cp   $70                                      ; $4E58: $FE $70
     jr   nz, .ret_4E61                            ; $4E5A: $20 $05
 
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $4E5C: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $4E5C: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $4E5E: $EA $68 $D3
 
 .ret_4E61
@@ -333,7 +333,7 @@ Data_019_500B::
 func_019_500D::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $500D: $21 $40 $C3
     add  hl, bc                                   ; $5010: $09
-    ld   [hl], $D2                                ; $5011: $36 $D2
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $5011: $36 $D2
     ld   de, Unknown065SpriteVariants             ; $5013: $11 $DB $4F
     call RenderActiveEntitySpritesPair            ; $5016: $CD $C0 $3B
     ld   hl, wEntitiesPrivateState3Table          ; $5019: $21 $D0 $C2
@@ -343,7 +343,7 @@ func_019_500D::
     jr   nz, .jr_5027                             ; $501F: $20 $06
 
     inc  [hl]                                     ; $5021: $34
-    ld   a, MUSIC_CUCCO_HOUSE                     ; $5022: $3E $57
+    ld   a, MUSIC_HENHOUSE                        ; $5022: $3E $57
     ld   [wMusicTrackToPlay], a                   ; $5024: $EA $68 $D3
 
 .jr_5027
@@ -357,7 +357,7 @@ func_019_500D::
 
 .jr_5034
     call ReturnIfNonInteractive_19                ; $5034: $CD $3D $7D
-    call func_019_7CA2                            ; $5037: $CD $A2 $7C
+    call PushLinkOutOfEntity_19                   ; $5037: $CD $A2 $7C
     ldh  a, [hFrameCounter]                       ; $503A: $F0 $E7
     and  $7F                                      ; $503C: $E6 $7F
     jr   nz, .jr_504A                             ; $503E: $20 $0A
@@ -391,9 +391,7 @@ func_019_500D::
     cp   $0F                                      ; $5060: $FE $0F
     jr   nz, jr_019_5093                          ; $5062: $20 $2F
 
-    ld   a, $08                                   ; $5064: $3E $08
-
-.jr_5066
+    ld   a, ENTITY_MAGIC_POWDER_SPRINKLE          ; $5064: $3E $08
     call SpawnNewEntity_trampoline                ; $5066: $CD $86 $3B
     jr   c, ret_019_5092                          ; $5069: $38 $27
 
@@ -515,7 +513,7 @@ label_019_50C4::
     ldh  [hActiveEntitySpriteVariant], a          ; $511C: $E0 $F1
     ld   hl, wEntitiesPhysicsFlagsTable           ; $511E: $21 $40 $C3
     add  hl, bc                                   ; $5121: $09
-    res  4, [hl]                                  ; $5122: $CB $A6
+    res  ENTITY_PHYSICS_B_SHADOW, [hl]            ; $5122: $CB $A6
     ld   de, Unknown066SpriteVariants             ; $5124: $11 $FB $4F
     call RenderActiveEntitySpritesPair            ; $5127: $CD $C0 $3B
     call CopyEntityPositionToActivePosition       ; $512A: $CD $8A $3D
@@ -589,12 +587,12 @@ label_019_50C4::
     ld   [hl], a                                  ; $5191: $77
 
 .jr_5192
-    call entityLinkPositionXDifference            ; $5192: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $5192: $CD $0B $7E
     add  $12                                      ; $5195: $C6 $12
     cp   $24                                      ; $5197: $FE $24
     ret  nc                                       ; $5199: $D0
 
-    call entityLinkPositionYDifference            ; $519A: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $519A: $CD $1B $7E
     add  $10                                      ; $519D: $C6 $10
     cp   $20                                      ; $519F: $FE $20
     ret  nc                                       ; $51A1: $D0
@@ -638,12 +636,12 @@ FlyingRoosterState0Handler::
     cp   $02                                      ; $51E6: $FE $02
     ret  c                                        ; $51E8: $D8
 
-    call entityLinkPositionXDifference            ; $51E9: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $51E9: $CD $0B $7E
     add  $08                                      ; $51EC: $C6 $08
     cp   $10                                      ; $51EE: $FE $10
     jp   nc, label_019_52AB                       ; $51F0: $D2 $AB $52
 
-    call entityLinkPositionYDifference            ; $51F3: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $51F3: $CD $1B $7E
     add  $10                                      ; $51F6: $C6 $10
     cp   $20                                      ; $51F8: $FE $20
     jp   nc, label_019_52AB                       ; $51FA: $D2 $AB $52
@@ -671,7 +669,7 @@ FlyingRoosterState0Handler::
     ld   hl, wRoomObjects + $45                   ; $521F: $21 $56 $D7
     ld   [hl], $C6                                ; $5222: $36 $C6
     ld   a, $99                                   ; $5224: $3E $99
-    call func_2BF                                 ; $5226: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $5226: $CD $2F $0B
     ld   a, $50                                   ; $5229: $3E $50
     ldh  [hIntersectedObjectLeft], a              ; $522B: $E0 $CE
     ld   a, $30                                   ; $522D: $3E $30
@@ -746,7 +744,7 @@ FlyingRoosterState0Handler::
     ld   a, $4B                                   ; $529E: $3E $4B
     ld   [hl+], a                                 ; $52A0: $22
     ld   [hl], b                                  ; $52A1: $70
-    ld   a, $11                                   ; $52A2: $3E $11
+    ld   a, NOISE_SFX_RUMBLE                      ; $52A2: $3E $11
     ldh  [hNoiseSfx], a                           ; $52A4: $E0 $F4
     call IncrementEntityState                     ; $52A6: $CD $12 $3B
     jr   FlyingRoosterState1Handler               ; $52A9: $18 $06
@@ -772,11 +770,11 @@ FlyingRoosterState1Handler::
     ld   hl, wRoomObjects + $25                   ; $52CC: $21 $36 $D7
     ld   [hl], $91                                ; $52CF: $36 $91
     ld   a, $99                                   ; $52D1: $3E $99
-    call func_2BF                                 ; $52D3: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $52D3: $CD $2F $0B
     ld   hl, wRoomObjects + $35                   ; $52D6: $21 $46 $D7
     ld   [hl], $5E                                ; $52D9: $36 $5E
     ld   a, $99                                   ; $52DB: $3E $99
-    call func_2BF                                 ; $52DD: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $52DD: $CD $2F $0B
     ld   a, $50                                   ; $52E0: $3E $50
     ldh  [hIntersectedObjectLeft], a              ; $52E2: $E0 $CE
     ld   a, $20                                   ; $52E4: $3E $20

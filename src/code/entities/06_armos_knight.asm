@@ -59,7 +59,7 @@ ArmosKnightPrivateState2Handler::
     call GetEntityTransitionCountdown             ; $5333: $CD $05 $0C
     jr   nz, jr_006_535D                          ; $5336: $20 $25
 
-    ld   a, $1A                                   ; $5338: $3E $1A
+    ld   a, NOISE_SFX_BOSS_EXPLOSION              ; $5338: $3E $1A
     ldh  [hNoiseSfx], a                           ; $533A: $E0 $F4
     call label_27DD                               ; $533C: $CD $DD $27
     call DidKillEnemy                             ; $533F: $CD $50 $3F
@@ -95,7 +95,7 @@ jr_006_5361:
     call ReturnIfNonInteractive_06                ; $5361: $CD $C6 $64
     call BossIntro                                ; $5364: $CD $E8 $3E
     call label_3B70                               ; $5367: $CD $70 $3B
-    call func_006_641A                            ; $536A: $CD $1A $64
+    call PushLinkOutOfEntity_06                   ; $536A: $CD $1A $64
     call AddEntityZSpeedToPos_06                  ; $536D: $CD $7A $65
     ld   hl, wEntitiesSpeedZTable                 ; $5370: $21 $20 $C3
     add  hl, bc                                   ; $5373: $09
@@ -145,7 +145,7 @@ jr_006_5361:
     jr   nc, label_006_5411                       ; $53B1: $30 $5E
 
     inc  [hl]                                     ; $53B3: $34
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $53B4: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $53B4: $3E $05
     call SpawnNewEntity_trampoline                ; $53B6: $CD $86 $3B
     jr   c, label_006_5411                        ; $53B9: $38 $56
 
@@ -171,7 +171,7 @@ jr_006_5361:
     jr   nc, label_006_5411                       ; $53DA: $30 $35
 
     inc  [hl]                                     ; $53DC: $34
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $53DD: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $53DD: $3E $05
     call SpawnNewEntity_trampoline                ; $53DF: $CD $86 $3B
     jr   c, label_006_5411                        ; $53E2: $38 $2D
 
@@ -195,10 +195,10 @@ jr_006_53F9:
     ld   [hl], $0F                                ; $5400: $36 $0F
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5402: $21 $40 $C3
     add  hl, de                                   ; $5405: $19
-    ld   [hl], $C4                                ; $5406: $36 $C4
+    ld   [hl], 4 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $5406: $36 $C4
     ld   a, TRANSCIENT_VFX_POOF                   ; $5408: $3E $02
     call AddTranscientVfx                         ; $540A: $CD $C7 $0C
-    ld   a, $29                                   ; $540D: $3E $29
+    ld   a, NOISE_SFX_BREAK                       ; $540D: $3E $29
     ldh  [hNoiseSfx], a                           ; $540F: $E0 $F4
 
 label_006_5411:
@@ -255,7 +255,7 @@ ArmosKnightState2Handler::
     call IncrementEntityState                     ; $5460: $CD $12 $3B
     ld   hl, wEntitiesPhysicsFlagsTable           ; $5463: $21 $40 $C3
     add  hl, bc                                   ; $5466: $09
-    res  7, [hl]                                  ; $5467: $CB $BE
+    res  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $5467: $CB $BE
     ld   hl, wEntitiesHitboxFlagsTable            ; $5469: $21 $50 $C3
     add  hl, bc                                   ; $546C: $09
     res  7, [hl]                                  ; $546D: $CB $BE
@@ -309,7 +309,7 @@ ArmosKnightState3Handler::
 
 .jr_54B4
     call ApplyVectorTowardsLink_trampoline        ; $54B4: $CD $AA $3B
-    ld   a, JINGLE_BIG_BUMP                       ; $54B7: $3E $20
+    ld   a, JINGLE_BOUNCE                         ; $54B7: $3E $20
     ldh  [hJingle], a                             ; $54B9: $E0 $F2
 
 jr_006_54BB:
@@ -356,7 +356,7 @@ ArmosKnightState6Handler::
     ld   [wC157], a                               ; $54F6: $EA $57 $C1
     ld   a, $04                                   ; $54F9: $3E $04
     ld   [wC158], a                               ; $54FB: $EA $58 $C1
-    ld   a, JINGLE_HUGE_BUMP                      ; $54FE: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $54FE: $3E $0B
     ldh  [hJingle], a                             ; $5500: $E0 $F2
     call GetEntityTransitionCountdown             ; $5502: $CD $05 $0C
     ld   [hl], $30                                ; $5505: $36 $30

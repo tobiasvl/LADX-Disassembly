@@ -9,7 +9,7 @@ GrimCreeperEntityHandler::
 
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6FDF: $21 $40 $C3
     add  hl, bc                                   ; $6FE2: $09
-    set  6, [hl]                                  ; $6FE3: $CB $F6
+    set  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $6FE3: $CB $F6
     call func_018_7181                            ; $6FE5: $CD $81 $71
     call label_394D                               ; $6FE8: $CD $4D $39
     call BossIntro                                ; $6FEB: $CD $E8 $3E
@@ -32,7 +32,7 @@ GrimCreeperEntityHandler::
     cp   $01                                      ; $7008: $FE $01
     jr   nz, .jr_7011                             ; $700A: $20 $05
 
-    ld   a, $3F                                   ; $700C: $3E $3F
+    ld   a, NOISE_SFX_MINIBOSS_FLEE               ; $700C: $3E $3F
     ldh  [hNoiseSfx], a                           ; $700E: $E0 $F4
     inc  [hl]                                     ; $7010: $34
 
@@ -147,7 +147,7 @@ GrimCreeperState3Handler::
     call SpawnNewEntity_trampoline                ; $70B3: $CD $86 $3B
     jr   c, label_018_70FD                        ; $70B6: $38 $45
 
-    ld   a, JINGLE_GRIM_CREEPER                   ; $70B8: $3E $31
+    ld   a, JINGLE_GRIM_CREEPER_BATS              ; $70B8: $3E $31
     ldh  [hJingle], a                             ; $70BA: $E0 $F2
     ld   hl, wEntitiesInertiaTable                ; $70BC: $21 $D0 $C3
     add  hl, bc                                   ; $70BF: $09
@@ -185,7 +185,7 @@ GrimCreeperState3Handler::
     ld   [hl], $01                                ; $70F4: $36 $01
     ld   hl, wEntitiesPhysicsFlagsTable           ; $70F6: $21 $40 $C3
     add  hl, de                                   ; $70F9: $19
-    set  6, [hl]                                  ; $70FA: $CB $F6
+    set  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $70FA: $CB $F6
     pop  bc                                       ; $70FC: $C1
 
 label_018_70FD:
@@ -429,13 +429,13 @@ func_018_72A5::
 
     ld   hl, wEntitiesPhysicsFlagsTable           ; $72AD: $21 $40 $C3
     add  hl, bc                                   ; $72B0: $09
-    res  6, [hl]                                  ; $72B1: $CB $B6
+    res  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $72B1: $CB $B6
     ld   a, $20                                   ; $72B3: $3E $20
     call ApplyVectorTowardsLink_trampoline        ; $72B5: $CD $AA $3B
     ld   hl, wEntitiesSpeedZTable                 ; $72B8: $21 $20 $C3
     add  hl, bc                                   ; $72BB: $09
     ld   [hl], $F4                                ; $72BC: $36 $F4
-    ld   a, JINGLE_GRIM_CREEPER                   ; $72BE: $3E $31
+    ld   a, JINGLE_GRIM_CREEPER_BATS              ; $72BE: $3E $31
     ldh  [hJingle], a                             ; $72C0: $E0 $F2
     call IncrementEntityState                     ; $72C2: $CD $12 $3B
 

@@ -98,15 +98,15 @@ jr_015_4EEE:
     call SpawnNewEntity_trampoline                ; $4F10: $CD $86 $3B
     ret  c                                        ; $4F13: $D8
 
-    ld   a, $0A                                   ; $4F14: $3E $0A
+    ld   a, NOISE_SFX_WHOOSH                      ; $4F14: $3E $0A
     ldh  [hNoiseSfx], a                           ; $4F16: $E0 $F4
     ld   hl, wEntitiesIgnoreHitsCountdownTable    ; $4F18: $21 $10 $C4
     add  hl, de                                   ; $4F1B: $19
     ld   [hl], b                                  ; $4F1C: $70
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4F1D: $21 $40 $C3
     add  hl, de                                   ; $4F20: $19
-    set  6, [hl]                                  ; $4F21: $CB $F6
-    set  4, [hl]                                  ; $4F23: $CB $E6
+    set  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $4F21: $CB $F6
+    set  ENTITY_PHYSICS_B_SHADOW, [hl]            ; $4F23: $CB $E6
     ld   hl, wEntitiesOptions1Table               ; $4F25: $21 $30 $C4
     add  hl, de                                   ; $4F28: $19
     set  ENTITY_OPT1_B_EXCLUDED_FROM_KILL_ALL, [hl] ; $4F29: $CB $CE

@@ -115,13 +115,13 @@ BushCrawlerEntityHandler::
     add  hl, bc                                   ; $40A9: $09
     ld   [hl], $05                                ; $40AA: $36 $05
     ld   hl, hNoiseSfx                            ; $40AC: $21 $F4 $FF
-    ld   [hl], $05                                ; $40AF: $36 $05
+    ld   [hl], NOISE_SFX_CUT_GRASS                ; $40AF: $36 $05
     call GetEntityPrivateCountdown1               ; $40B1: $CD $00 $0C
     ld   [hl], $1F                                ; $40B4: $36 $1F
     ld   hl, wEntitiesPhysicsFlagsTable           ; $40B6: $21 $40 $C3
     add  hl, bc                                   ; $40B9: $09
     ld   a, [hl]                                  ; $40BA: $7E
-    add  $02                                      ; $40BB: $C6 $02
+    add  2                                        ; $40BB: $C6 $02
     ld   [hl], a                                  ; $40BD: $77
     jp   label_007_4198                           ; $40BE: $C3 $98 $41
 
@@ -146,13 +146,13 @@ BushCrawlerState0Handler::
     call GetEntityTransitionCountdown             ; $40DB: $CD $05 $0C
     jr   nz, jr_007_4128                          ; $40DE: $20 $48
 
-    call func_007_7E6D                            ; $40E0: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $40E0: $CD $6D $7E
     add  $08                                      ; $40E3: $C6 $08
     cp   $10                                      ; $40E5: $FE $10
     jr   c, .jr_40F9                              ; $40E7: $38 $10
 
     push de                                       ; $40E9: $D5
-    call func_007_7E5D                            ; $40EA: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $40EA: $CD $5D $7E
     add  $08                                      ; $40ED: $C6 $08
     pop  de                                       ; $40EF: $D1
     cp   $10                                      ; $40F0: $FE $10
@@ -179,7 +179,7 @@ BushCrawlerState0Handler::
     ld   [hl], a                                  ; $4112: $77
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4113: $21 $40 $C3
     add  hl, bc                                   ; $4116: $09
-    res  7, [hl]                                  ; $4117: $CB $BE
+    res  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $4117: $CB $BE
     ld   hl, wEntitiesHitboxFlagsTable            ; $4119: $21 $50 $C3
     add  hl, bc                                   ; $411C: $09
     res  2, [hl]                                  ; $411D: $CB $96
@@ -191,7 +191,7 @@ BushCrawlerState0Handler::
 jr_007_4128:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4128: $21 $40 $C3
     add  hl, bc                                   ; $412B: $09
-    set  7, [hl]                                  ; $412C: $CB $FE
+    set  ENTITY_PHYSICS_B_HARMLESS, [hl]          ; $412C: $CB $FE
     ld   hl, wEntitiesHitboxFlagsTable            ; $412E: $21 $50 $C3
     add  hl, bc                                   ; $4131: $09
     set  2, [hl]                                  ; $4132: $CB $D6
@@ -203,7 +203,7 @@ jr_007_4128:
     and  a                                        ; $413E: $A7
     ret  nz                                       ; $413F: $C0
 
-    ld   a, [wBButtonSlot]                        ; $4140: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $4140: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $4143: $FE $03
     jr   nz, .jr_414E                             ; $4145: $20 $07
 
@@ -214,7 +214,7 @@ jr_007_4128:
     ret                                           ; $414D: $C9
 
 .jr_414E
-    ld   a, [wAButtonSlot]                        ; $414E: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $414E: $FA $01 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $4151: $FE $03
     ret  nz                                       ; $4153: $C0
 
@@ -245,7 +245,7 @@ jr_007_415A:
     call GetEntityTransitionCountdown             ; $417E: $CD $05 $0C
     ld   [hl], $02                                ; $4181: $36 $02
     ld   hl, hWaveSfx                             ; $4183: $21 $F3 $FF
-    ld   [hl], $02                                ; $4186: $36 $02
+    ld   [hl], WAVE_SFX_LIFT_UP                   ; $4186: $36 $02
     ld   hl, wEntitiesTypeTable                   ; $4188: $21 $A0 $C3
     add  hl, bc                                   ; $418B: $09
     ld   [hl], $05                                ; $418C: $36 $05

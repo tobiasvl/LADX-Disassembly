@@ -79,7 +79,7 @@ TarinEntityHandler::
     ; Handle Tarin's appearance in the credits
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4971: $21 $40 $C3
     add  hl, bc                                   ; $4974: $09
-    ld   [hl], $C4                                ; $4975: $36 $C4
+    ld   [hl], 4 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $4975: $36 $C4
     ld   hl, wEntitiesInertiaTable                ; $4977: $21 $D0 $C3
     add  hl, bc                                   ; $497A: $09
     ld   a, [hl]                                  ; $497B: $7E
@@ -154,7 +154,7 @@ jr_005_49D1:
 ._03 dw func_005_4B89                             ; $49E3
 
 func_005_49E5::
-    call func_005_54C3                            ; $49E5: $CD $C3 $54
+    call PushLinkOutOfEntity_05                   ; $49E5: $CD $C3 $54
     ldh  a, [hLinkPositionY]                      ; $49E8: $F0 $99
     cp   $20                                      ; $49EA: $FE $20
     jr   nc, .jr_49FD                             ; $49EC: $30 $0F
@@ -267,7 +267,7 @@ jr_005_4A46:
     ld   hl, wOverworldRoomStatus                 ; $4A90: $21 $00 $D8
     add  hl, de                                   ; $4A93: $19
     ld   a, [hl]                                  ; $4A94: $7E
-    or   $10                                      ; $4A95: $F6 $10
+    or   OW_ROOM_STATUS_CHANGED                   ; $4A95: $F6 $10
     ld   [hl], a                                  ; $4A97: $77
     ld   a, $01                                   ; $4A98: $3E $01
     ld   [wDB48], a                               ; $4A9A: $EA $48 $DB
@@ -478,7 +478,7 @@ func_005_4B89::
     and  a                                        ; $4BB0: $A7
     jr   nz, .jr_4BB6                             ; $4BB1: $20 $03
 
-    call func_005_54C3                            ; $4BB3: $CD $C3 $54
+    call PushLinkOutOfEntity_05                   ; $4BB3: $CD $C3 $54
 
 .jr_4BB6
     call ShouldLinkTalkToEntity_05                ; $4BB6: $CD $06 $55
@@ -593,7 +593,7 @@ jr_005_4C43:
 jr_005_4C57:
     call RenderActiveEntitySpritesPair            ; $4C57: $CD $C0 $3B
     call ReturnIfNonInteractive_05                ; $4C5A: $CD $3A $7A
-    call func_005_54C3                            ; $4C5D: $CD $C3 $54
+    call PushLinkOutOfEntity_05                   ; $4C5D: $CD $C3 $54
 
     ; Jump table excuted when Tarin is giving the shield
     ldh  a, [hActiveEntityState]                  ; $4C60: $F0 $F0
@@ -644,7 +644,7 @@ TarinShield1Handler::
 
     call GetEntityTransitionCountdown             ; $4CA1: $CD $05 $0C
     ld   [hl], $80                                ; $4CA4: $36 $80
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $4CA6: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $4CA6: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $4CA8: $EA $68 $D3
     ldh  a, [hIsGBC]                              ; $4CAB: $F0 $FE
     and  a                                        ; $4CAD: $A7
@@ -806,7 +806,7 @@ jr_005_4D5D:
     ld   [hl], $30                                ; $4D94: $36 $30
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4D96: $21 $40 $C3
     add  hl, de                                   ; $4D99: $19
-    ld   [hl], $C1                                ; $4D9A: $36 $C1
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $4D9A: $36 $C1
     ld   hl, wEntitiesHitboxFlagsTable            ; $4D9C: $21 $50 $C3
     add  hl, de                                   ; $4D9F: $19
     ld   [hl], $00                                ; $4DA0: $36 $00

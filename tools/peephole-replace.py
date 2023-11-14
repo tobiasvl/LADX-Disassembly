@@ -21,6 +21,7 @@ class PeepholeRule:
     replacements: an Hash or lambda providing a replacement for the value matched.
     """
     def __init__(self, input, replacements):
+        self.input = input
         self.rules = []
         self.replacements = replacements
         for line in input.split("\n"):
@@ -57,6 +58,8 @@ class PeepholeRule:
                             print(" -> ")
                             print(line)
                             lines[index+rule_index] = line
+                        else:
+                            print(f"Replacement value missing for: {m.group(1)}:{self.input}")
 
 ENTITY_OPT1_BITS = {
     7: "ENTITY_OPT1_B_IS_BOSS",
@@ -99,6 +102,25 @@ def flags_from_enum(enum_value):
       flags_from_enum(enum_value) # -> "ENTITY_OPT1_IS_BOSS|ENTITY_OPT1_SWORD_CLINK_OFF"                               ; $6902: $36 $C0
     """
     return str(enum_value).replace(f"{type(enum_value).__name__}.", '')
+
+
+def read_enum(filename, prefix):
+    result = {}
+    basepath = os.path.dirname(__file__)
+    for line in open(os.path.join(basepath, "..", "src", filename), "rt"):
+        line = line.strip()
+        if ';' in line:
+            line = line[:line.find(';')]
+        if line.startswith(prefix):
+            if " equ " in line:
+                line = line.split(" equ ")
+                value = line[0].strip()
+                key = line[1].strip()
+                if key.startswith('$'):
+                    key = int(key[1:], 16)
+                    result[key] = value
+    return result
+
 
 rules = [
     PeepholeRule("""
@@ -148,7 +170,7 @@ rules = [
         0x02: "ENTITY_BOMB",
         0x03: "ENTITY_HOOKSHOT_CHAIN",
         0x04: "ENTITY_MAGIC_ROD_FIREBALL",
-        0x05: "ENTITY_ENTITY_LIFTABLE_ROCK",
+        0x05: "ENTITY_LIFTABLE_ROCK",
         0x06: "ENTITY_PUSHED_BLOCK",
         0x07: "ENTITY_CHEST_WITH_ITEM",
         0x08: "ENTITY_MAGIC_POWDER_SPRINKLE",
@@ -247,7 +269,7 @@ rules = [
         0x65: "ENTITY_ANGLER_FISH",
         0x66: "ENTITY_CRYSTAL_SWITCH",
         0x67: "ENTITY_67",
-        0x68: "ENTITY_68",
+        0x68: "ENTITY_HOOKSHOT_BRIDGE",
         0x69: "ENTITY_MOVING_BLOCK_MOVER",
         0x6A: "ENTITY_RAFT_RAFT_OWNER",
         0x6B: "ENTITY_TEXT_DEBUGGER",
@@ -435,6 +457,32 @@ rules = [
         ld   [hl], a
         ldh  [hRoomStatus], a
     """, lambda value: flags_from_enum(RoomStatusFlag(value))),
+
+     PeepholeRule("""
+        ld   a, $@@
+        ldh  [hJingle], a
+    """, read_enum("constants/sfx.asm", "JINGLE_")),
+     PeepholeRule("""
+        ld   a, $@@
+        ldh  [hWaveSfx], a
+    """, read_enum("constants/sfx.asm", "WAVE_SFX_")),
+     PeepholeRule("""
+        ld   a, $@@
+        ldh  [hNoiseSfx], a
+    """, read_enum("constants/sfx.asm", "NOISE_SFX_")),
+
+     PeepholeRule("""
+        ld   hl, hJingle
+        ld   [hl], $@@
+    """, read_enum("constants/sfx.asm", "JINGLE_")),
+     PeepholeRule("""
+        ld   hl, hWaveSfx
+        ld   [hl], $@@
+    """, read_enum("constants/sfx.asm", "WAVE_SFX_")),
+     PeepholeRule("""
+        ld   hl, hNoiseSfx
+        ld   [hl], $@@
+    """, read_enum("constants/sfx.asm", "NOISE_SFX_")),
 ]
 
 basepath = os.path.dirname(__file__)

@@ -87,7 +87,7 @@ func_007_4EFF::
     ld   hl, wEntitiesPosYTable                   ; $4F0A: $21 $10 $C2
     add  hl, bc                                   ; $4F0D: $09
     ld   [hl], $58                                ; $4F0E: $36 $58
-    call func_007_7CF0                            ; $4F10: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $4F10: $CD $F0 $7C
     call func_007_7D43                            ; $4F13: $CD $43 $7D
     ret  nc                                       ; $4F16: $D0
 
@@ -95,7 +95,7 @@ func_007_4EFF::
     jp   IncrementEntityState                     ; $4F1C: $C3 $12 $3B
 
 func_007_4F1F::
-    call func_007_7CF0                            ; $4F1F: $CD $F0 $7C
+    call PushLinkOutOfEntity_07                   ; $4F1F: $CD $F0 $7C
     ld   a, [wDialogState]                        ; $4F22: $FA $9F $C1
     and  a                                        ; $4F25: $A7
     jr   nz, ret_007_4F4D                         ; $4F26: $20 $25
@@ -107,7 +107,7 @@ func_007_4F1F::
     ld   a, $02                                   ; $4F2E: $3E $02
     ld   [wExchangingTradeSequenceItem], a        ; $4F30: $EA $7F $DB
     ld   hl, wOverworldRoomStatus + $87           ; $4F33: $21 $87 $D8
-    set  6, [hl]                                  ; $4F36: $CB $F6
+    set  OW_ROOM_STATUS_FLAG_UNKNOWN_6, [hl]      ; $4F36: $CB $F6
     call GetEntityTransitionCountdown             ; $4F38: $CD $05 $0C
     ld   [hl], $A0                                ; $4F3B: $36 $A0
     ld   a, JINGLE_TREASURE_FOUND                 ; $4F3D: $3E $01
@@ -166,7 +166,7 @@ func_007_4F56::
     call GetEntityTransitionCountdown             ; $4F91: $CD $05 $0C
     jr   nz, .jr_4FA5                             ; $4F94: $20 $0F
 
-    ld   a, MUSIC_TARIN_BEEHIVE                   ; $4F96: $3E $34
+    ld   a, MUSIC_TARIN_BEES                      ; $4F96: $3E $34
     ld   [wMusicTrackToPlay], a                   ; $4F98: $EA $68 $D3
     ldh  [hDefaultMusicTrack], a                  ; $4F9B: $E0 $B0
     call GetEntityTransitionCountdown             ; $4F9D: $CD $05 $0C

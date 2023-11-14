@@ -456,6 +456,7 @@ ELSE
     ld   hl, DialogBankTable                      ; $256C: $21 $41 $47
     add  hl, de                                   ; $256F: $19
     ld   a, [hl] ; bank                           ; $2570: $7E
+    ; Mask out DIALOG_UNSKIPPABLE flag
     and  $3F                                      ; $2571: $E6 $3F
     ld   [rSelectROMBank], a                      ; $2573: $EA $00 $21
     pop  hl                                       ; $2576: $E1
@@ -467,8 +468,10 @@ ENDC
     add  hl, de                                   ; $257F: $19
     ld   a, [hli]                                 ; $2580: $2A
     ld   e, a                                     ; $2581: $5F
+    ; Peek ahead and store the next character in
+    ; the dialog, for later use in DialogBreakHandler
     ld   a, [hl]                                  ; $2582: $7E
-    ld   [wC3C3], a ; upcoming character, used in code for the arrow ; $2583: $EA $C3 $C3
+    ld   [wDialogNextChar], a                     ; $2583: $EA $C3 $C3
     call ReloadSavedBank                          ; $2586: $CD $1D $08
     ld   a, e                                     ; $2589: $7B
     ldh  [hMultiPurpose0], a                      ; $258A: $E0 $D7
@@ -497,7 +500,7 @@ ENDC
     xor  a                                        ; $25A9: $AF
     ld   [wDrawCommand], a                        ; $25AA: $EA $01 $D6
 
-.label_25AD::
+.end
     ld   a, [wDialogState]                        ; $25AD: $FA $9F $C1
     ; Keep DIALOG_BOX_BOTTOM_FLAG
     and  $F0                                      ; $25B0: $E6 $F0
@@ -511,7 +514,7 @@ REPT 5
 IF CHARLEN("{THIEF_NAME}") < INDEX + 1
     db 0
 ELSE
-    db  CHARSUB("{THIEF_NAME}", INDEX + 1) + 1  ; $25B8
+    db CHARSUB("{THIEF_NAME}", INDEX + 1) + 1     ; $25B8
 ENDC
 INDEX = INDEX + 1
 ENDR
@@ -523,10 +526,10 @@ ENDR
     ld   a, [wDialogSFX]                          ; $25C2: $FA $AB $C5
     ld   d, a                                     ; $25C5: $57
     ld   e, $01                                   ; $25C6: $1E $01
-    cp   WAVE_SFX_TYPEWRITER                      ; $25C8: $FE $0F
+    cp   WAVE_SFX_TEXT_PRINT                      ; $25C8: $FE $0F
     jr   z, .handleFrequency                      ; $25CA: $28 $08
     ld   e, $07                                   ; $25CC: $1E $07
-    cp   WAVE_SFX_HOOT                            ; $25CE: $FE $19
+    cp   WAVE_SFX_OWL_HOOT                        ; $25CE: $FE $19
     jr   z, .handleFrequency                      ; $25D0: $28 $02
     ld   e, $03                                   ; $25D2: $1E $03
 .handleFrequency
@@ -559,8 +562,16 @@ ENDR
 .notThief
     add  hl, de                                   ; $25FF: $19
     ld   a, [hl]                                  ; $2600: $7E
+    ; Name characters are from NameEntryCharmap
+    ; which is ASCII + 1, so decrement it here to
+    ; convert it to DialogCharmap which is ASCII
     dec  a                                        ; $2601: $3D
-    cp   "@"                                      ; $2602: $FE $FF
+    ; Convert NameEntryCharmap space ($00) to
+    ; DialogCharmap/ASCII space ($20)
+    PUSHC
+    SETCHARMAP NameEntryCharmap
+    cp   " " - 1                                  ; $2602: $FE $FF
+    POPC
     jr   nz, .handleNameChar                      ; $2604: $20 $02
     ld   a, " "                                   ; $2606: $3E $20
 .handleNameChar
@@ -627,7 +638,7 @@ ENDC
     ld   a, DIALOG_DIACRITIC_1                    ; $2659: $3E $C9
     rr   e                                        ; $265B: $CB $1B
     jr   c, .handleDiacriticTile                  ; $265D: $38 $01
-    dec  a  ; DIALOG_DIACRITIC_2                  ; $265F: $3D
+    dec  a ; DIALOG_DIACRITIC_2                   ; $265F: $3D
 
 .handleDiacriticTile
     ldi  [hl], a                                  ; $2660: $22
@@ -635,6 +646,8 @@ ENDC
 
 .noDiacritic
     ld   a, [wDialogCharacterIndex]               ; $2663: $FA $70 $C1
+    ; increment character index
+    ; (add is used because inc doesn't set the carry flag)
     add  a, $01                                   ; $2666: $C6 $01
     ld   [wDialogCharacterIndex], a               ; $2668: $EA $70 $C1
     ld   a, [wDialogCharacterIndexHi]             ; $266B: $FA $64 $C1
@@ -642,36 +655,61 @@ ENDC
     ld   [wDialogCharacterIndexHi], a             ; $2670: $EA $64 $C1
     xor  a                                        ; $2673: $AF
     ld   [wDialogIsWaitingForButtonPress], a      ; $2674: $EA $CC $C1
+    ; check if we've filled the dialog box with 32 characters
     ld   a, [wDialogNextCharPosition]             ; $2677: $FA $71 $C1
     cp   $1F                                      ; $267A: $FE $1F
-    jr   z, label_268E                            ; $267C: $28 $10
+    jr   z, .dialogBoxFull                        ; $267C: $28 $10
 
-label_267E::
+.nextCharacter
     ld   a, [wDialogState]                        ; $267E: $FA $9F $C1
-    and  $F0                                      ; $2681: $E6 $F0
-    or   $06                                      ; $2683: $F6 $06
+    and  $F0 ; mask DIALOG_BOX_BOTTOM_FLAG        ; $2681: $E6 $F0
+    or   DIALOG_LETTER_IN_1                       ; $2683: $F6 $06
     ld   [wDialogState], a                        ; $2685: $EA $9F $C1
     ld   a, $00                                   ; $2688: $3E $00
     ld   [wDialogScrollDelay], a                  ; $268A: $EA $72 $C1
     ret                                           ; $268D: $C9
 
-label_268E::
+.dialogBoxFull
     jp   IncrementDialogStateAndReturn            ; $268E: $C3 $85 $24
 
-data_2691::
-    db $22, $42                                   ; $2691
+DialogBoxOrigin::
+    ; Background tile map address of the beginning of the
+    ; text in a dialog box (one line above regular text, to
+    ; make room for diacritics?)
+.low
+    db   $22 ; top
+    db   $42 ; bottom
+.high
+    db   $98 ; top
+    db   $99 ; bottom
 
-data_2693::
-    db $98, $99                                   ; $2693
-
+; Handle a break in the dialog, ie. the dialog box is full but
+; there is more text left to print (wDialogState == DIALOG_BREAK)
+; 
+; This routine checks the next character to see if it's more
+; text, and if so, display arrow and wait for the player to press A.
+;
+; If the next character instead is a terminating character like
+; "@" or "<ask>", then we don't have an actual break in the dialog.
+; This allows terminators to lie beyond the maximum line
+; length of 16 characters without starting a new line; otherwise
+; a final line of exactly 16 characters followed by "@" would print
+; an extra empty line.
+;
+; However, there's a potential bug here; the check for the terminator
+; is done after checking if two full lines of characters have been
+; printed, so it only triggers on even-numbered lines. Dialog ending
+; on an odd-numbered line will still print an empty line at the end.
 DialogBreakHandler::
+    ; @bug: This check should be done after the next two
+    ; checks for terminators to trigger on odd-numbered lines as well.
     ld   a, [wDialogCharacterIndex]               ; $2695: $FA $70 $C1
     and  $1F                                      ; $2698: $E6 $1F
-    jr   nz, .jp_26E1                             ; $269A: $20 $45
-    ld   a, [wC3C3]                               ; $269C: $FA $C3 $C3
-    cp   $FF                                      ; $269F: $FE $FF
-    jp   z, DialogDrawNextCharacterHandler.label_25AD ; $26A1: $CA $AD $25
-    cp   $FE                                      ; $26A4: $FE $FE
+    jr   nz, .buildDrawCommand                    ; $269A: $20 $45
+    ld   a, [wDialogNextChar]                     ; $269C: $FA $C3 $C3
+    cp   "@"                                      ; $269F: $FE $FF
+    jp   z, DialogDrawNextCharacterHandler.end    ; $26A1: $CA $AD $25
+    cp   "<ask>"                                  ; $26A4: $FE $FE
     jp   z, DialogDrawNextCharacterHandler.choice ; $26A6: $CA $95 $25
     ld   a, [wDialogIsWaitingForButtonPress]      ; $26A9: $FA $CC $C1
     and  a                                        ; $26AC: $A7
@@ -681,10 +719,10 @@ DialogBreakHandler::
     call DialogDrawNextCharacterHandler.endDialog ; $26B3: $CD $9F $25
 
 .dialogButtonPressHandler
-    call func_27BB                                ; $26B6: $CD $BB $27
+    call DrawDialogArrowTrampoline                ; $26B6: $CD $BB $27
     ldh  a, [hJoypadState]                        ; $26B9: $F0 $CC
     bit  J_BIT_A, a                               ; $26BB: $CB $67
-    jr   nz, .jp_26E1                             ; $26BD: $20 $22
+    jr   nz, .buildDrawCommand                    ; $26BD: $20 $22
     bit  J_BIT_B, a                               ; $26BF: $CB $6F
     jr   z, DialogScrollingStartHandler           ; $26C1: $28 $51
     ; The following code looks up whether the
@@ -710,7 +748,7 @@ ELSE
 ENDC
     jp   z, SkipDialog                            ; $26DE: $CA $8B $27
 
-.jp_26E1
+.buildDrawCommand
     ; Build a draw command for the dialog background
 
     ; e = (wDialogState == DIALOG_CLOSED ? 0 : 1)
@@ -722,12 +760,12 @@ ENDC
 .closed
 
     ld   d, $00                                   ; $26EB: $16 $00
-    ld   hl, data_2693                            ; $26ED: $21 $93 $26
+    ld   hl, DialogBoxOrigin.high                 ; $26ED: $21 $93 $26
     add  hl, de                                   ; $26F0: $19
     ld   a, [wBGOriginHigh]                       ; $26F1: $FA $2E $C1
     add  a, [hl]                                  ; $26F4: $86
     ld   [wDrawCommand.destinationHigh], a        ; $26F5: $EA $01 $D6
-    ld   hl, data_2691                            ; $26F8: $21 $91 $26
+    ld   hl, DialogBoxOrigin.low                  ; $26F8: $21 $91 $26
     add  hl, de                                   ; $26FB: $19
     ld   a, [wBGOriginLow]                        ; $26FC: $FA $2F $C1
     add  a, [hl]                                  ; $26FF: $86
@@ -738,7 +776,7 @@ ENDC
     ld   [wDrawCommand.length+ 1], a              ; $270A: $EA $04 $D6
     xor  a                                        ; $270D: $AF
     ld   [wDrawCommand.data + 1], a               ; $270E: $EA $05 $D6
-IF __PATCH_9__
+IF __OPTIMIZATIONS_2__
     jp   IncrementDialogState
 ELSE
     call IncrementDialogState                     ; $2711: $CD $85 $24
@@ -748,28 +786,34 @@ ENDC
 DialogScrollingStartHandler::
     ret                                           ; $2714: $C9
 
-data_2715::
-    db $62, $82                                   ; $2715
-
-data_2717::
-    db $98, $99                                   ; $2717
+DialogBoxMidOrigin::
+    ; The BG tile map address of the line inbetween
+    ; the first and second lines of text in a dialog box,
+    ; which is temporarily filled with the second line
+    ; when scrolling text after a break in the dialog
+.low
+    db   $62 ; top
+    db   $82 ; bottom                                  ; $2715
+.high
+    db   $98 ; top
+    db   $99 ; bottom                                  ; $2717
 
 ; Scroll dialog line?
 DialogBeginScrolling::
     ld   e, $00                                   ; $2719: $1E $00
     ld   a, [wDialogState]                        ; $271B: $FA $9F $C1
-    and  $80                                      ; $271E: $E6 $80
+    and  DIALOG_BOX_BOTTOM_FLAG                   ; $271E: $E6 $80
     jr   z, label_2723                            ; $2720: $28 $01
     inc  e                                        ; $2722: $1C
 
 label_2723::
     ld   d, $00                                   ; $2723: $16 $00
-    ld   hl, data_2717                            ; $2725: $21 $17 $27
+    ld   hl, DialogBoxMidOrigin.high              ; $2725: $21 $17 $27
     add  hl, de                                   ; $2728: $19
     ld   a, [wBGOriginHigh]                       ; $2729: $FA $2E $C1
     add  a, [hl]                                  ; $272C: $86
     ld   b, a                                     ; $272D: $47
-    ld   hl, data_2715                            ; $272E: $21 $15 $27
+    ld   hl, DialogBoxMidOrigin.low               ; $272E: $21 $15 $27
 
 label_2731::
     add  hl, de                                   ; $2731: $19
@@ -818,11 +862,15 @@ label_275D::
 DialogScrollingEndHandler::
     ret                                           ; $2768: $C9
 
-data_2769::
-    db $42, $62                                   ; $2769
-
-data_276B::
-    db $98, $99                                   ; $276B
+DialogBoxFirstLineOrigin::
+    ; Background tile map address of the beginning of the
+    ; actual first line text in a dialog box
+.low
+    db   $42 ; top
+    db   $62 ; bottom
+.high
+    db   $98 ; top
+    db   $99 ; bottom
 
 DialogFinishScrolling::
     ld   e, 0                                     ; $276D: $1E $00
@@ -833,14 +881,14 @@ DialogFinishScrolling::
 
 label_2777::
     ld   d, $00                                   ; $2777: $16 $00
-    ld   hl, data_276B                            ; $2779: $21 $6B $27
+    ld   hl, DialogBoxFirstLineOrigin.high        ; $2779: $21 $6B $27
     add  hl, de                                   ; $277C: $19
     ld   a, [wBGOriginHigh]                       ; $277D: $FA $2E $C1
     add  a, [hl]                                  ; $2780: $86
     ld   b, a                                     ; $2781: $47
-    ld   hl, data_2769                            ; $2782: $21 $69 $27
+    ld   hl, DialogBoxFirstLineOrigin.low         ; $2782: $21 $69 $27
     call label_2731                               ; $2785: $CD $31 $27
-    jp   label_267E                               ; $2788: $C3 $7E $26
+    jp   DialogDrawNextCharacterHandler.nextCharacter ; $2788: $C3 $7E $26
 
 SkipDialog::
     ld   a, $02                                   ; $278B: $3E $02
@@ -866,15 +914,15 @@ DialogChoiceHandler::
     ldh  a, [hFrameCounter]                       ; $27AA: $F0 $E7
     and  $10                                      ; $27AC: $E6 $10
     ret  z                                        ; $27AE: $C8
-    jpsb func_017_7DCC                            ; $27AF: $3E $17 $EA $00 $21 $C3 $CC $7D
+    jpsb DrawDialogChoiceMarker                   ; $27AF: $3E $17 $EA $00 $21 $C3 $CC $7D
 
 .jp_27B7
-IF __PATCH_9__
+IF __OPTIMIZATIONS_2__
     jp   UpdateDialogState
 ELSE
     call UpdateDialogState                        ; $27B7: $CD $96 $24
     ret                                           ; $27BA: $C9
 ENDC
 
-func_27BB::
-    jpsb func_017_7D7C                            ; $27BB: $3E $17 $EA $00 $21 $C3 $7C $7D
+DrawDialogArrowTrampoline::
+    jpsb DrawDialogArrow                          ; $27BB: $3E $17 $EA $00 $21 $C3 $7C $7D

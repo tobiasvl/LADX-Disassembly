@@ -308,7 +308,7 @@ func_999::
     ldi  [hl], a                                  ; $09C5: $22
     jr   RestoreStackedBankAndReturn              ; $09C6: $18 $AB
 
-IF !__PATCH_0__
+IF !__OPTIMIZATIONS_1__
 CheckPushedTombStone_trampoline::
     push af                                       ; $09C8: $F5
     callsb CheckPushedTombStone                   ; $09C9: $3E $20 $EA $00 $21 $CD $85 $49
@@ -469,9 +469,9 @@ RestoreStackedBank::
     call SwitchBank                               ; $0AB1: $CD $0C $08
     ret                                           ; $0AB4: $C9
 
-func_AB5::
+ChangeBGColumnPaletteAndExecuteDrawCommands::
     push af                                       ; $0AB5: $F5
-    callsb func_024_5C1A                          ; $0AB6: $3E $24 $EA $00 $21 $CD $1A $5C
+    callsb ChangeBGColumnPalette                  ; $0AB6: $3E $24 $EA $00 $21 $CD $1A $5C
     ld   de, wDrawCommand                         ; $0ABE: $11 $01 $D6
     call ExecuteDrawCommands                      ; $0AC1: $CD $27 $29
     jr   RestoreStackedBank                       ; $0AC4: $18 $EA
@@ -507,6 +507,7 @@ LoadPhotoBgMap_trampoline::
     ret                                           ; $0B0A: $C9
 
 IF __PATCH_3__
+; Unused code?
 func_036_72D5_trampoline::
     push af
     callsb func_036_72D5
@@ -551,11 +552,17 @@ CopyObjectsAttributesToWRAM2::
     ld   [rSelectROMBank], a                      ; $0B2B: $EA $00 $21
     ret                                           ; $0B2E: $C9
 
-; On GBC, copy some overworld objects to ram bank 2
+; On GBC, copy the overworld object at [hl] to ram bank 2.
+;
+; This is used when the inventory menu is exited to restore the background objects
+; as they were modified (i.e. cut grass, holes dug with the shovel, etc.)
+;
+;
 ; Inputs:
-;   a  data bank?
-;   hl destination in RAM bank 2
-func_2BF::
+;   a  bit7: If not set, check if the object at address hl is in a specific ignore list.
+;      bit0-6: Bank number to return to after this function is finished.
+;   hl source in RAM bank 0 and destination in RAM bank 2
+BackupObjectInRAM2::
     ldh  [hMultiPurpose2], a                      ; $0B2F: $E0 $D9
     ldh  a, [hIsGBC]                              ; $0B31: $F0 $FE
     and  a                                        ; $0B33: $A7
@@ -569,7 +576,7 @@ func_2BF::
     ldh  a, [hMultiPurpose2]                      ; $0B3B: $F0 $D9
     and  $80                                      ; $0B3D: $E6 $80
     jr   nz, .else                                ; $0B3F: $20 $0A
-    callsb func_020_6E50                          ; $0B41: $3E $20 $EA $00 $21 $CD $50 $6E
+    callsb CheckOverworldObjectIgnoreList         ; $0B41: $3E $20 $EA $00 $21 $CD $50 $6E
     jr   c, .endIf                                ; $0B49: $38 $09
 .else
     ld   b, [hl]                                  ; $0B4B: $46
@@ -610,11 +617,11 @@ CopyBGMapFromBank::
     ; hl += $168
     ld   de, $168                                 ; $0B72: $11 $68 $01
     add  hl, de                                   ; $0B75: $19
-    ; Switch to RAM bank 1
+    ; Switch to VRAM bank 1
     ld   a, $01                                   ; $0B76: $3E $01
     ld   [rVBK], a                                ; $0B78: $E0 $4F
     call CopyToBGMap0                             ; $0B7A: $CD $96 $0B
-    ; Switch back to RAM bank 0
+    ; Switch back to VRAM bank 0
     xor  a                                        ; $0B7D: $AF
     ld   [rVBK], a                                ; $0B7E: $E0 $4F
 .gbcEnd
@@ -803,7 +810,7 @@ CopySirenInstrumentTiles::
 
 PlayBombExplosionSfx::
     ld   hl, hNoiseSfx                            ; $0C4B: $21 $F4 $FF
-    ld   [hl], NOISE_SFX_BOMB_EXPLOSION           ; $0C4E: $36 $0C
+    ld   [hl], NOISE_SFX_EXPLOSION                ; $0C4E: $36 $0C
 
 func_C50::
     ld   hl, wC502                                ; $0C50: $21 $02 $C5
@@ -1280,17 +1287,26 @@ ExecuteGameplayHandler::
     jr   nz, jumpToGameplayHandler                ; $0E44: $20 $3F
 
 presentSaveScreenIfNeeded::
-    ; If a indoor/outdoor transition is running
+    ; If a indoor/outdoor transition is running...
     ld   a, [wTransitionSequenceCounter]          ; $0E46: $FA $6B $C1
     cp   $04                                      ; $0E49: $FE $04
+    ; ...don't open the save screen.
     jr   nz, jumpToGameplayHandler                ; $0E4B: $20 $38
 
-    ; If a dialog is visible, or the screen is animating from one map to another
+    ; If a dialog is visible...
     ld   a, [wDialogState]                        ; $0E4D: $FA $9F $C1
+    ; ...or wC167 is non-zero...
     ld   hl, wC167                                ; $0E50: $21 $67 $C1
     or   [hl]                                     ; $0E53: $B6
+    ; ...or the screen is currently scrolling from one room to another...
+    ;
+    ; (POI: This last check was added in 1.1 of the non-DX version of the game,
+    ; and patches the screen warp glitch. However, removing this check doesn't
+    ; re-introduce the glitch into the DX version, perhaps because of another
+    ; check somewhere else.)
     ld   hl, wRoomTransitionState                 ; $0E54: $21 $24 $C1
     or   [hl]                                     ; $0E57: $B6
+    ; ...don't open the save screen.
     jr   nz, jumpToGameplayHandler                ; $0E58: $20 $2B
 
     ; If GameplayType > INVENTORY (i.e. photo album and pictures)
@@ -1546,7 +1562,7 @@ WorldInteractiveHandler::
     dec  e                                        ; $1009: $1D
 
 .label_100A
-    callsb func_020_5C9C                          ; $100A: $3E $20 $EA $00 $21 $CD $9C $5C
+    callsb DrawInventorySlots                     ; $100A: $3E $20 $EA $00 $21 $CD $9C $5C
 
 label_1012::
     callsw func_014_54F8                          ; $1012: $3E $14 $CD $0C $08 $CD $F8 $54
@@ -1626,10 +1642,10 @@ ApplyGotItem::
 
 InitGotItemSequence::
     ldh  a, [hPressedButtonsMask]                 ; $107F: $F0 $CB
-    and  $B0                                      ; $1081: $E6 $B0
+    and  J_A | J_B | J_START                      ; $1081: $E6 $B0
     jr   nz, .jp_10DB                             ; $1083: $20 $56
     ldh  a, [hPressedButtonsMask]                 ; $1085: $F0 $CB
-    and  $40                                      ; $1087: $E6 $40
+    and  J_SELECT                                 ; $1087: $E6 $40
     jr   z, .jp_10DB                              ; $1089: $28 $50
     ld   a, [wD45F]                               ; $108B: $FA $5F $D4
     inc  a                                        ; $108E: $3C
@@ -1714,7 +1730,7 @@ InitGotItemSequence::
     xor  a                                        ; $111F: $AF
     ld   [wInvincibilityCounter], a               ; $1120: $EA $C7 $DB
     ldh  [hLinkPhysicsModifier], a                ; $1123: $E0 $9C
-    ld   [wDDD6], a                               ; $1125: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $1125: $EA $D6 $DD
     ld   [wDDD7], a                               ; $1128: $EA $D7 $DD
     ld   [wD464], a                               ; $112B: $EA $64 $D4
     call label_27F2                               ; $112E: $CD $F2 $27
@@ -1813,7 +1829,7 @@ UseShield::
     ret                                           ; $12F7: $C9
 
 UseShovel::
-    ld   a, [wC1C7]                               ; $12F8: $FA $C7 $C1
+    ld   a, [wLinkUsingShovel]                    ; $12F8: $FA $C7 $C1
     ld   hl, wIsLinkInTheAir                      ; $12FB: $21 $46 $C1
     or   [hl]                                     ; $12FE: $B6
     ret  nz                                       ; $12FF: $C0
@@ -1826,7 +1842,7 @@ UseShovel::
     jr   .endIf                                   ; $1309: $18 $04
 
 .notPoking
-    ld   a, NOISE_SFX_SHOWEL_DIG                  ; $130B: $3E $0E
+    ld   a, NOISE_SFX_SHOVEL_DIG                  ; $130B: $3E $0E
     ldh  [hNoiseSfx], a                           ; $130D: $E0 $F4
 .endIf
 
@@ -1835,9 +1851,9 @@ IF __PATCH_0__
 ENDC
 
     ld   a, $01                                   ; $130F: $3E $01
-    ld   [wC1C7], a                               ; $1311: $EA $C7 $C1
+    ld   [wLinkUsingShovel], a                    ; $1311: $EA $C7 $C1
     xor  a                                        ; $1314: $AF
-    ld   [wC1C8], a                               ; $1315: $EA $C8 $C1
+    ld   [wLinkUsingShovelTimer], a               ; $1315: $EA $C8 $C1
     ret                                           ; $1318: $C9
 
 UseHookshot::
@@ -1986,7 +2002,7 @@ ShootArrow::
     jr   .setBombArrowCooldown                    ; $13FF: $18 $06
 
 .initBombArrowCooldown
-    ld   a, NOISE_SFX_SHOOT_ARROW                 ; $1401: $3E $0A
+    ld   a, NOISE_SFX_WHOOSH                      ; $1401: $3E $0A
     ldh  [hNoiseSfx], a                           ; $1403: $E0 $F4
     ld   a, BOMB_ARROW_COOLDOWN                   ; $1405: $3E $06
 
@@ -2181,7 +2197,7 @@ UseRocsFeather::
     ret                                           ; $1523: $C9
 
 SwordRandomSfxTable::
-    db   NOISE_SFX_SWORD_A, NOISE_SFX_SWORD_B, NOISE_SFX_SWORD_C, NOISE_SFX_SWORD_D ; $1524
+    db   NOISE_SFX_SWORD_SWING_A, NOISE_SFX_SWORD_SWING_B, NOISE_SFX_SWORD_SWING_C, NOISE_SFX_SWORD_SWING_D ; $1524
 
 UseSword::
     ld   a, [wC16D]                               ; $1528: $FA $6D $C1
@@ -2381,7 +2397,7 @@ label_1637::
     ld   [wC16D], a                               ; $1650: $EA $6D $C1
 
 label_1653::
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $1653: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $1653: $3E $05
     call SpawnPlayerProjectile                    ; $1655: $CD $2F $14
     jr   c, .dropRandomItem                       ; $1658: $38 $22
 
@@ -2495,7 +2511,7 @@ CheckItemsSwordCollision::
     ret                                           ; $16F7: $C9
 
 .label_16F8
-    ld   a, $17                                   ; $16F8: $3E $17
+    ld   a, NOISE_SFX_CLINK                       ; $16F8: $3E $17
     ldh  [hNoiseSfx], a                           ; $16FA: $E0 $F4
     ret                                           ; $16FC: $C9
 
@@ -2604,7 +2620,7 @@ DisplayTransientVfxForLinkRunning::
 .shallowWater
     ldh  a, [hLinkPositionY]                      ; $1781: $F0 $99
     ldh  [hMultiPurpose1], a                      ; $1783: $E0 $D8
-    ld   a, JINGLE_WATER_DIVE                     ; $1785: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $1785: $3E $0E
     ldh  [hJingle], a                             ; $1787: $E0 $F2
     ld   a, TRANSCIENT_VFX_PEGASUS_SPLASH         ; $1789: $3E $0C
     jp   AddTranscientVfx                         ; $178B: $C3 $C7 $0C
@@ -2726,7 +2742,7 @@ LinkMotionMapFadeOutHandler::
     ldh  [hBaseScrollX], a                        ; $185B: $E0 $96
     ldh  [hBaseScrollY], a                        ; $185D: $E0 $97
     ldh  [hDungeonTitleMessageCountdown], a       ; $185F: $E0 $B4
-    ld   [wDDD6], a                               ; $1861: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $1861: $EA $D6 $DD
     ld   [wDDD7], a                               ; $1864: $EA $D7 $DD
 
     ld   e, $10                                   ; $1867: $1E $10
@@ -2885,7 +2901,7 @@ LinkMotionMapFadeOutHandler::
     ld   a, $30                                   ; $1963: $3E $30
     ldh  [hDungeonTitleMessageCountdown], a       ; $1965: $E0 $B4
     xor  a                                        ; $1967: $AF
-    ld   [hSwitchBlocksState], a                  ; $1968: $EA $FB $D6
+    ld   [wSwitchBlocksState], a                  ; $1968: $EA $FB $D6
     ld   [wSwitchableObjectAnimationStage], a     ; $196B: $EA $F8 $D6
 
 .label_196E
@@ -2951,7 +2967,7 @@ LinkMotionMapFadeOutHandler::
 ; or starting after a game over.
 SetSpawnLocation::
     ; Initialize counter
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     xor  a
 ELSE
     ld   a, $00                                   ; $19C2: $3E $00
@@ -3001,7 +3017,7 @@ LinkMotionMapFadeInHandler::
     call func_1A39                                ; $19FC: $CD $39 $1A
     ld   a, [wTransitionSequenceCounter]          ; $19FF: $FA $6B $C1
     cp   $04                                      ; $1A02: $FE $04
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jr   nz, .return                              ; $1A04: $20 $1B
@@ -3017,7 +3033,7 @@ ENDC
     ld   [wLinkMotionState], a                    ; $1A0F: $EA $1C $C1
     ld   a, [wDidStealItem]                       ; $1A12: $FA $7E $D4
     and  a                                        ; $1A15: $A7
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  z
 ELSE
     jr   z, .return                               ; $1A16: $28 $09
@@ -3026,7 +3042,7 @@ ENDC
     ld   [wDidStealItem], a                       ; $1A19: $EA $7E $D4
     jp_open_dialog Dialog036                      ; $1A1C: $3E $36 $C3 $85 $23
 
-IF !__PATCH_0__
+IF !__OPTIMIZATIONS_1__
 .return
     ret                                           ; $1A21: $C9
 ENDC
@@ -3034,7 +3050,8 @@ ENDC
 
 func_1A22::
     callsb func_020_6C4F                          ; $1A22: $3E $20 $EA $00 $21 $CD $4F $6C
-    callsb func_020_55CA                          ; $1A2A: $3E $20 $EA $00 $21 $CD $CA $55
+    callsb FadeOutMusic                           ; $1A2A: $3E $20 $EA $00 $21 $CD $CA $55
+    ; Return to previous ROM bank callsite
     ld   a, [wCurrentBank]                        ; $1A32: $FA $AF $DB
     ld   [rSelectROMBank], a                      ; $1A35: $EA $00 $21
     ret                                           ; $1A38: $C9
@@ -3042,6 +3059,7 @@ func_1A22::
 func_1A39::
     callsb func_020_6C7A                          ; $1A39: $3E $20 $EA $00 $21 $CD $7A $6C
     callsb func_020_563B                          ; $1A41: $3E $20 $EA $00 $21 $CD $3B $56
+    ; Return to previous ROM bank callsite
     ld   a, [wCurrentBank]                        ; $1A49: $FA $AF $DB
     ld   [rSelectROMBank], a                      ; $1A4C: $EA $00 $21
     ret                                           ; $1A4F: $C9
@@ -3301,8 +3319,8 @@ UpdateSwitchBlockTiles::
     ld   hl, hLinkInteractiveMotionBlocked        ; $1EE1: $21 $A1 $FF
     ld   [hl], $01                                ; $1EE4: $36 $01
 
-    ; de = [hSwitchBlocksState]
-    ld   hl, hSwitchBlocksState                   ; $1EE6: $21 $FB $D6
+    ; de = [wSwitchBlocksState]
+    ld   hl, wSwitchBlocksState                   ; $1EE6: $21 $FB $D6
     ld   e, [hl]                                  ; $1EE9: $5E
     ld   d, $00                                   ; $1EEA: $16 $00
     inc  a                                        ; $1EEC: $3C
@@ -3310,11 +3328,11 @@ UpdateSwitchBlockTiles::
     ; On stage 3…
     cp   03                                       ; $1EED: $FE $03
     jr   nz, .stage3End                           ; $1EEF: $20 $0A
-    ; Invert second bit of hSwitchBlocksState (toggle between 0 and 2)
+    ; Invert second bit of wSwitchBlocksState (toggle between 0 and 2)
     push af                                       ; $1EF1: $F5
-    ld   a, [hSwitchBlocksState]                  ; $1EF2: $FA $FB $D6
+    ld   a, [wSwitchBlocksState]                  ; $1EF2: $FA $FB $D6
     xor  $02                                      ; $1EF5: $EE $02
-    ld   [hSwitchBlocksState], a                  ; $1EF7: $EA $FB $D6
+    ld   [wSwitchBlocksState], a                  ; $1EF7: $EA $FB $D6
     pop  af                                       ; $1EFA: $F1
 .stage3End
 
@@ -3405,7 +3423,7 @@ LinkDirectionToLinkAnimationState_2::
 .up:    db  LINK_ANIMATION_STATE_UNKNOWN_3A
 .down:  db  LINK_ANIMATION_STATE_UNKNOWN_3C                       ; $1F51
 
-data_1F55::
+LinkDirectionToLiftDirectionButton::
     db   2, 1, 8, 4                               ; $1F55
 
 data_1F59::
@@ -3432,7 +3450,7 @@ label_1F69::
     or   [hl]                                     ; $1F73: $B6
     ld   hl, wLinkMotionState                     ; $1F74: $21 $1C $C1
     or   [hl]                                     ; $1F77: $B6
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jp   nz, func_2165.return                     ; $1F78: $C2 $77 $21
@@ -3668,7 +3686,7 @@ ENDC
 
 .specialCasesEnd
 
-    ld   a, [wBButtonSlot]                        ; $20CF: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $20CF: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $20D2: $FE $03
     jr   nz, .jr_20DD                             ; $20D4: $20 $07
     ldh  a, [hPressedButtonsMask]                 ; $20D6: $F0 $CB
@@ -3677,16 +3695,16 @@ ENDC
     ret                                           ; $20DC: $C9
 
 .jr_20DD
-    ld   a, [wAButtonSlot]                        ; $20DD: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $20DD: $FA $01 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $20E0: $FE $03
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jp   nz, func_2165.return                     ; $20E2: $C2 $77 $21
 ENDC
     ldh  a, [hPressedButtonsMask]                 ; $20E5: $F0 $CB
     and  J_A                                      ; $20E7: $E6 $10
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  z
 ELSE
     jp   z, func_2165.return                      ; $20E9: $CA $77 $21
@@ -3704,7 +3722,7 @@ ENDC
     add  hl, de                                   ; $2100: $19
     ld   a, [hl]                                  ; $2101: $7E
     ldh  [hLinkAnimationState], a                 ; $2102: $E0 $9D
-    ld   hl, data_1F55                            ; $2104: $21 $55 $1F
+    ld   hl, LinkDirectionToLiftDirectionButton   ; $2104: $21 $55 $1F
     add  hl, de                                   ; $2107: $19
     ldh  a, [hPressedButtonsMask]                 ; $2108: $F0 $CB
     and  [hl]                                     ; $210A: $A6
@@ -3730,7 +3748,7 @@ ENDC
     inc  [hl]                                     ; $212F: $34
     ld   a, [hl]                                  ; $2130: $7E
     cp   e                                        ; $2131: $BB
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  c
 ELSE
     jr   c, .return                               ; $2132: $38 $19
@@ -3744,7 +3762,7 @@ ENDC
     jr   z, .jr_2153                              ; $213F: $28 $12
     ld   a, [wIsIndoor]                           ; $2141: $FA $A5 $DB
     and  a                                        ; $2144: $A7
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  nz
 ELSE
     jr   nz, .return                              ; $2145: $20 $06
@@ -3780,7 +3798,7 @@ func_2165::
     ld   [wC15D], a                               ; $2171: $EA $5D $C1
     jp   label_2183                               ; $2174: $C3 $83 $21
 
-IF !__PATCH_0__
+IF !__OPTIMIZATIONS_1__
 .return
     ret                                           ; $2177: $C9
 ENDC
@@ -3790,16 +3808,16 @@ func_014_5526_trampoline::
     jp   ReloadSavedBank                          ; $2180: $C3 $1D $08
 
 label_2183::
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $2183: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $2183: $3E $05
     call SpawnPlayerProjectile                    ; $2185: $CD $2F $14
 
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ret  c
 ELSE
-    jr   c, label_21A7                            ; $2188: $38 $1D
+    jr   c, .return                               ; $2188: $38 $1D
 ENDC
 
-    ld   a, WAVE_SFX_ZIP                          ; $218A: $3E $02
+    ld   a, WAVE_SFX_LIFT_UP                      ; $218A: $3E $02
     ldh  [hWaveSfx], a                            ; $218C: $E0 $F3
 
     ld   hl, wEntitiesStatusTable                 ; $218E: $21 $80 $C2
@@ -3814,8 +3832,8 @@ ENDC
     ld   e, $01                                   ; $219D: $1E $01
     jpsw func_003_5795                            ; $219F: $3E $03 $CD $0C $08 $C3 $95 $57
 
-IF !__PATCH_0__
-label_21A7::
+IF !__OPTIMIZATIONS_1__
+.return
     ret                                           ; $21A7: $C9
 ENDC
 
@@ -4014,18 +4032,18 @@ DoUpdateBGRegion::
     ld   b, $00                                   ; $224C: $06 $00
     ld   c, [hl]                                  ; $224E: $4E
 
-    ; If running on GBC…
+    ; When on the GBC Overworld, read the object value from WRAM2 instead
+    ; (See BackupObjectInRAM2)
     ldh  a, [hIsGBC]                              ; $224F: $F0 $FE
     and  a                                        ; $2251: $A7
     jr   z, .ramSwitchEnd                         ; $2252: $28 $0E
-    ; … and is indoor…
     ld   a, [wIsIndoor]                           ; $2254: $FA $A5 $DB
     and  a                                        ; $2257: $A7
     jr   nz, .ramSwitchEnd                        ; $2258: $20 $08
-    ; … switch to RAM Bank 2,
+    ; Switch to RAM Bank 2,
     ld   a, $02                                   ; $225A: $3E $02
     ld   [rSVBK], a                               ; $225C: $E0 $70
-    ; read hl,
+    ; read the object value,
     ld   c, [hl]                                  ; $225E: $4E
     ; switch back to RAM Bank 0.
     xor  a                                        ; $225F: $AF
@@ -5046,9 +5064,9 @@ LoadIntroSequenceTiles::
 ; Copy title screen tiles to tiles memory
 LoadTitleScreenTiles::
     ; Load title logo
-    ld   a, BANK(TitleLogoTitles)                 ; $2DA7: $3E $0F
+    ld   a, BANK(TitleLogoTiles)                  ; $2DA7: $3E $0F
     call SwitchAdjustedBank                       ; $2DA9: $CD $13 $08
-    ld   hl, TitleLogoTitles                      ; $2DAC: $21 $00 $49
+    ld   hl, TitleLogoTiles                       ; $2DAC: $21 $00 $49
     ld   de, vTiles1                              ; $2DAF: $11 $00 $88
     ld   bc, TILE_SIZE * $70                      ; $2DB2: $01 $00 $07
     call CopyData                                 ; $2DB5: $CD $14 $29
@@ -5059,11 +5077,11 @@ LoadTitleScreenTiles::
 
     ldh  a, [hIsGBC]                              ; $2DBD: $F0 $FE
     and  a                                        ; $2DBF: $A7
-    jr   nz, .dxTilesDMG                          ; $2DC0: $20 $05
-    ld   hl, TitleDXTilesCGB                      ; $2DC2: $21 $00 $5C
+    jr   nz, .dxTilesCGB                          ; $2DC0: $20 $05
+    ld   hl, TitleDXTilesDMG                      ; $2DC2: $21 $00 $5C
     jr   .dxTilesEnd                              ; $2DC5: $18 $03
-.dxTilesDMG
-    ld   hl, TitleDXTilesDMG                      ; $2DC7: $21 $00 $58
+.dxTilesCGB
+    ld   hl, TitleDXTilesCGB                      ; $2DC7: $21 $00 $58
 .dxTilesEnd
 
     ld   de, vTiles0 + $400                       ; $2DCA: $11 $00 $84
@@ -5352,7 +5370,7 @@ LoadRoomSpecificTiles::
     jr   nz, .skipBGLoading                       ; $2F55: $20 $12
 .notColorDungeon
 
-    ld   hl, Dungeons2Tiles                       ; $2F57: $21 $00 $50
+    ld   hl, IndoorTiles                          ; $2F57: $21 $00 $50
     ldh  a, [hWorldTileset]                       ; $2F5A: $F0 $94
     cp   W_TILESET_NO_UPDATE                      ; $2F5C: $FE $FF
     jr   z, .skipBGLoading                        ; $2F5E: $28 $09
@@ -5858,7 +5876,7 @@ LoadRoom::
     cp   ROOM_INDOOR_A_GORIYA                     ; $3195: $FE $F5
     jr   nz, .goriyaRoomEnd                       ; $3197: $20 $0D
     ld   a, [wTradeSequenceItem]                  ; $3199: $FA $0E $DB
-    cp   INVENTORY_MAGNIFYING_GLASS               ; $319C: $FE $0E
+    cp   TRADING_ITEM_MAGNIFYING_LENS             ; $319C: $FE $0E
     jr   nz, .goriyaRoomEnd                       ; $319E: $20 $06
     ld   bc, IndoorsAF5Alt                        ; $31A0: $01 $55 $78
     jp   .parseRoomHeader                         ; $31A3: $C3 $3A $32
@@ -6700,7 +6718,7 @@ label_3527::
     ld   a, $1A                                   ; $3527: $3E $1A
 
 label_3529::
-    call func_2BF                                 ; $3529: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $3529: $CD $2F $0B
     ret                                           ; $352C: $C9
 
 ; Copy an object from the room data to the active room
@@ -6864,7 +6882,7 @@ label_35CB::
 
 label_35E8::
     ld   a, $24                                   ; $35E8: $3E $24
-    call func_2BF                                 ; $35EA: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $35EA: $CD $2F $0B
     ret                                           ; $35ED: $C9
 
 label_35EE::

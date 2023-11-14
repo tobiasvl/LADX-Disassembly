@@ -762,7 +762,7 @@ func_017_4839::
     cp   $C0                                      ; $483D: $FE $C0
     jr   c, .jr_4846                              ; $483F: $38 $05
 
-    ld   a, $0F                                   ; $4841: $3E $0F
+    ld   a, NOISE_SFX_SEA_WAVES                   ; $4841: $3E $0F
     ldh  [hNoiseSfx], a                           ; $4843: $E0 $F4
     xor  a                                        ; $4845: $AF
 
@@ -1212,7 +1212,7 @@ label_017_4C22:
     res  LCDCB_BG9C00, [hl]                       ; $4C43: $CB $9E
     call ResetCreditsSceneVariables               ; $4C45: $CD $A5 $4D
     call IncrementCreditsGameplaySubtype          ; $4C48: $CD $5B $4C
-    ld   a, MUSIC_MEETING_WINDFISH                ; $4C4B: $3E $59
+    ld   a, MUSIC_WIND_FISH                       ; $4C4B: $3E $59
     ld   [wMusicTrackToPlay], a                   ; $4C4D: $EA $68 $D3
     ld   a, $40                                   ; $4C50: $3E $40
     ld   [wD006], a                               ; $4C52: $EA $06 $D0
@@ -1645,7 +1645,7 @@ CreditsWindFishPrepare3Handler::
     ld   [wTransitionGfx], a                      ; $50EC: $EA $7F $C1
     ld   a, $09                                   ; $50EF: $3E $09
     ld   [wCreditsSubscene], a                    ; $50F1: $EA $0E $D0
-    ld   a, $1F                                   ; $50F4: $3E $1F
+    ld   a, WAVE_SFX_WIND_FISH_MORPH              ; $50F4: $3E $1F
     ldh  [hWaveSfx], a                            ; $50F6: $E0 $F3
     ret                                           ; $50F8: $C9
 
@@ -1864,7 +1864,7 @@ CreditsWindFishFloatingHandler::
 
 CreditsOpenWindFishDialog::
     call CreditsOpenDialog                        ; $53EB: $CD $F0 $7C
-    ld   a, WAVE_SFX_WIND_FISH                    ; $53EE: $3E $17
+    ld   a, WAVE_SFX_WIND_FISH_CRY                ; $53EE: $3E $17
     ldh  [hWaveSfx], a                            ; $53F0: $E0 $F3
 
 ret_017_53F2:
@@ -1893,7 +1893,7 @@ CreditsWindFishPrepareDisapparitionHandler::
     ld   [wD005], a                               ; $540E: $EA $05 $D0
     ld   a, $50                                   ; $5411: $3E $50
     ld   [wD006], a                               ; $5413: $EA $06 $D0
-    ld   a, $1F                                   ; $5416: $3E $1F
+    ld   a, WAVE_SFX_WIND_FISH_MORPH              ; $5416: $3E $1F
     ldh  [hWaveSfx], a                            ; $5418: $E0 $F3
     call IncrementCreditsSubscene                 ; $541A: $CD $D9 $4C
 
@@ -1980,7 +1980,7 @@ CreditsWindFishDisappearedHandler::
     cp   $0A                                      ; $54C4: $FE $0A
     jr   nz, .jr_54D5                             ; $54C6: $20 $0D
 
-    ; Open the "Play the intruments!" dialog
+    ; Open the "Play the instruments!" dialog
     ld_dialog_low a, Dialog0D2                    ; $54C8: $3E $D2
     call CreditsOpenWindFishDialog                ; $54CA: $CD $EB $53
     ld   a, $27                                   ; $54CD: $3E $27
@@ -2093,7 +2093,7 @@ CreditsLinkPreparesToPlayHandler::
 
     ld   a, LINK_ANIMATION_STATE_STANDING_UP      ; $5571: $3E $04
     ldh  [hLinkAnimationState], a                 ; $5573: $E0 $9D
-    ld   a, MUSIC_WIND_FISH_AWAKENS               ; $5575: $3E $3F
+    ld   a, MUSIC_ISLAND_DISAPPEAR                ; $5575: $3E $3F
     ld   [wMusicTrackToPlay], a                   ; $5577: $EA $68 $D3
 
 jr_017_557A:
@@ -2146,7 +2146,7 @@ jr_017_557A:
     ld   [hl], $03                                ; $55C7: $36 $03
     ld   hl, wEntitiesPhysicsFlagsTable           ; $55C9: $21 $40 $C3
     add  hl, de                                   ; $55CC: $19
-    ld   [hl], $C2                                ; $55CD: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $55CD: $36 $C2
     ld   hl, wEntitiesDropTimerTable              ; $55CF: $21 $50 $C4
     add  hl, de                                   ; $55D2: $19
     ld   [hl], $20                                ; $55D3: $36 $20
@@ -2170,7 +2170,7 @@ CreditsLinkShowsInstrumentsHandler::
     jr   nz, .jr_55F6                             ; $55EF: $20 $05
 
     ld   hl, hJingle                              ; $55F1: $21 $F2 $FF
-    ld   [hl], JINGLE_SHOW_INSTRUMENTS            ; $55F4: $36 $34
+    ld   [hl], JINGLE_INSTRUMENTS_APPEAR          ; $55F4: $36 $34
 
 .jr_55F6
     and  a                                        ; $55F6: $A7
@@ -2678,7 +2678,7 @@ func_017_590B::
     jr   nz, .jr_5917                             ; $5910: $20 $05
 
     ld   hl, hNoiseSfx                            ; $5912: $21 $F4 $FF
-    ld   [hl], $35                                ; $5915: $36 $35
+    ld   [hl], NOISE_SFX_ISLAND_DISAPPEAR         ; $5915: $36 $35
 
 .jr_5917
     and  a                                        ; $5917: $A7
@@ -2907,14 +2907,14 @@ func_017_5A66::
     ld   a, $50                                   ; $5AAF: $3E $50
     ldh  [hLinkPositionX], a                      ; $5AB1: $E0 $98
     ld   hl, wLCDControl                          ; $5AB3: $21 $FD $D6
-    set  3, [hl]                                  ; $5AB6: $CB $DE
+    set  LCDCB_BG9C00, [hl]                       ; $5AB6: $CB $DE
     ld   a, $A0                                   ; $5AB8: $3E $A0
     ld   [wD006], a                               ; $5ABA: $EA $06 $D0
     ld   a, $FF                                   ; $5ABD: $3E $FF
     ld   [wBGPalette], a                          ; $5ABF: $EA $97 $DB
     ld   a, $5C                                   ; $5AC2: $3E $5C
     ldh  [hLinkPositionY], a                      ; $5AC4: $E0 $99
-    ld   a, $34                                   ; $5AC6: $3E $34
+    ld   a, NOISE_SFX_WATERSPOUT                  ; $5AC6: $3E $34
     ldh  [hNoiseSfx], a                           ; $5AC8: $E0 $F4
 
     jp   IncrementD000AndReturn                   ; $5ACA: $C3 $25 $56
@@ -3339,7 +3339,7 @@ CreditsWaterNoiseFadingOutHandler::
     ld   a, $80                                   ; $6037: $3E $80
     ld   [wD466], a                               ; $6039: $EA $66 $D4
     ld   hl, wLCDControl                          ; $603C: $21 $FD $D6
-    res  3, [hl]                                  ; $603F: $CB $9E
+    res  LCDCB_BG9C00, [hl]                       ; $603F: $CB $9E
     ld   hl, wGameplaySubtype                     ; $6041: $21 $96 $DB
     inc  [hl]                                     ; $6044: $34
 
@@ -3764,7 +3764,7 @@ func_017_629E::
     add  hl, de                                   ; $6341: $19
     ld   [hl], $11                                ; $6342: $36 $11
     ld   hl, wLCDControl                          ; $6344: $21 $FD $D6
-    res  2, [hl]                                  ; $6347: $CB $96
+    res  LCDCB_OBJ16, [hl]                        ; $6347: $CB $96
     jp   IncrementCreditsSubscene                 ; $6349: $C3 $D9 $4C
 
 Data_017_634C::
@@ -3986,7 +3986,7 @@ TransitionToNextEndingScene::
 
     ; Set OAM size to 8x16
     ld   hl, wLCDControl                          ; $650D: $21 $FD $D6
-    set  2, [hl]                                  ; $6510: $CB $D6
+    set  LCDCB_OBJ16, [hl]                        ; $6510: $CB $D6
 
     ld   hl, wGameplaySubtype                     ; $6512: $21 $96 $DB
     inc  [hl]                                     ; $6515: $34
@@ -4877,7 +4877,7 @@ CreditsRollLoadHandler::
     ld   a, $01                                   ; $6E96: $3E $01
     ld   [wPaletteUnknownE], a                    ; $6E98: $EA $D5 $DD
     ld   hl, wLCDControl                          ; $6E9B: $21 $FD $D6
-    res  2, [hl]                                  ; $6E9E: $CB $96
+    res  LCDCB_OBJ16, [hl]                        ; $6E9E: $CB $96
     jp   IncrementCreditsSubscene                 ; $6EA0: $C3 $D9 $4C
 
 CreditsRoll1Handler::
@@ -5537,7 +5537,7 @@ Data_017_7521::
 func_017_7545::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7545: $21 $40 $C3
     add  hl, bc                                   ; $7548: $09
-    ld   [hl], $C3                                ; $7549: $36 $C3
+    ld   [hl], 3 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $7549: $36 $C3
     ldh  a, [hActiveEntitySpriteVariant]          ; $754B: $F0 $F1
     rla                                           ; $754D: $17
     rla                                           ; $754E: $17
@@ -5604,7 +5604,7 @@ func_017_75AA::
 .jr_75D7
     ld   [hl], $C0                                ; $75D7: $36 $C0
     call IncrementEntityState                     ; $75D9: $CD $12 $3B
-    ld   a, $17                                   ; $75DC: $3E $17
+    ld   a, WAVE_SFX_WIND_FISH_CRY                ; $75DC: $3E $17
     ldh  [hWaveSfx], a                            ; $75DE: $E0 $F3
 
 ret_017_75E0:
@@ -5727,7 +5727,7 @@ Data_017_774B::
 func_017_7757::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7757: $21 $40 $C3
     add  hl, bc                                   ; $775A: $09
-    ld   [hl], $C3                                ; $775B: $36 $C3
+    ld   [hl], 3 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $775B: $36 $C3
     ld   hl, Data_017_774B                        ; $775D: $21 $4B $77
     ld   c, $03                                   ; $7760: $0E $03
     call RenderActiveEntitySpritesRect            ; $7762: $CD $E6 $3C
@@ -5757,7 +5757,7 @@ func_017_7772::
 jr_017_7784:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7784: $21 $40 $C3
     add  hl, bc                                   ; $7787: $09
-    ld   [hl], $C1                                ; $7788: $36 $C1
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $7788: $36 $C1
     ld   hl, wEntitiesSpeedXTable                 ; $778A: $21 $40 $C2
     add  hl, bc                                   ; $778D: $09
     ld   a, [hl]                                  ; $778E: $7E
@@ -5851,7 +5851,7 @@ Data_017_7838::
 func_017_783C::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $783C: $21 $40 $C3
     add  hl, bc                                   ; $783F: $09
-    ld   [hl], $C1                                ; $7840: $36 $C1
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $7840: $36 $C1
     ld   a, c                                     ; $7842: $79
     rla                                           ; $7843: $17
     and  $06                                      ; $7844: $E6 $06
@@ -5905,7 +5905,7 @@ Unknow001SpriteVariants::
 func_017_7885::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7885: $21 $40 $C3
     add  hl, bc                                   ; $7888: $09
-    ld   [hl], $C2                                ; $7889: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $7889: $36 $C2
     ldh  a, [hActiveEntitySpriteVariant]          ; $788B: $F0 $F1
     cp   $01                                      ; $788D: $FE $01
     jr   z, jr_017_78B7                           ; $788F: $28 $26
@@ -6007,7 +6007,7 @@ Data_017_7907::
 func_017_790D::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $790D: $21 $40 $C3
     add  hl, bc                                   ; $7910: $09
-    ld   [hl], $C2                                ; $7911: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $7911: $36 $C2
     ldh  a, [hIsGBC]                              ; $7913: $F0 $FE
     and  a                                        ; $7915: $A7
     jr   z, .jr_791D                              ; $7916: $28 $05
@@ -6677,10 +6677,11 @@ func_017_7D34::
     ld   [hl], a                                  ; $7D78: $77
     ret                                           ; $7D79: $C9
 
-Data_017_7D7A::
-    db   $37, $7F
+DialogArrowOAMYTable::
+    db   $37 ; top
+    db   $7F ; bottom
 
-func_017_7D7C::
+DrawDialogArrow::
     ldh  a, [hFrameCounter]                       ; $7D7C: $F0 $E7
     and  $10                                      ; $7D7E: $E6 $10
     ret  nz                                       ; $7D80: $C0
@@ -6688,87 +6689,90 @@ func_017_7D7C::
     ld   e, $00                                   ; $7D81: $1E $00
     ld   a, [wDialogState]                        ; $7D83: $FA $9F $C1
     and  DIALOG_BOX_BOTTOM_FLAG                   ; $7D86: $E6 $80
-    jr   z, .jr_7D8B                              ; $7D88: $28 $01
+    jr   z, .doneSettingY                         ; $7D88: $28 $01
 
     inc  e                                        ; $7D8A: $1C
 
-.jr_7D8B
+.doneSettingY
     ld   d, $00                                   ; $7D8B: $16 $00
     ld   a, [wGameplayType]                       ; $7D8D: $FA $95 $DB
     cp   GAMEPLAY_CREDITS                         ; $7D90: $FE $01
-    jr   z, .jr_7DAC                              ; $7D92: $28 $18
+    jr   z, .credits                              ; $7D92: $28 $18
 
-    ld   hl, Data_017_7D7A                        ; $7D94: $21 $7A $7D
+    ld   hl, DialogArrowOAMYTable                 ; $7D94: $21 $7A $7D
     add  hl, de                                   ; $7D97: $19
     ld   a, [hl]                                  ; $7D98: $7E
     ld   [wOAMBuffer+$18], a                      ; $7D99: $EA $18 $C0
-    ld   a, $97                                   ; $7D9C: $3E $97
+    ld   a, $97 ; X position                      ; $7D9C: $3E $97
     ld   [wOAMBuffer+$19], a                      ; $7D9E: $EA $19 $C0
-    ld   a, $A2                                   ; $7DA1: $3E $A2
+    ld   a, $A2 ; Arrow tile                      ; $7DA1: $3E $A2
     ld   [wOAMBuffer+$1A], a                      ; $7DA3: $EA $1A $C0
-    ld   a, $42                                   ; $7DA6: $3E $42
+    ld   a, OAMF_YFLIP | OAM_GBC_PAL_2            ; $7DA6: $3E $42
     ld   [wOAMBuffer+$1B], a                      ; $7DA8: $EA $1B $C0
     ret                                           ; $7DAB: $C9
 
-.jr_7DAC
-    ld   hl, Data_017_7D7A                        ; $7DAC: $21 $7A $7D
+.credits
+    ld   hl, DialogArrowOAMYTable                 ; $7DAC: $21 $7A $7D
     add  hl, de                                   ; $7DAF: $19
     ld   a, [hl]                                  ; $7DB0: $7E
     ld   hl, hBaseScrollY                         ; $7DB1: $21 $97 $FF
     sub  [hl]                                     ; $7DB4: $96
     ld   [wOAMBuffer], a                          ; $7DB5: $EA $00 $C0
-    ld   a, $97                                   ; $7DB8: $3E $97
+    ld   a, $97 ; X position                      ; $7DB8: $3E $97
     ld   [wOAMBuffer+1], a                        ; $7DBA: $EA $01 $C0
-    ld   a, $FE                                   ; $7DBD: $3E $FE
+    ld   a, $FE ; Arrow tile                      ; $7DBD: $3E $FE
     ld   [wOAMBuffer+2], a                        ; $7DBF: $EA $02 $C0
-    ld   a, $40                                   ; $7DC2: $3E $40
+    ld   a, OAMF_YFLIP                            ; $7DC2: $3E $40
     ld   [wOAMBuffer+3], a                        ; $7DC4: $EA $03 $C0
     ret                                           ; $7DC7: $C9
 
-Data_017_7DC8::
-    db   $30, $78
+ChoiceSelectionMarkerYTable::
+    db   $30 ; top
+    db   $78 ; bottom
 
-Data_017_7DCA::
-    db   $30, $58
+ChoiceSelectionMarkerXTable::
+    db   $30 ; top
+    db   $58 ; bottom
 
-func_017_7DCC::
+DrawDialogChoiceMarker::
     ld   e, $00                                   ; $7DCC: $1E $00
     ld   a, [wDialogState]                        ; $7DCE: $FA $9F $C1
     and  DIALOG_BOX_BOTTOM_FLAG                   ; $7DD1: $E6 $80
-    jr   z, .jr_7DD6                              ; $7DD3: $28 $01
+    jr   z, .doneSettingY                         ; $7DD3: $28 $01
 
     inc  e                                        ; $7DD5: $1C
 
-.jr_7DD6
+.doneSettingY
     ld   d, $00                                   ; $7DD6: $16 $00
     ld   a, [wGameplayType]                       ; $7DD8: $FA $95 $DB
     cp   GAMEPLAY_CREDITS                         ; $7DDB: $FE $01
-    jr   z, jr_017_7E04                           ; $7DDD: $28 $25
+    jr   z, .credits                              ; $7DDD: $28 $25
 
-    ld   hl, Data_017_7DC8                        ; $7DDF: $21 $C8 $7D
+    ld   hl, ChoiceSelectionMarkerYTable          ; $7DDF: $21 $C8 $7D
     add  hl, de                                   ; $7DE2: $19
     ld   a, [hl]                                  ; $7DE3: $7E
     ld   [wOAMBuffer+$18], a                      ; $7DE4: $EA $18 $C0
     ld   e, $00                                   ; $7DE7: $1E $00
     ld   a, [wDialogAskSelectionIndex]            ; $7DE9: $FA $77 $C1
     and  $01                                      ; $7DEC: $E6 $01
-    jr   z, .jr_7DF1                              ; $7DEE: $28 $01
+    jr   z, .doneSettingX                         ; $7DEE: $28 $01
 
     inc  e                                        ; $7DF0: $1C
 
-.jr_7DF1
-    ld   hl, Data_017_7DCA                        ; $7DF1: $21 $CA $7D
+.doneSettingX
+    ld   hl, ChoiceSelectionMarkerXTable          ; $7DF1: $21 $CA $7D
     add  hl, de                                   ; $7DF4: $19
     ld   a, [hl]                                  ; $7DF5: $7E
     ld   [wOAMBuffer+$19], a                      ; $7DF6: $EA $19 $C0
-    ld   a, $3E                                   ; $7DF9: $3E $3E
+    ld   a, $3E ; Marker tile                     ; $7DF9: $3E $3E
     ld   [wOAMBuffer+$1A], a                      ; $7DFB: $EA $1A $C0
     ld   a, $00                                   ; $7DFE: $3E $00
     ld   [wOAMBuffer+$1B], a                      ; $7E00: $EA $1B $C0
     ret                                           ; $7E03: $C9
 
-jr_017_7E04:
-    ld   hl, Data_017_7DC8                        ; $7E04: $21 $C8 $7D
+; Dead code? The credits don't contain any dialog with choices
+.credits:
+    ld   hl, ChoiceSelectionMarkerYTable          ; $7E04: $21 $C8 $7D
     add  hl, de                                   ; $7E07: $19
     ld   a, [hl]                                  ; $7E08: $7E
     ld   hl, hBaseScrollY                         ; $7E09: $21 $97 $FF
@@ -6782,13 +6786,11 @@ jr_017_7E04:
     inc  e                                        ; $7E19: $1C
 
 .jr_7E1A
-    ld   hl, Data_017_7DCA                        ; $7E1A: $21 $CA $7D
+    ld   hl, ChoiceSelectionMarkerXTable          ; $7E1A: $21 $CA $7D
     add  hl, de                                   ; $7E1D: $19
     ld   a, [hl]                                  ; $7E1E: $7E
     ld   [wOAMBuffer+1], a                        ; $7E1F: $EA $01 $C0
-    ld   a, $9E                                   ; $7E22: $3E $9E
-
-.jr_7E24
+    ld   a, $9E ; Marker tile                     ; $7E22: $3E $9E
     ld   [wOAMBuffer+2], a                        ; $7E24: $EA $02 $C0
     ld   a, $00                                   ; $7E27: $3E $00
     ld   [wOAMBuffer+3], a                        ; $7E29: $EA $03 $C0

@@ -44,9 +44,9 @@ include "code/entities/07_spiked_beetle.asm"
 include "code/entities/07_moblin_sword.asm"
 include "code/entities/07_chest_with_item.asm"
 
-func_007_7CF0::
+PushLinkOutOfEntity_07::
     call CheckLinkCollisionWithEnemy_trampoline   ; $7CF0: $CD $5A $3B
-    jr   nc, jr_007_7D14                          ; $7CF3: $30 $1F
+    jr   nc, .jr_007_7D14                         ; $7CF3: $30 $1F
 
     call CopyLinkFinalPositionToPosition          ; $7CF5: $CD $BE $0C
     call ResetPegasusBoots                        ; $7CF8: $CD $B6 $0C
@@ -70,7 +70,7 @@ func_007_7CF0::
     scf                                           ; $7D12: $37
     ret                                           ; $7D13: $C9
 
-jr_007_7D14:
+.jr_007_7D14
     and  a                                        ; $7D14: $A7
     ret                                           ; $7D15: $C9
 
@@ -342,7 +342,7 @@ AddEntityZSpeedToPos_07::
     ld   hl, wEntitiesPosZTable                   ; $7E58: $21 $10 $C3
     jr   AddEntitySpeedToPos_07.updatePosition    ; $7E5B: $18 $D2
 
-func_007_7E5D::
+EntityLinkPositionXDifference_07::
     ld   e, $00                                   ; $7E5D: $1E $00
     ldh  a, [hLinkPositionX]                      ; $7E5F: $F0 $98
     ld   hl, wEntitiesPosXTable                   ; $7E61: $21 $00 $C2
@@ -357,7 +357,7 @@ func_007_7E5D::
     ld   d, a                                     ; $7E6B: $57
     ret                                           ; $7E6C: $C9
 
-func_007_7E6D::
+EntityLinkPositionYDifference_07::
     ld   e, $02                                   ; $7E6D: $1E $02
     ldh  a, [hLinkPositionY]                      ; $7E6F: $F0 $99
     ld   hl, wEntitiesPosYTable                   ; $7E71: $21 $10 $C2
@@ -373,7 +373,7 @@ func_007_7E6D::
     ret                                           ; $7E7C: $C9
 
 func_007_7E7D::
-    call func_007_7E5D                            ; $7E7D: $CD $5D $7E
+    call EntityLinkPositionXDifference_07         ; $7E7D: $CD $5D $7E
     ld   a, e                                     ; $7E80: $7B
     ldh  [hMultiPurpose0], a                      ; $7E81: $E0 $D7
     ld   a, d                                     ; $7E83: $7A
@@ -385,7 +385,7 @@ func_007_7E7D::
 
 .jr_7E8A
     push af                                       ; $7E8A: $F5
-    call func_007_7E6D                            ; $7E8B: $CD $6D $7E
+    call EntityLinkPositionYDifference_07         ; $7E8B: $CD $6D $7E
     ld   a, e                                     ; $7E8E: $7B
     ldh  [hMultiPurpose1], a                      ; $7E8F: $E0 $D8
     ld   a, d                                     ; $7E91: $7A
@@ -515,7 +515,7 @@ label_007_7F36:
     ldh  [hMultiPurpose1], a                      ; $7F3F: $E0 $D8
     ld   a, TRANSCIENT_VFX_POOF                   ; $7F41: $3E $02
     call AddTranscientVfx                         ; $7F43: $CD $C7 $0C
-    ld   a, $13                                   ; $7F46: $3E $13
+    ld   a, NOISE_SFX_ENEMY_DESTROYED             ; $7F46: $3E $13
     ldh  [hNoiseSfx], a                           ; $7F48: $E0 $F4
     ret                                           ; $7F4A: $C9
 
@@ -548,5 +548,5 @@ label_007_7F36:
 jr_007_7F76:
     call ClearEntityStatus_07                     ; $7F76: $CD $A4 $7E
     ld   hl, hNoiseSfx                            ; $7F79: $21 $F4 $FF
-    ld   [hl], $1A                                ; $7F7C: $36 $1A
+    ld   [hl], NOISE_SFX_BOSS_EXPLOSION           ; $7F7C: $36 $1A
     ret                                           ; $7F7E: $C9

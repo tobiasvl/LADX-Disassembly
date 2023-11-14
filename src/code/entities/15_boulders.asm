@@ -34,7 +34,7 @@ BouldersEntityHandler::
     ld   [hl], $10                                ; $439A: $36 $10
     ld   hl, wEntitiesPhysicsFlagsTable           ; $439C: $21 $40 $C3
     add  hl, de                                   ; $439F: $19
-    ld   [hl], $12                                ; $43A0: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $43A0: $36 $12
     ld   hl, wEntitiesHitboxFlagsTable            ; $43A2: $21 $50 $C3
     add  hl, de                                   ; $43A5: $19
     set  7, [hl]                                  ; $43A6: $CB $FE
@@ -130,7 +130,7 @@ label_015_43CA:
     ld   hl, wEntitiesSpeedZTable                 ; $4427: $21 $20 $C3
     add  hl, bc                                   ; $442A: $09
     ld   [hl], a                                  ; $442B: $77
-    ld   a, JINGLE_BIG_BUMP                       ; $442C: $3E $20
+    ld   a, JINGLE_BOUNCE                         ; $442C: $3E $20
     ldh  [hJingle], a                             ; $442E: $E0 $F2
 
 jr_015_4430:

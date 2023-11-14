@@ -78,7 +78,7 @@ func_007_4CEE::
     ld   [hl], $0E                                ; $4D0D: $36 $0E
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4D0F: $21 $40 $C3
     add  hl, de                                   ; $4D12: $19
-    ld   [hl], $C1                                ; $4D13: $36 $C1
+    ld   [hl], 1 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $4D13: $36 $C1
     ld   hl, wEntitiesHitboxFlagsTable            ; $4D15: $21 $50 $C3
     add  hl, de                                   ; $4D18: $19
     ld   [hl], $00                                ; $4D19: $36 $00
@@ -251,7 +251,7 @@ Data_007_4E0D::
     db   $20, $28, $F0, $E8, $E8, $E0, $E0, $D8
 
 func_007_4E25::
-    ld   a, JINGLE_HONEYCOMB                      ; $4E25: $3E $22
+    ld   a, JINGLE_TARIN_BEE_BUZZ                 ; $4E25: $3E $22
     ldh  [hJingle], a                             ; $4E27: $E0 $F2
     ld   a, [wD204]                               ; $4E29: $FA $04 $D2
     ld   e, a                                     ; $4E2C: $5F

@@ -35,6 +35,19 @@ ENTITY_OPT1_B_IS_MINI_BOSS           equ 2
 ENTITY_OPT1_B_EXCLUDED_FROM_KILL_ALL equ 1
 ENTITY_OPT1_B_MOVE_PIT_WATER         equ 0
 
+; Values for wEntitiesPhysicsFlagsTable
+ENTITY_PHYSICS_HARMLESS             equ $80 ; The entity does not damage Link
+ENTITY_PHYSICS_PROJECTILE_NOCLIP    equ $40 ; Projectiles pass through the entity
+ENTITY_PHYSICS_GRABBABLE            equ $20 ; TODO: Implies that the entity can be grabbed with the Power Bracelet, or picked up/collected, depending on entity's private state?
+ENTITY_PHYSICS_SHADOW               equ $10 ; The entity casts a shadow
+; Mask for all the physics flags
+ENTITY_PHYSICS_MASK                 equ $F0
+; Bit numbers for wEntitiesPhysicsFlagsTable
+ENTITY_PHYSICS_B_HARMLESS           equ 7
+ENTITY_PHYSICS_B_GRABBABLE          equ 5
+ENTITY_PHYSICS_B_PROJECTILE_NOCLIP  equ 6
+ENTITY_PHYSICS_B_SHADOW             equ 4
+
 ; Values for wEntitiesTypeTable
 ; (See also EntityHandlersTable)
 ENTITY_ARROW                         equ $00
@@ -42,8 +55,8 @@ ENTITY_BOOMERANG                     equ $01
 ENTITY_BOMB                          equ $02
 ENTITY_HOOKSHOT_CHAIN                equ $03
 ENTITY_MAGIC_ROD_FIREBALL            equ $04
-ENTITY_ENTITY_LIFTABLE_ROCK          equ $05
-ENTITY_PUSHED_BLOCK                  equ $06
+ENTITY_LIFTABLE_ROCK                 equ $05
+ENTITY_PUSHED_BLOCK                  equ $06 ; The entity spawned when pushing an OBJECT_PUSHABLE_BLOCK, before it's moved into its new position
 ENTITY_CHEST_WITH_ITEM               equ $07
 ENTITY_MAGIC_POWDER_SPRINKLE         equ $08
 ENTITY_OCTOROK                       equ $09
@@ -141,7 +154,7 @@ ENTITY_SOUTH_FACE_SHRINE_DOOR        equ $64 ; unknown ; @TODO unused Eagle's To
 ENTITY_ANGLER_FISH                   equ $65
 ENTITY_CRYSTAL_SWITCH                equ $66
 ENTITY_67                            equ $67 ; unknown
-ENTITY_68                            equ $68 ; unknown
+ENTITY_HOOKSHOT_BRIDGE               equ $68
 ENTITY_MOVING_BLOCK_MOVER            equ $69
 ENTITY_RAFT_RAFT_OWNER               equ $6A
 ENTITY_TEXT_DEBUGGER                 equ $6B

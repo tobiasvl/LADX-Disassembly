@@ -72,7 +72,7 @@ jr_006_6853:
     jp   nz, ClearEntityStatus_06                 ; $685E: $C2 $DB $65
 
     ld   a, [wOverworldRoomStatus + ROOM_OW_MARIN_BRIDGE] ; $6861: $FA $08 $D8
-    and  $10                                      ; $6864: $E6 $10
+    and  OW_ROOM_STATUS_CHANGED                   ; $6864: $E6 $10
     ret  z                                        ; $6866: $C8
 
     jr   jr_006_68A0                              ; $6867: $18 $37
@@ -89,7 +89,7 @@ jr_006_6853:
     jr   nz, .jr_687E                             ; $6874: $20 $08
 
     ld   a, [wOverworldRoomStatus + UNKNOWN_ROOM_06] ; $6876: $FA $06 $D8
-    and  $10                                      ; $6879: $E6 $10
+    and  OW_ROOM_STATUS_CHANGED                   ; $6879: $E6 $10
     ret  z                                        ; $687B: $C8
 
     jr   jr_006_68A0                              ; $687C: $18 $22
@@ -167,7 +167,7 @@ OwlState0Handler::
     cp   ROOM_OW_BEACH_WITH_SWORD
     jr   nz, .jr_68EF                             ; $68D9: $20 $14
 
-    ld   a, MUSIC_SWORD_SEARCH                    ; $68DB: $3E $1D
+    ld   a, MUSIC_OVERWORLD_SWORDLESS             ; $68DB: $3E $1D
     ldh  [hDefaultMusicTrack], a                  ; $68DD: $E0 $B0
     ldh  a, [hLinkPositionY]                      ; $68DF: $F0 $99
     cp   $44                                      ; $68E1: $FE $44
@@ -259,7 +259,7 @@ OwlState1Handler::
 
 OwlState2Handler::
     call ReturnIfNonInteractive_06                ; $6972: $CD $C6 $64
-    call func_006_641A                            ; $6975: $CD $1A $64
+    call PushLinkOutOfEntity_06                   ; $6975: $CD $1A $64
     ld   a, [wTransitionSequenceCounter]          ; $6978: $FA $6B $C1
     cp   $04                                      ; $697B: $FE $04
     ret  nz                                       ; $697D: $C0
@@ -303,7 +303,7 @@ OwlState3Handler::
     ld   d, b                                     ; $69B5: $50
     ld   hl, wOverworldRoomStatus                 ; $69B6: $21 $00 $D8
     add  hl, de                                   ; $69B9: $19
-    set  5, [hl]                                  ; $69BA: $CB $EE
+    set  OW_ROOM_STATUS_FLAG_OWL_TALKED, [hl]     ; $69BA: $CB $EE
     ret                                           ; $69BC: $C9
 
 func_006_69BD::
@@ -337,19 +337,19 @@ OwlState4Handler::
     ldh  [hDefaultMusicTrack], a                  ; $69EF: $E0 $B0
     ld   a, [wActivePowerUp]                      ; $69F1: $FA $7C $D4
     and  a                                        ; $69F4: $A7
-    jr   z, .ret_6A04                             ; $69F5: $28 $0D
+    jr   z, .return                               ; $69F5: $28 $0D
 
 IF !__PATCH_0__
     ld   a, [wTunicType]                          ; $69F7: $FA $0F $DC
     and  a                                        ; $69FA: $A7
-    jr   nz, .ret_6A04                            ; $69FB: $20 $07
+    jr   nz, .return                              ; $69FB: $20 $07
 ENDC
 
     ld   a, MUSIC_ACTIVE_POWER_UP
     ld   [wMusicTrackToPlay], a                   ; $69FF: $EA $68 $D3
     ldh  [hDefaultMusicTrackAlt], a               ; $6A02: $E0 $BD
 
-.ret_6A04
+.return
     ret                                           ; $6A04: $C9
 
 jr_006_6A05:
@@ -357,7 +357,7 @@ jr_006_6A05:
     and  $07                                      ; $6A07: $E6 $07
     jr   nz, .jr_6A0F                             ; $6A09: $20 $04
 
-    ld   a, $05                                   ; $6A0B: $3E $05
+    ld   a, NOISE_SFX_CUT_GRASS                   ; $6A0B: $3E $05
     ldh  [hNoiseSfx], a                           ; $6A0D: $E0 $F4
 
 .jr_6A0F
@@ -430,5 +430,5 @@ jr_006_6A5B:
 .jr_6A71
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6A71: $21 $40 $C3
     add  hl, bc                                   ; $6A74: $09
-    res  4, [hl]                                  ; $6A75: $CB $A6
+    res  ENTITY_PHYSICS_B_SHADOW, [hl]            ; $6A75: $CB $A6
     ret                                           ; $6A77: $C9

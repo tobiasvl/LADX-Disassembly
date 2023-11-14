@@ -24,7 +24,7 @@ BeetleSpawnerEntityHandler::
     and  $3F                                      ; $7532: $E6 $3F
     jr   nz, .ret_756E                            ; $7534: $20 $38
 
-    ld   a, $B2                                   ; $7536: $3E $B2
+    ld   a, ENTITY_BEETLE_SPAWNER                 ; $7536: $3E $B2
     ld   e, $04                                   ; $7538: $1E $04
     call SpawnNewEntityInRange_trampoline         ; $753A: $CD $98 $3B
     jr   c, .ret_756E                             ; $753D: $38 $2F
@@ -39,7 +39,7 @@ BeetleSpawnerEntityHandler::
     ld   [hl], a                                  ; $754C: $77
     ld   hl, wEntitiesPhysicsFlagsTable           ; $754D: $21 $40 $C3
     add  hl, de                                   ; $7550: $19
-    ld   [hl], $12                                ; $7551: $36 $12
+    ld   [hl], 2 | ENTITY_PHYSICS_SHADOW          ; $7551: $36 $12
     ld   hl, wEntitiesPrivateState3Table          ; $7553: $21 $D0 $C2
     add  hl, de                                   ; $7556: $19
     ld   [hl], $01                                ; $7557: $36 $01

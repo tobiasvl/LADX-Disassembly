@@ -53,7 +53,7 @@ ZombieEntityHandler::
 .jr_63D1
     add  $40                                      ; $63D1: $C6 $40
     ld   [hl], a                                  ; $63D3: $77
-    ld   a, $BF                                   ; $63D4: $3E $BF
+    ld   a, ENTITY_ZOMBIE                         ; $63D4: $3E $BF
     ld   e, $05                                   ; $63D6: $1E $05
     call SpawnNewEntityInRange_trampoline         ; $63D8: $CD $98 $3B
     jr   c, ret_018_63F7                          ; $63DB: $38 $1A
@@ -71,7 +71,7 @@ ZombieEntityHandler::
     ld   [hl], $01                                ; $63EF: $36 $01
     ld   hl, wEntitiesPhysicsFlagsTable           ; $63F1: $21 $40 $C3
     add  hl, de                                   ; $63F4: $19
-    res  6, [hl]                                  ; $63F5: $CB $B6
+    res  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $63F5: $CB $B6
 
 ret_018_63F7:
     ret                                           ; $63F7: $C9
@@ -155,7 +155,7 @@ ZombieState2Handler::
     call IncrementEntityState                     ; $646C: $CD $12 $3B
     ld   hl, wEntitiesPhysicsFlagsTable           ; $646F: $21 $40 $C3
     add  hl, bc                                   ; $6472: $09
-    set  6, [hl]                                  ; $6473: $CB $F6
+    set  ENTITY_PHYSICS_B_PROJECTILE_NOCLIP, [hl] ; $6473: $CB $F6
 
 jr_018_6475:
     ldh  a, [hFrameCounter]                       ; $6475: $F0 $E7

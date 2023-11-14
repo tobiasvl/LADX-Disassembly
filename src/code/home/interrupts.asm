@@ -15,7 +15,7 @@ IntroBeachScreenSections::
 ;
 ; InterruptLCDStatus
 ;
-; Manipulate the Background's scrollX and scrollY value during HBlank,
+; Manipulate the Background's scrollX and scrollY value during mode 2 (Searching OAM-RAM),
 ; to create various effects like differential scrolling.
 ;
 
@@ -393,7 +393,7 @@ InterruptVBlank::
     and  a                                        ; $052D: $A7
     jr   z, .gbcEnd                               ; $052E: $28 $08
     ; Change BG column palette
-    callsb func_024_5C1A                          ; $0530: $3E $24 $EA $00 $21 $CD $1A $5C
+    callsb ChangeBGColumnPalette                  ; $0530: $3E $24 $EA $00 $21 $CD $1A $5C
 .gbcEnd
 
     ld   de, wDrawCommand                         ; $0538: $11 $01 $D6
@@ -450,7 +450,7 @@ PhotoAlbumVBlankHandler::
     and  a                                        ; $0585: $A7
     jr   z, .gbcEnd                               ; $0586: $28 $10
     callsw CopyPalettesToVRAM                     ; $0588: $3E $21 $CD $0C $08 $CD $00 $40
-    callsw func_024_5C1A                          ; $0590: $3E $24 $CD $0C $08 $CD $1A $5C
+    callsw ChangeBGColumnPalette                  ; $0590: $3E $24 $CD $0C $08 $CD $1A $5C
 .gbcEnd
 
     ld   de, wDrawCommand                         ; $0598: $11 $01 $D6
@@ -505,7 +505,7 @@ LoadTiles::
 
     ld   a, [wIsIndoor]                           ; $05E0: $FA $A5 $DB
     and  a                                        ; $05E3: $A7
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     jr   z, LoadOverworldBGTiles
 ELSE
     jp   z, LoadOverworldBGTiles                  ; $05E4: $CA $56 $06
@@ -514,7 +514,7 @@ ENDC
     cp   TILESET_LOAD_DUNGEON_MINIMAP             ; $05E9: $FE $02
     jp   z, LoadDungeonMinimapTiles               ; $05EB: $CA $26 $08
 
-    ld   a, BANK(Dungeons2Tiles)                  ; $05EE: $3E $0D
+    ld   a, BANK(IndoorTiles)                     ; $05EE: $3E $0D
     call AdjustBankNumberForGBC                   ; $05F0: $CD $0B $0B
     ld   [rSelectROMBank], a                      ; $05F3: $EA $00 $21
     ldh  a, [hBGTilesLoadingStage]                ; $05F6: $F0 $92
@@ -536,7 +536,7 @@ ENDC
     add  hl, bc                                   ; $0616: $09
     ld   e, l                                     ; $0617: $5D
     ld   d, h                                     ; $0618: $54
-    ld   hl, Dungeons2Tiles                       ; $0619: $21 $00 $50
+    ld   hl, IndoorTiles                          ; $0619: $21 $00 $50
 
     ldh  a, [hMapId]                              ; $061C: $F0 $F7
     cp   MAP_COLOR_DUNGEON                        ; $061E: $FE $FF
@@ -577,7 +577,7 @@ ENDC
     ret                                           ; $0655: $C9
 
 LoadOverworldBGTiles::
-    ld   a, $0F                                   ; $0656: $3E $0F
+    ld   a, BANK(Overworld2Tiles)                 ; $0656: $3E $0F
     call AdjustBankNumberForGBC                   ; $0658: $CD $0B $0B
     ld   [rSelectROMBank], a                      ; $065B: $EA $00 $21
     ; de = vTiles2 + [hBGTilesLoadingStage] * 6
@@ -655,7 +655,7 @@ LoadEntityTiles::
     ; use wNeedsUpdatingEntityTilesB.
     ldh  a, [hNeedsUpdatingEntityTilesA]          ; $06CB: $F0 $91
     and  a                                        ; $06CD: $A7
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     jr   z, UpdateEntityTilesB
 ELSE
     jp   z, UpdateEntityTilesB                    ; $06CE: $CA $3E $07

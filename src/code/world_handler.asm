@@ -148,11 +148,13 @@ ENDC
     ld   a, TILEMAP_INVENTORY                     ; $4414: $3E $02
     ld   [wBGMapToLoad], a                        ; $4416: $EA $FF $D6
 
+    ; Every time the inventory is opened in the overworld, the D4 glint puzzle solution changes.
+    ; (This ensures the puzzle is random, but doesn't change while inside the dungeon.)
     call GetRandomByte                            ; $4419: $CD $0D $28
     ld   hl, hFrameCounter                        ; $441C: $21 $E7 $FF
     or   [hl]                                     ; $441F: $B6
     and  $03                                      ; $4420: $E6 $03
-    ldh  [hTileGlintAnimation], a                 ; $4422: $E0 $B9
+    ldh  [hTileGlintSequence], a                  ; $4422: $E0 $B9
 
     ret                                           ; $4424: $C9
 
@@ -318,12 +320,12 @@ IF __PATCH_A__ == 1
     ld a, [ROM_DebugTool2]
     and a
     ret nz
-    call label_3E5A
+    call DrawABButtonSlots
 ELIF __PATCH_A__ == 2
     call IncrementGameplaySubtype
-    call label_3E5A
+    call DrawABButtonSlots
 ELSE
-    call label_3E5A                               ; $4500: $CD $5A $3E
+    call DrawABButtonSlots                        ; $4500: $CD $5A $3E
     call IncrementGameplaySubtype                 ; $4503: $CD $D6 $44
 ENDC
     ret                                           ; $4506: $C9
@@ -333,7 +335,7 @@ GameplayWorldLoad6Handler::
     ; Load audio track
     ;
 
-    call func_001_5895                            ; $4507: $CD $95 $58
+    call InitializeInventoryBar                   ; $4507: $CD $95 $58
 
     ;
     ; Finish preparations

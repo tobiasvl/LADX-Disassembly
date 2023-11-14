@@ -32,7 +32,7 @@ HookshotChainEntityHandler::
     and  $03                                      ; $7C14: $E6 $03
     jr   nz, .jr_7C1C                             ; $7C16: $20 $04
 
-    ld   a, $0B                                   ; $7C18: $3E $0B
+    ld   a, NOISE_SFX_HOOKSHOT                    ; $7C18: $3E $0B
     ldh  [hNoiseSfx], a                           ; $7C1A: $E0 $F4
 
 .jr_7C1C
@@ -120,7 +120,7 @@ jr_018_7C54:
     cp   e                                        ; $7C82: $BB
     jr   nz, ret_018_7CAE                         ; $7C83: $20 $29
 
-    ld   a, ENTITY_68                             ; $7C85: $3E $68
+    ld   a, ENTITY_HOOKSHOT_BRIDGE                ; $7C85: $3E $68
     call SpawnNewEntity_trampoline                ; $7C87: $CD $86 $3B
     ld   hl, wEntitiesPosXTable                   ; $7C8A: $21 $00 $C2
     add  hl, de                                   ; $7C8D: $19

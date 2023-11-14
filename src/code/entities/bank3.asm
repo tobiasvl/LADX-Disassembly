@@ -195,7 +195,7 @@ EntityInitHandler::
     jr   z, .callEntityInitHandler                ; $48BC: $28 $5
     ldh  a, [hRoomStatus]                         ; $48BE: $F0 $F8
     and  ROOM_STATUS_EVENT_2|ROOM_STATUS_EVENT_1  ; $48C0: $E6 $30
-IF __PATCH_0__
+IF __PATCH_0__ ; Could probably be moved into __OPTIMIZATIONS_1__
     jp   nz, UnloadEntityAndReturn
 ELSE
     jr   z, .roomStatusEnd                        ; $48C2: $28 $03
@@ -345,7 +345,7 @@ EntityInitTarinBeekeeper::
     jp   SetEntitySpriteVariant                   ; $4979: $C3 $0C $3B
 
 EntityInitTelephone::
-    ld   a, MUSIC_PHONE_BOOTH                     ; $497C: $3E $33
+    ld   a, MUSIC_ULRIRA                          ; $497C: $3E $33
     jr   SetMusicTrackIfHasSword                  ; $497E: $18 $15
 
 EntityInitRichard::
@@ -361,7 +361,7 @@ EntityInitRichard::
     ld   [hl], DIRECTION_DOWN                     ; $4991: $36 $03
 .jr_003_4993
 
-    ld   a, MUSIC_RICHARD_MANSION                 ; $4993: $3E $40
+    ld   a, MUSIC_RICHARD_HOUSE                   ; $4993: $3E $40
     ; fallthrough
 
 SetMusicTrackIfHasSword::
@@ -389,7 +389,7 @@ EntityInitDreamShrineBed::
     jr   SetMusicTrack                            ; $49AF: $18 $EB
 
 EntityInitFishermanUnderBridge::
-    ld   a, MUSIC_FISHING_UNDER_BRIDGE            ; $49B1: $3E $3A
+    ld   a, MUSIC_FISHERMAN_UNDER_BRIDGE          ; $49B1: $3E $3A
     jr   SetMusicTrack                            ; $49B3: $18 $E7
 
 EntityInitKikiTheMonkey::
@@ -574,7 +574,7 @@ EntityInitMarin::
     ; she should sing Ballad of the Wind Fish
     inc  a                                        ; $4A94: $3C
     ld   [wIsMarinSinging], a                     ; $4A95: $EA $C8 $C3
-    ld   a, MUSIC_MARIN_SINGING                   ; $4A98: $3E $2F
+    ld   a, MUSIC_MARIN_SING                      ; $4A98: $3E $2F
     ldh  [hNextMusicTrackToFadeInto], a           ; $4A9A: $E0 $B1
     ldh  [hDefaultMusicTrack], a                  ; $4A9C: $E0 $B0
     ldh  [hDefaultMusicTrackAlt], a               ; $4A9E: $E0 $BD
@@ -706,7 +706,7 @@ EntityInitWitch::
     ret                                           ; $4B42: $C9
 
 EntityInitShopOwner::
-    ld   a, MUSIC_WITCH_HUT                       ; $4B43: $3E $07
+    ld   a, MUSIC_SHOP                            ; $4B43: $3E $07
     call SetMusicTrackIfHasSword                  ; $4B45: $CD $95 $49
 
 .setDirectionLeft
@@ -747,7 +747,7 @@ EntityInitZora::
     jr   nz, EntityInitNoop                       ; $4B6B: $20 $E9
 
     ld   a, [wTradeSequenceItem]                  ; $4B6D: $FA $0E $DB
-    cp   TRADING_ITEM_MAGNIFIYING_GLASS           ; $4B70: $FE $0E
+    cp   TRADING_ITEM_MAGNIFYING_LENS             ; $4B70: $FE $0E
     jp   nz, UnloadEntityAndReturn                ; $4B72: $C2 $8D $3F
 
     ld   a, [wPhotos2]                            ; $4B75: $FA $0D $DC
@@ -872,7 +872,7 @@ jr_003_4C15:
 EntityInitColorDungeonBook::
     ld   hl, wEntitiesPosYTable                   ; $4C1F: $21 $10 $C2
     add  hl, bc                                   ; $4C22: $09
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     inc  [hl]
     inc  [hl]
 ELSE
@@ -930,7 +930,7 @@ EntityDestructionHandler::
     call ReturnIfNonInteractive_03.allowInactiveEntity ; $4C6A: $CD $7E $7F
     call ApplyRecoilIfNeeded_03                   ; $4C6D: $CD $A9 $7F
     call func_003_60B3                            ; $4C70: $CD $B3 $60
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     jp   ClearEntitySpeed
 ELSE
     call ClearEntitySpeed                         ; $4C73: $CD $7F $3D
@@ -960,7 +960,7 @@ ENDC
     ld   [hl], ENTITY_STATUS_DYING                ; $4C96: $36 $01
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4C98: $21 $40 $C3
     add  hl, bc                                   ; $4C9B: $09
-    ld   [hl], $04                                ; $4C9C: $36 $04
+    ld   [hl], 4                                  ; $4C9C: $36 $04
     ld   hl, hNoiseSfx                            ; $4C9E: $21 $F4 $FF
     ld   [hl], NOISE_SFX_ENEMY_DESTROYED          ; $4CA1: $36 $13
     ret                                           ; $4CA3: $C9
@@ -1157,10 +1157,10 @@ EntityThrownHandler::
     add  hl, bc                                   ; $4DBF: $09
     ld   [hl], $20                                ; $4DC0: $36 $20
     ld   hl, hWaveSfx                             ; $4DC2: $21 $F3 $FF
-    ld   [hl], WAVE_SFX_BOSS_GRAWL                ; $4DC5: $36 $07
+    ld   [hl], WAVE_SFX_BOSS_HURT                 ; $4DC5: $36 $07
     ld   hl, wEntitiesPrivateState4Table          ; $4DC7: $21 $40 $C4
     add  hl, bc                                   ; $4DCA: $09
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     inc  [hl]
     ld   a, [hl]
 ELSE
@@ -1214,7 +1214,7 @@ EntityStunnedHandler::
     call func_003_60B3                            ; $4E10: $CD $B3 $60
     call ClearEntitySpeed                         ; $4E13: $CD $7F $3D
     call func_003_6E2B                            ; $4E16: $CD $2B $6E
-    ld   a, [wBButtonSlot]                        ; $4E19: $FA $00 $DB
+    ld   a, [wInventoryItems.BButtonSlot]         ; $4E19: $FA $00 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $4E1C: $FE $03
     jr   nz, .jr_4E28                             ; $4E1E: $20 $08
 
@@ -1225,7 +1225,7 @@ EntityStunnedHandler::
     jr   jr_003_4E72                              ; $4E26: $18 $4A
 
 .jr_4E28
-    ld   a, [wAButtonSlot]                        ; $4E28: $FA $01 $DB
+    ld   a, [wInventoryItems.AButtonSlot]         ; $4E28: $FA $01 $DB
     cp   INVENTORY_POWER_BRACELET                 ; $4E2B: $FE $03
     jr   nz, jr_003_4E72                          ; $4E2D: $20 $43
 
@@ -1243,7 +1243,7 @@ func_003_4E35::
     ld   a, [hl]                                  ; $4E3F: $7E
     push hl                                       ; $4E40: $E5
     push af                                       ; $4E41: $F5
-    or   $80                                      ; $4E42: $F6 $80
+    or   ENTITY_PHYSICS_HARMLESS                  ; $4E42: $F6 $80
     ld   [hl], a                                  ; $4E44: $77
     call CheckLinkCollisionWithEnemy              ; $4E45: $CD $72 $6C
     rl   e                                        ; $4E48: $CB $13
@@ -1259,7 +1259,7 @@ func_003_4E35::
     add  hl, bc                                   ; $4E59: $09
     ld   [hl], $07                                ; $4E5A: $36 $07
 
-    ld   a, WAVE_SFX_ZIP                          ; $4E5C: $3E $02
+    ld   a, WAVE_SFX_LIFT_UP                      ; $4E5C: $3E $02
     ldh  [hWaveSfx], a                            ; $4E5E: $E0 $F3
 
     ld   hl, wEntitiesLiftedTable                 ; $4E60: $21 $90 $C4
@@ -1466,7 +1466,7 @@ ENDC
 
 EntityInitTradingItem::
     ld   a, [wTradeSequenceItem]                  ; $4F68: $FA $0E $DB
-    cp   TRADING_ITEM_MAGNIFIYING_GLASS           ; $4F6B: $FE $0E
+    cp   TRADING_ITEM_MAGNIFYING_LENS             ; $4F6B: $FE $0E
     jr   z, EntityInitWithShiftedPosition         ; $4F6D: $28 $14
 
     ret                                           ; $4F6F: $C9
@@ -1686,7 +1686,7 @@ EntityInitChestWithItem::
     jp   nc, MarkRoomCompleted                    ; $50AF: $D2 $2A $51
 
     cp   CHEST_SEASHELL                           ; $50B2: $FE $20
-IF __PATCH_3__
+IF __OPTIMIZATIONS_3__
     jp   z, label_003_636D                        ; $50B4: $20 $03
 ELSE
     jr   nz, .jr_50B9                             ; $50B4: $20 $03
@@ -1750,7 +1750,7 @@ ENDC
     cp   $02                                      ; $5104: $FE $02
     jr   z, .powerBraceletEnd                     ; $5106: $28 $04
 
-    ; increment the Power bracelet lebel.
+    ; increment the Power bracelet level.
     ld   hl, wPowerBraceletLevel                  ; $5108: $21 $43 $DB
     inc  [hl]                                     ; $510B: $34
 .powerBraceletEnd
@@ -1777,7 +1777,7 @@ ENDC
 ChestGiveNoneInventoryItem:
     ; This handles giving keys, golden leafs and flippers
     ; by increasing the proper memory location.
-    ld   hl, wBButtonSlot                         ; $5125: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $5125: $21 $00 $DB
     add  hl, de                                   ; $5128: $19
     inc  [hl]                                     ; $5129: $34
 
@@ -1863,7 +1863,7 @@ ELSE
 ENDC
 
 .jr_5198
-    ld   a, NOISE_SFX_BLOCK_RUMBLE                ; $5198: $3E $11
+    ld   a, NOISE_SFX_RUMBLE                      ; $5198: $3E $11
     ldh  [hNoiseSfx], a                           ; $519A: $E0 $F4
     ld   de, Data_003_5166                        ; $519C: $11 $66 $51
     ld   b, $C6                                   ; $519F: $06 $C6
@@ -1918,7 +1918,7 @@ func_003_51C9::
     ld   [hl], a                                  ; $51EC: $77
     ld   [wDDD8], a                               ; $51ED: $EA $D8 $DD
     ld   a, $03                                   ; $51F0: $3E $03
-    call func_2BF                                 ; $51F2: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $51F2: $CD $2F $0B
 
 label_003_51F5:
     call label_2887                               ; $51F5: $CD $87 $28
@@ -1984,7 +1984,7 @@ label_003_52D7:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $52E0: $21 $40 $C3
     add  hl, de                                   ; $52E3: $19
     ld   a, [hl]                                  ; $52E4: $7E
-    and  $40                                      ; $52E5: $E6 $40
+    and  ENTITY_PHYSICS_PROJECTILE_NOCLIP         ; $52E5: $E6 $40
     jr   nz, .jr_531E                             ; $52E7: $20 $35
 
     ld   hl, wEntitiesPosXTable                   ; $52E9: $21 $00 $C2
@@ -2010,7 +2010,7 @@ label_003_52D7:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $530A: $21 $40 $C3
     add  hl, de                                   ; $530D: $19
     ld   a, [hl]                                  ; $530E: $7E
-    and  $20                                      ; $530F: $E6 $20
+    and  ENTITY_PHYSICS_GRABBABLE                 ; $530F: $E6 $20
     jr   nz, .jr_531E                             ; $5311: $20 $0B
 
     push bc                                       ; $5313: $C5
@@ -2052,7 +2052,7 @@ func_003_53E4::; likely cutting grass
     ld   [hl], e                                  ; $53FD: $73
     ld   hl, wEntitiesPhysicsFlagsTable           ; $53FE: $21 $40 $C3
     add  hl, bc                                   ; $5401: $09
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     inc  [hl]
     inc  [hl]
 ELSE
@@ -2065,7 +2065,7 @@ ret_003_5406:
     ret                                           ; $5406: $C9
 
 SmashRock::
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $5407: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $5407: $3E $05
     call SpawnNewEntity                           ; $5409: $CD $CA $64
     ret  c                                        ; $540C: $D8
 
@@ -2091,7 +2091,7 @@ SmashRock::
     ld   [hl], $0F                                ; $5429: $36 $0F
     ld   hl, wEntitiesPhysicsFlagsTable           ; $542B: $21 $40 $C3
     add  hl, de                                   ; $542E: $19
-    ld   [hl], $C4                                ; $542F: $36 $C4
+    ld   [hl], 4 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $542F: $36 $C4
     ld   a, NOISE_SFX_POT_SMASHED                 ; $5431: $3E $09
     ldh  [hNoiseSfx], a                           ; $5433: $E0 $F4
     jp   UnloadEntityAndReturn                    ; $5435: $C3 $8D $3F
@@ -2176,7 +2176,7 @@ EntityDeathHandler::
     add  hl, bc                                   ; $551B: $09
     ld   a, [hl]                                  ; $551C: $7E
     and  $80                                      ; $551D: $E6 $80
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     jp   nz, ExecuteActiveEntityHandler
 ELSE
     jr   z, .dying                                ; $551F: $28 $03
@@ -2260,12 +2260,12 @@ jr_003_556F:
     cp   ACTIVE_POWER_UP_PIECE_OF_POWER           ; $558C: $FE $01
     jr   nz, .jr_5594                             ; $558E: $20 $04
 
-    ld   a, $12                                   ; $5590: $3E $12
+    ld   a, WAVE_SFX_UNKNOWN_12                   ; $5590: $3E $12
     ldh  [hWaveSfx], a                            ; $5592: $E0 $F3
 
 .jr_5594
     ld   hl, hNoiseSfx                            ; $5594: $21 $F4 $FF
-    ld   [hl], $13                                ; $5597: $36 $13
+    ld   [hl], NOISE_SFX_ENEMY_DESTROYED          ; $5597: $36 $13
 
 jr_003_5599:
     call ApplyRecoilIfNeeded_03                   ; $5599: $CD $A9 $7F
@@ -2766,7 +2766,7 @@ HeartContainerEntityHandler::
 
 Foo:
     ; Start playing music right away
-    ld a, MUSIC_BOSS_DEFEATED
+    ld a, MUSIC_AFTER_BOSS
     ld [wMusicTrackToPlay], a
 
     call GetRoomStatusAddressInHL
@@ -2813,10 +2813,9 @@ func_003_5A2E::
     ret                                           ; $5A4C: $C9
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
-HeartPieceSpriteVariants::
-.variant0
-    db $AC, $02
-    db $AC, $22
+HeartPieceEntitySprite::
+    db $AC, OAM_GBC_PAL_2
+    db $AC, OAM_GBC_PAL_2 | OAMF_XFLIP
 
 HeartPieceEntityHandler::
     ldh  a, [hRoomStatus]                         ; $5A51: $F0 $F8
@@ -2863,9 +2862,9 @@ HeartPieceState4Handler::
 
 HeartPieceState5Handler::
     call HoldEntityAboveLink                      ; $5A98: $CD $17 $5A
-    ld   de, HeartPieceSpriteVariants             ; $5A9B: $11 $4D $5A
+    ld   de, HeartPieceEntitySprite               ; $5A9B: $11 $4D $5A
     call RenderActiveEntitySpritesPair            ; $5A9E: $CD $C0 $3B
-    call func_003_5B2B                            ; $5AA1: $CD $2B $5B
+    call DrawHeartPiecesInDialog                  ; $5AA1: $CD $2B $5B
     ld   hl, wEntitiesInertiaTable                ; $5AA4: $21 $D0 $C3
     add  hl, bc                                   ; $5AA7: $09
     inc  [hl]                                     ; $5AA8: $34
@@ -2885,11 +2884,11 @@ HeartPieceState5Handler::
 
 HeartPieceState6Handler::
     call HoldEntityAboveLink                      ; $5ABB: $CD $17 $5A
-    ld   de, HeartPieceSpriteVariants             ; $5ABE: $11 $4D $5A
+    ld   de, HeartPieceEntitySprite               ; $5ABE: $11 $4D $5A
     call RenderActiveEntitySpritesPair            ; $5AC1: $CD $C0 $3B
     xor  a                                        ; $5AC4: $AF
     ld   [wC1AB], a                               ; $5AC5: $EA $AB $C1
-    call func_003_5B2B                            ; $5AC8: $CD $2B $5B
+    call DrawHeartPiecesInDialog                  ; $5AC8: $CD $2B $5B
     ld   a, [wDialogState]                        ; $5ACB: $FA $9F $C1
     and  a                                        ; $5ACE: $A7
     ret  nz                                       ; $5ACF: $C0
@@ -2918,7 +2917,7 @@ HeartPieceState6Handler::
 
 HeartPieceState7Handler::
     call HoldEntityAboveLink                      ; $5AF0: $CD $17 $5A
-    ld   de, HeartPieceSpriteVariants             ; $5AF3: $11 $4D $5A
+    ld   de, HeartPieceEntitySprite               ; $5AF3: $11 $4D $5A
     call RenderActiveEntitySpritesPair            ; $5AF6: $CD $C0 $3B
     ld   a, [wDialogState]                        ; $5AF9: $FA $9F $C1
     and  a                                        ; $5AFC: $A7
@@ -2939,24 +2938,24 @@ HeartPieceState8Handler::
     jp   MarkRoomCompleted                        ; $5B14: $C3 $2A $51
 
 ; define sprite variants by selecting tile n° and setting OAM attributes (palette + flags) in a list
-Unknown021SpriteVariants::
+HeartPieceSpriteVariants::
 .variant0
-    db $9A, $02
-    db $9A, $22
+    db $9A, OAM_GBC_PAL_2 
+    db $9A, OAM_GBC_PAL_2 | OAMF_XFLIP
 .variant1
-    db $9C, $02
-    db $9A, $22
+    db $9C, OAM_GBC_PAL_2 
+    db $9A, OAM_GBC_PAL_2 | OAMF_XFLIP
 .variant2
-    db $9E, $02
-    db $9A, $22
+    db $9E, OAM_GBC_PAL_2 
+    db $9A, OAM_GBC_PAL_2 | OAMF_XFLIP
 .variant3
-    db $9E, $02
-    db $9C, $22
+    db $9E, OAM_GBC_PAL_2 
+    db $9C, OAM_GBC_PAL_2 | OAMF_XFLIP
 .variant4
-    db $9E, $02
-    db $9E, $22
+    db $9E, OAM_GBC_PAL_2 
+    db $9E, OAM_GBC_PAL_2 | OAMF_XFLIP
 
-func_003_5B2B::
+DrawHeartPiecesInDialog::
     ld   a, [wDialogState]                        ; $5B2B: $FA $9F $C1
     and  a                                        ; $5B2E: $A7
     ret  z                                        ; $5B2F: $C8
@@ -2968,21 +2967,21 @@ func_003_5B2B::
     ld   a, [wDialogState]                        ; $5B36: $FA $9F $C1
     and  DIALOG_BOX_BOTTOM_FLAG                   ; $5B39: $E6 $80
     ld   a, $23                                   ; $5B3B: $3E $23
-    jr   z, .jr_5B41                              ; $5B3D: $28 $02
+    jr   z, .positionSprite                       ; $5B3D: $28 $02
 
     ld   a, $6B                                   ; $5B3F: $3E $6B
 
-.jr_5B41
+.positionSprite
     ldh  [hActiveEntityVisualPosY], a             ; $5B41: $E0 $EC
     ld   a, [wHeartPiecesCount]                   ; $5B43: $FA $5C $DB
     ldh  [hActiveEntitySpriteVariant], a          ; $5B46: $E0 $F1
     ld   a, $8E                                   ; $5B48: $3E $8E
     ldh  [hActiveEntityPosX], a                   ; $5B4A: $E0 $EE
-    ld   de, Unknown021SpriteVariants             ; $5B4C: $11 $17 $5B
+    ld   de, HeartPieceSpriteVariants             ; $5B4C: $11 $17 $5B
     jp   RenderActiveEntitySpritesPair            ; $5B4F: $C3 $C0 $3B
 
 HeartPieceState0Handler::
-    ld   de, HeartPieceSpriteVariants             ; $5B52: $11 $4D $5A
+    ld   de, HeartPieceEntitySprite               ; $5B52: $11 $4D $5A
     call RenderActiveEntitySpritesPair            ; $5B55: $CD $C0 $3B
     jp   label_003_60AA                           ; $5B58: $C3 $AA $60
 
@@ -3174,7 +3173,7 @@ label_003_5C49:
 
 .jr_5C67
     dec  a                                        ; $5C67: $3D
-IF __PATCH_3__
+IF __OPTIMIZATIONS_3__
     jp   nz, HoldEntityAboveLink
 ELSE
     jr   nz, .jr_5C75                             ; $5C68: $20 $0B
@@ -3185,7 +3184,7 @@ ENDC
     call MarkRoomCompleted                        ; $5C6F: $CD $2A $51
     jp   UnloadEntityAndReturn                    ; $5C72: $C3 $8D $3F
 
-IF !__PATCH_3__
+IF !__OPTIMIZATIONS_3__
 .jr_5C75
     jp   HoldEntityAboveLink                      ; $5C75: $C3 $17 $5A
 ENDC
@@ -3212,7 +3211,7 @@ KeyDropPointEntityHandler::
     ; If dropped in the quicksand mark the angler key
     ; as available in the quicksand cave by setting the room flags.
     ld   hl, wOverworldRoomStatus + ROOM_OW_YARNA_LANMOLA ; $5C8E: $21 $CE $D8
-    set  4, [hl]                                  ; $5C91: $CB $E6
+    set  OW_ROOM_STATUS_FLAG_CHANGED, [hl]        ; $5C91: $CB $E6
     ld   hl, wIndoorARoomStatus + ROOM_INDOOR_A_QUICKSAND_CAVE ; $5C93: $21 $F8 $D9
     set  5, [hl]                                  ; $5C96: $CB $EE
     ret                                           ; $5C98: $C9
@@ -3251,7 +3250,7 @@ KeyDropPointEntityHandler::
 
 .jr_5CCD
     dec  a                                        ; $5CCD: $3D
-IF __PATCH_3__
+IF __OPTIMIZATIONS_3__
     jp   nz, HoldEntityAboveLink
     jp   UnloadEntityAndReturn
 ELSE
@@ -3366,7 +3365,7 @@ SleepyToadstoolEntityHandler::
 
 .jr_5D6C
     dec  a                                        ; $5D6C: $3D
-IF __PATCH_3__
+IF __OPTIMIZATIONS_3__
     jp   nz, HoldEntityAboveLink
 ELSE
     jr   nz, .jr_5D80                             ; $5D6D: $20 $11
@@ -3380,7 +3379,7 @@ ENDC
     ld   [wHasToadstool], a                       ; $5D7A: $EA $4B $DB
     jp   UnloadEntityAndReturn                    ; $5D7D: $C3 $8D $3F
 
-IF !__PATCH_3__
+IF !__OPTIMIZATIONS_3__
 .jr_5D80
     jp   HoldEntityAboveLink                      ; $5D80: $C3 $17 $5A
 ENDC
@@ -3456,7 +3455,7 @@ AfterSirensInstrumentD1::
 AfterSirensInstrumentD2::
     ld   a, $02                                   ; $5E12: $3E $02
     ld   [wDB48], a                               ; $5E14: $EA $48 $DB
-IF !__PATCH_0__
+IF !__OPTIMIZATIONS_1__
     ret                                           ; $5E17: $C9
 ENDC
 
@@ -3501,7 +3500,7 @@ animateSirensInstrumentPickup:
     and  a                                        ; $5E3D: $A7
     jr   nz, .jr_5E45                             ; $5E3E: $20 $05
 
-    ld   a, $2C                                   ; $5E40: $3E $2C
+    ld   a, NOISE_SFX_INSTRUMENT_WARP             ; $5E40: $3E $2C
     ldh  [hNoiseSfx], a                           ; $5E42: $E0 $F4
     xor  a                                        ; $5E44: $AF
 
@@ -3652,7 +3651,7 @@ ENDC
 
 .jr_5EFE
     dec  a                                        ; $5EFE: $3D
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     jp   HoldEntityAboveLink
 ELSE
     jr   nz, jr_003_5F01                          ; $5EFF: $20 $00
@@ -3664,7 +3663,7 @@ ENDC
 InstrumentMusicTable::
     db   MUSIC_INSTRUMENT_FULL_MOON_CELLO
     db   MUSIC_INSTRUMENT_CONCH_HORN
-    db   MUSIC_INSTRUMENT_SEA_LILY_BELL
+    db   MUSIC_INSTRUMENT_SEA_LILYS_BELL
     db   MUSIC_INSTRUMENT_SURF_HARP
     db   MUSIC_INSTRUMENT_WIND_MARIMBA
     db   MUSIC_INSTRUMENT_CORAL_TRIANGLE
@@ -3741,7 +3740,7 @@ func_003_5F33::
     ld   a, [hl]                                  ; $5F70: $7E
     and  $01                                      ; $5F71: $E6 $01
     ldh  [hMultiPurposeG], a                      ; $5F73: $E0 $E8
-    ld   a, $39                                   ; $5F75: $3E $39
+    ld   a, ENTITY_INSTRUMENT_OF_THE_SIRENS       ; $5F75: $3E $39
     call SpawnNewEntity                           ; $5F77: $CD $CA $64
     push bc                                       ; $5F7A: $C5
     ld   hl, wEntitiesPrivateState1Table          ; $5F7B: $21 $B0 $C2
@@ -3891,12 +3890,11 @@ HidingSlimeKeyEntityHandler::
 
 jr_003_604C:
     dec  a                                        ; $604C: $3D
-IF __PATCH_3__
+IF __OPTIMIZATIONS_3__
     jp   nz, HoldEntityAboveLink
     jp   UnloadEntityAndReturn
 ELSE
     jr   nz, .jr_6052                             ; $604D: $20 $03
-
     jp   UnloadEntityAndReturn                    ; $604F: $C3 $8D $3F
 
 .jr_6052
@@ -4039,7 +4037,7 @@ jr_003_6112:
     cp   ENTITY_KEY_DROP_POINT                    ; $6116: $FE $30
     jr   nz, .keyDropPointEnd                     ; $6118: $20 $06
 
-    ld   a, $17                                   ; $611A: $3E $17
+    ld   a, NOISE_SFX_CLINK                       ; $611A: $3E $17
     ldh  [hNoiseSfx], a                           ; $611C: $E0 $F4
     jr   .bombEnd                                 ; $611E: $18 $14
 .keyDropPointEnd
@@ -4455,7 +4453,7 @@ PickSirensInstrument::
     xor  a                                        ; $6392: $AF
     ld   [wBossDefeated], a                       ; $6393: $EA $6C $D4
     ld   [wObjectAffectingBGPalette], a           ; $6396: $EA $CB $C3
-    ld   a, MUSIC_INSTRUMENT_ACQUIRED             ; $6399: $3E $1B
+    ld   a, MUSIC_OBTAIN_INSTRUMENT               ; $6399: $3E $1B
     ld   [wMusicTrackToPlay], a                   ; $639B: $EA $68 $D3
     ld   [wC167], a                               ; $639E: $EA $67 $C1
 
@@ -4474,7 +4472,7 @@ HoldPickupInTheAir::
 PickHeartContainer::
     xor  a                                        ; $63B0: $AF
     ld   [wActivePowerUp], a                      ; $63B1: $EA $7C $D4
-    ld   a, MUSIC_HEART_CONTAINER_ACQUIRED        ; $63B4: $3E $25
+    ld   a, MUSIC_HEART_CONTAINER                 ; $63B4: $3E $25
     ld   [wMusicTrackToPlay], a                   ; $63B6: $EA $68 $D3
     ld   [wBossDefeated], a                       ; $63B9: $EA $6C $D4
     call GetEntityTransitionCountdown             ; $63BC: $CD $05 $0C
@@ -4484,7 +4482,7 @@ PickHeartContainer::
     jr   jr_003_63DB                              ; $63C5: $18 $14
 
 PickToadstoolOrDungeonKey::
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $63C7: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $63C7: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $63C9: $EA $68 $D3
     jr   label_003_63D2                           ; $63CC: $18 $04
 
@@ -4504,7 +4502,7 @@ jr_003_63DB:
     jp   ResetSpinAttack                          ; $63E1: $C3 $AF $0C
 
 PickHeartPiece::
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $63E4: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $63E4: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $63E6: $EA $68 $D3
     call IncrementEntityState                     ; $63E9: $CD $12 $3B
     jr   jr_003_63DB                              ; $63EC: $18 $ED
@@ -4539,7 +4537,7 @@ ProcessPowerUp:
     ld   [wC111], a                               ; $640C: $EA $11 $C1
     xor  a                                        ; $640F: $AF
     ld   [wPowerUpHits], a                        ; $6410: $EA $7A $D4
-    ld   a, MUSIC_POWERUP_ACQUIRED                ; $6413: $3E $27
+    ld   a, MUSIC_OBTAIN_POWERUP                  ; $6413: $3E $27
     ld   [wMusicTrackToPlay], a                   ; $6415: $EA $68 $D3
     ld   a, MUSIC_ACTIVE_POWER_UP                 ; $6418: $3E $49
     ldh  [hDefaultMusicTrackAlt], a               ; $641A: $E0 $BD
@@ -4584,7 +4582,7 @@ PickSword::
     and  a                                        ; $6450: $A7
     jr   nz, .jr_6468                             ; $6451: $20 $15
 
-    ld   a, MUSIC_SWORD_ACQUIRED                  ; $6453: $3E $0F
+    ld   a, MUSIC_OBTAIN_SWORD                    ; $6453: $3E $0F
     ld   [wMusicTrackToPlay], a                   ; $6455: $EA $68 $D3
     ld   [wC167], a                               ; $6458: $EA $67 $C1
     call HoldPickupInTheAir                       ; $645B: $CD $A1 $63
@@ -4603,7 +4601,7 @@ PickSword::
     ld   d, INVENTORY_SHIELD                      ; $6470: $16 $04
 
 GiveInventoryItem::     ; @TODO GivePlayerItem or w/e - inserts item in [d] into first available slot
-    ld   hl, wBButtonSlot                         ; $6472: $21 $00 $DB
+    ld   hl, wInventoryItems.BButtonSlot          ; $6472: $21 $00 $DB
     ld   e, $0C                                   ; $6475: $1E $0C
 
 .checkInventorySlot:                              ; Check if we already have this item:
@@ -4614,7 +4612,7 @@ GiveInventoryItem::     ; @TODO GivePlayerItem or w/e - inserts item in [d] into
     dec  e                                        ; Otherwise, have we checked all slots?
     jr   nz, .checkInventorySlot                  ; If no, continue
 
-    ld   hl, wBButtonSlot                         ; Otherwise, load the inventory start again...
+    ld   hl, wInventoryItems.BButtonSlot                         ; Otherwise, load the inventory start again...
 
 .checkInventorySlotEmpty:
     ld   a, [hl]                                  ; Check if an item is equipped in this slot
@@ -4652,7 +4650,7 @@ PickDroppableKey::
     jr   z, jr_003_64AD                           ; $64A3: $28 $08
 
 jr_003_64A5:
-    ld   a, MUSIC_TOOL_ACQUIRED                   ; $64A5: $3E $10
+    ld   a, MUSIC_OBTAIN_ITEM                     ; $64A5: $3E $10
     ld   [wMusicTrackToPlay], a                   ; $64A7: $EA $68 $D3
     jp   label_003_63D2                           ; $64AA: $C3 $D2 $63
 
@@ -5077,10 +5075,10 @@ func_003_6771::
     ld   [hl+], a                                 ; $67D9: $22
     ld   [hl-], a                                 ; $67DA: $32
     ld   a, $83                                   ; $67DB: $3E $83
-    call func_2BF                                 ; $67DD: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $67DD: $CD $2F $0B
     inc  hl                                       ; $67E0: $23
     ld   a, $83                                   ; $67E1: $3E $83
-    call func_2BF                                 ; $67E3: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $67E3: $CD $2F $0B
     dec  hl                                       ; $67E6: $2B
     ld   a, l                                     ; $67E7: $7D
     add  $10                                      ; $67E8: $C6 $10
@@ -5090,10 +5088,10 @@ func_003_6771::
     ld   [hl], a                                  ; $67EE: $77
     ld   [wDDD8], a                               ; $67EF: $EA $D8 $DD
     ld   a, $83                                   ; $67F2: $3E $83
-    call func_2BF                                 ; $67F4: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $67F4: $CD $2F $0B
     dec  hl                                       ; $67F7: $2B
     ld   a, $83                                   ; $67F8: $3E $83
-    call func_2BF                                 ; $67FA: $CD $2F $0B
+    call BackupObjectInRAM2                       ; $67FA: $CD $2F $0B
     inc  hl                                       ; $67FD: $23
     ld   c, $03                                   ; $67FE: $0E $03
     ld   b, $00                                   ; $6800: $06 $00
@@ -5150,8 +5148,8 @@ jr_003_6828:
     ld   [hl], a                                  ; $684F: $77
     ld   [wDDD8], a                               ; $6850: $EA $D8 $DD
     ld   a, $83                                   ; $6853: $3E $83
-    call func_2BF                                 ; $6855: $CD $2F $0B
-IF __PATCH_3__
+    call BackupObjectInRAM2                       ; $6855: $CD $2F $0B
+IF __OPTIMIZATIONS_3__
     ld   de, Data_003_674D
     ldh  a, [hIsGBC]
     and  a
@@ -5176,7 +5174,7 @@ jr_003_6865:
     ld   d, $00                                   ; $686C: $16 $00
     add  hl, de                                   ; $686E: $19
     ld   a, [hl]                                  ; $686F: $7E
-    or   ROOM_STATUS_DOOR_OPEN_UP                 ; $6870: $F6 $04
+    or   OW_ROOM_STATUS_OPENED                    ; $6870: $F6 $04
     ld   [hl], a                                  ; $6872: $77
     ldh  [hRoomStatus], a                         ; $6873: $E0 $F8
     jp   label_003_51F5                           ; $6875: $C3 $F5 $51
@@ -5350,7 +5348,7 @@ func_003_68F8::
 .jr_003_6964
     call func_014_5526_trampoline                 ; $6964: $CD $78 $21
 
-    ld   a, ENTITY_ENTITY_LIFTABLE_ROCK           ; $6967: $3E $05
+    ld   a, ENTITY_LIFTABLE_ROCK                  ; $6967: $3E $05
     call SpawnNewEntity                           ; $6969: $CD $CA $64
     jr   c, .return                               ; $696C: $38 $32
 
@@ -5579,7 +5577,7 @@ Data_003_6B48::
 
 func_003_6B48:
     cp   $01                                      ; $6B4C: $FE $01
-IF __PATCH_3__
+IF __OPTIMIZATIONS_3__
     jp   z, UnloadEntityAndReturn
 ELSE
     jr   nz, .jr_6B53                             ; $6B4E: $20 $03
@@ -5901,7 +5899,7 @@ func_003_6CC0::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6CC0: $21 $40 $C3
     add  hl, bc                                   ; $6CC3: $09
     ld   a, [hl]                                  ; $6CC4: $7E
-    and  $80                                      ; $6CC5: $E6 $80
+    and  ENTITY_PHYSICS_HARMLESS                  ; $6CC5: $E6 $80
     jr   z, jr_003_6CCD                           ; $6CC7: $28 $04
 
 jr_003_6CC9:
@@ -5941,7 +5939,7 @@ ApplyLinkCollisionWithEnemy::
     ld   a, $F0                                   ; $6CED: $3E $F0
     ldh  [hLinkSpeedY], a                         ; $6CEF: $E0 $9B
     call ClearEntitySpeed                         ; $6CF1: $CD $7F $3D
-    ld   a, $0E                                   ; $6CF4: $3E $0E
+    ld   a, WAVE_SFX_FLOOR_SWITCH                 ; $6CF4: $3E $0E
     ldh  [hWaveSfx], a                            ; $6CF6: $E0 $F3
     ret                                           ; $6CF8: $C9
 .cheepCheepEnd
@@ -5985,7 +5983,7 @@ ApplyLinkCollisionWithEnemy::
     ld   [hl], $02                                ; $6D23: $36 $02
     call GetEntityTransitionCountdown             ; $6D25: $CD $05 $0C
     ld   [hl], $30                                ; $6D28: $36 $30
-    ld   a, $0E                                   ; $6D2A: $3E $0E
+    ld   a, WAVE_SFX_FLOOR_SWITCH                 ; $6D2A: $3E $0E
     ldh  [hWaveSfx], a                            ; $6D2C: $E0 $F3
     ldh  a, [hIsSideScrolling]                    ; $6D2E: $F0 $F9
     and  a                                        ; $6D30: $A7
@@ -6260,7 +6258,7 @@ func_003_6E2B::
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6E9B: $21 $40 $C3
     add  hl, bc                                   ; $6E9E: $09
     ld   a, [hl]                                  ; $6E9F: $7E
-    and  %00100000                                ; $6EA0: $E6 $20
+    and  ENTITY_PHYSICS_GRABBABLE                 ; $6EA0: $E6 $20
     jp   nz, collectPickableItem                  ; $6EA2: $C2 $11 $63
     ; if sword collision is enabled jump to EnemyCollidedWithSword
     ld   a, [wSwordCollisionEnabled]              ; $6EA5: $FA $B0 $C5
@@ -6575,7 +6573,7 @@ EnemyCollidedWithSword::
     ld   [wSwordAnimationState], a                ; $7032: $EA $37 $C1
     ld   [wC16A], a                               ; $7035: $EA $6A $C1
     ld   [wIsUsingSpinAttack], a                  ; $7038: $EA $21 $C1
-    ld   a, $1C                                   ; $703B: $3E $1C
+    ld   a, NOISE_SFX_BUZZ_BLOB_ELECTROCUTE       ; $703B: $3E $1C
     ldh  [hNoiseSfx], a                           ; $703D: $E0 $F4
     jp   ApplyLinkCollisionWithEnemy              ; $703F: $C3 $D5 $6C
 .buzzBlobEnd
@@ -6634,7 +6632,7 @@ EnemyCollidedWithSword::
 
     ldh  a, [hMultiPurposeG]                      ; $7081: $F0 $E8
     and  a                                        ; $7083: $A7
-IF __PATCH_3__
+IF __OPTIMIZATIONS_3__
     jp   nz, func_003_6DDF
 ELSE
     jr   nz, .jr_003_70A9                         ; $7084: $20 $23
@@ -6663,7 +6661,7 @@ ENDC
     call func_003_6DDF                            ; $70A3: $CD $DF $6D
     jp   .continueDefaultCollision                ; $70A6: $C3 $02 $71
 
-IF !__PATCH_3__
+IF !__OPTIMIZATIONS_3__
 .jr_003_70A9
     jp   func_003_6DDF                            ; $70A9: $C3 $DF $6D
 ENDC
@@ -6830,7 +6828,7 @@ ENDC
     ld   [hl], TRUE                               ; $7187: $36 $01
 
     ; Play the power recoil SFX
-    ld   a, WAFE_SFX_POWER_HIT                    ; $7189: $3E $11
+    ld   a, WAVE_SFX_POWER_HIT                    ; $7189: $3E $11
     ldh  [hWaveSfx], a                            ; $718B: $E0 $F3
 
     ld   hl, wEntitiesStatusTable                 ; $718D: $21 $80 $C2
@@ -6942,12 +6940,12 @@ label_003_71C0:
     add  hl, bc                                   ; $7218: $09
     ld   a, [hl]                                  ; $7219: $7E
     ld   hl, hJingle                              ; $721A: $21 $F2 $FF
-    ld   [hl], JINGLE_BOW_WOW_CHOMP               ; $721D: $36 $03
+    ld   [hl], JINGLE_ENEMY_HIT                   ; $721D: $36 $03
     and  $80                                      ; $721F: $E6 $80
     jr   z, .jr_7228                              ; $7221: $28 $05
 
     ld   hl, hWaveSfx                             ; $7223: $21 $F3 $FF
-    ld   [hl], WAVE_SFX_BOSS_GRAWL                ; $7226: $36 $07
+    ld   [hl], WAVE_SFX_BOSS_HURT                 ; $7226: $36 $07
 
 ; Hurt cucco.
 .jr_7228
@@ -7137,7 +7135,7 @@ jr_003_7304:
 .openBossDefeatedDialog
     ld   a, e                                     ; $7325: $7B
     call OpenDialogInTable0                       ; $7326: $CD $85 $23
-    ld   a, MUSIC_BOSS_WARNING                    ; $7329: $3E $5E
+    ld   a, MUSIC_BOSS_DEFEAT                     ; $7329: $3E $5E
     ld   [wMusicTrackToPlay], a                   ; $732B: $EA $68 $D3
     jr   jr_003_733E                              ; $732E: $18 $0E
 
@@ -7582,7 +7580,7 @@ jr_003_7571:
     ldh  [hLinkSpeedY], a                         ; $758E: $E0 $9B
     ld   a, $30                                   ; $7590: $3E $30
     ldh  [hLinkVelocityZ], a                      ; $7592: $E0 $A3
-    ld   a, JINGLE_HUGE_BUMP                      ; $7594: $3E $0B
+    ld   a, JINGLE_STRONG_BUMP                    ; $7594: $3E $0B
     ldh  [hJingle], a                             ; $7596: $E0 $F2
     ret                                           ; $7598: $C9
 
@@ -7623,7 +7621,7 @@ entitiesLoop:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $75BD: $21 $40 $C3
     add  hl, de                                   ; $75C0: $19
     ld   a, [hl]                                  ; $75C1: $7E
-    and  $40                                      ; $75C2: $E6 $40
+    and  ENTITY_PHYSICS_PROJECTILE_NOCLIP         ; $75C2: $E6 $40
     jp   nz, checkNextEntity                      ; $75C4: $C2 $9F $77
 
     ; If the entities X are far appart, move to next
@@ -7699,7 +7697,7 @@ entitiesLoop:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7630: $21 $40 $C3
     add  hl, de                                   ; $7633: $19
     ld   a, [hl]                                  ; $7634: $7E
-    and  $20                                      ; $7635: $E6 $20
+    and  ENTITY_PHYSICS_GRABBABLE                 ; $7635: $E6 $20
     jp   nz, label_003_7715                       ; $7637: $C2 $15 $77
 
     ldh  a, [hActiveEntityType]                   ; $763A: $F0 $EB
@@ -7868,7 +7866,7 @@ label_003_7715:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $7724: $21 $40 $C3
     add  hl, de                                   ; $7727: $19
     ld   a, [hl]                                  ; $7728: $7E
-    and  $20                                      ; $7729: $E6 $20
+    and  ENTITY_PHYSICS_GRABBABLE                 ; $7729: $E6 $20
     jr   z, jr_003_7737                           ; $772B: $28 $0A
 
     ld   a, c                                     ; $772D: $79
@@ -7891,7 +7889,7 @@ jr_003_7737:
     cp   ENTITY_HOOKSHOT_CHAIN                    ; $7741: $FE $03
     jr   z, jr_003_779A                           ; $7743: $28 $55
 
-    cp   ENTITY_ENTITY_LIFTABLE_ROCK              ; $7745: $FE $05
+    cp   ENTITY_LIFTABLE_ROCK                     ; $7745: $FE $05
     jr   nz, .jr_7751                             ; $7747: $20 $08
 
     push de                                       ; $7749: $D5
@@ -8019,7 +8017,7 @@ jr_003_77DD:
     ld   hl, wEntitiesPhysicsFlagsTable           ; $77E6: $21 $40 $C3
     add  hl, de                                   ; $77E9: $19
     ld   a, [hl]                                  ; $77EA: $7E
-    and  $60                                      ; $77EB: $E6 $60
+    and  ENTITY_PHYSICS_PROJECTILE_NOCLIP | ENTITY_PHYSICS_GRABBABLE ; $77EB: $E6 $60
     jr   nz, .jr_7834                             ; $77ED: $20 $45
 
     ld   hl, wEntitiesHitboxFlagsTable            ; $77EF: $21 $50 $C3
@@ -8268,7 +8266,7 @@ label_003_795C:
     add  hl, bc                                   ; $7966: $09
     ld   a, [hl]                                  ; $7967: $7E
     ldh  [hMultiPurpose1], a                      ; $7968: $E0 $D8
-    ld   a, JINGLE_WATER_DIVE                     ; $796A: $3E $0E
+    ld   a, JINGLE_WATER_SPLASH                   ; $796A: $3E $0E
     ldh  [hJingle], a                             ; $796C: $E0 $F2
     ld   a, TRANSCIENT_VFX_WATER_SPLASH           ; $796E: $3E $01
     call AddTranscientVfx                         ; $7970: $CD $C7 $0C
@@ -8515,7 +8513,7 @@ ApplyEntityPhysics::
     cp   ENTITY_WRECKING_BALL                     ; $7AF1: $FE $A8
     jr   z, .jr_7AF9                              ; $7AF3: $28 $04
 
-    cp   ENTITY_ENTITY_LIFTABLE_ROCK              ; $7AF5: $FE $05
+    cp   ENTITY_LIFTABLE_ROCK                     ; $7AF5: $FE $05
     jr   nz, jr_003_7B0E                          ; $7AF7: $20 $15
 
 .jr_7AF9
@@ -8775,7 +8773,7 @@ jr_003_7C2B:
     cp   ENTITY_HOOKSHOT_CHAIN                    ; $7C4F: $FE $03
     jr   nz, .jr_7C5A                             ; $7C51: $20 $07
 
-    ld   a, [wD6F9]                               ; $7C53: $FA $F9 $D6
+    ld   a, [wLinkStandingOnSwitchBlock]          ; $7C53: $FA $F9 $D6
     and  a                                        ; $7C56: $A7
     jp   nz, setCarryFlagAndReturn                ; $7C57: $C2 $A7 $7C
 
@@ -8794,7 +8792,7 @@ jr_003_7C2B:
     ld   hl, Data_003_7CA9                        ; $7C6A: $21 $A9 $7C
     add  hl, de                                   ; $7C6D: $19
     pop  de                                       ; $7C6E: $D1
-    ld   a, [hSwitchBlocksState]                  ; $7C6F: $FA $FB $D6
+    ld   a, [wSwitchBlocksState]                  ; $7C6F: $FA $FB $D6
     xor  [hl]                                     ; $7C72: $AE
     jr   z, setCarryFlagAndReturn                 ; $7C73: $28 $32
 
@@ -8894,7 +8892,7 @@ ApplySwordIntersectionWithObjects::
     cp   LINK_MOTION_REVOLVING_DOOR               ; $7CEC: $FE $05
     ret  z                                        ; $7CEE: $C8
 
-    ld   a, [wDDD6]                               ; $7CEF: $FA $D6 $DD
+    ld   a, [wBGPaletteTransitionEffect]          ; $7CEF: $FA $D6 $DD
     and  a                                        ; $7CF2: $A7
     jp   nz, jr_003_7E03                          ; $7CF3: $C2 $03 $7E
 
@@ -8961,7 +8959,7 @@ ApplySwordIntersectionWithObjects::
     jr   z, .jr_7D63                              ; $7D57: $28 $0A
 
     ld   a, $40                                   ; $7D59: $3E $40
-    ld   [wDDD6], a                               ; $7D5B: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $7D5B: $EA $D6 $DD
     ld   a, $0B                                   ; $7D5E: $3E $0B
     ld   [wDDD7], a                               ; $7D60: $EA $D7 $DD
 
@@ -9038,7 +9036,7 @@ jr_003_7DC0:
     jp   c, label_003_7DCD                        ; $7DC2: $DA $CD $7D
 
     cp   $90                                      ; $7DC5: $FE $90
-IF __PATCH_3__
+IF __OPTIMIZATIONS_3__
     jp   c, jr_003_7E03
 ELSE
     jp   nc, label_003_7DCD                       ; $7DC7: $D2 $CD $7D

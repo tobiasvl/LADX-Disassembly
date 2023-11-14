@@ -217,7 +217,7 @@ func_006_4C91::
     and  $0F                                      ; $4CC4: $E6 $0F
     jr   nz, ret_006_4D3A                         ; $4CC6: $20 $72
 
-    ld   a, $2F                                   ; $4CC8: $3E $2F
+    ld   a, NOISE_SFX_CUEBALL_SPLASH              ; $4CC8: $3E $2F
     ldh  [hNoiseSfx], a                           ; $4CCA: $E0 $F4
     ld   a, $01                                   ; $4CCC: $3E $01
 
@@ -272,7 +272,7 @@ func_006_4C91::
     ld   [hl], $01                                ; $4D1E: $36 $01
     ld   hl, wEntitiesPhysicsFlagsTable           ; $4D20: $21 $40 $C3
     add  hl, de                                   ; $4D23: $19
-    ld   [hl], $C2                                ; $4D24: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $4D24: $36 $C2
     ld   hl, wEntitiesOptions1Table               ; $4D26: $21 $30 $C4
     add  hl, de                                   ; $4D29: $19
     ld   [hl], ENTITY_OPT1_NONE                   ; $4D2A: $36 $00

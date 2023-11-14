@@ -41,7 +41,7 @@ label_019_6D00:
     jp   nz, label_019_6CE7                       ; $6D1C: $C2 $E7 $6C
 
     call func_019_6EC5                            ; $6D1F: $CD $C5 $6E
-    call func_019_7CA2                            ; $6D22: $CD $A2 $7C
+    call PushLinkOutOfEntity_19                   ; $6D22: $CD $A2 $7C
     ld   a, [wGameplayType]                       ; $6D25: $FA $95 $DB
     cp   GAMEPLAY_WORLD                           ; $6D28: $FE $0B
     ret  nz                                       ; $6D2A: $C0
@@ -132,7 +132,7 @@ BananasSchuleState2Handler::
     ld   [hl], $20                                ; $6DAF: $36 $20
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6DB1: $21 $40 $C3
     add  hl, de                                   ; $6DB4: $19
-    ld   [hl], $C2                                ; $6DB5: $36 $C2
+    ld   [hl], 2 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $6DB5: $36 $C2
     ld   a, JINGLE_JUMP                           ; $6DB7: $3E $24
     ldh  [hJingle], a                             ; $6DB9: $E0 $F2
     ldh  a, [hIsGBC]                              ; $6DBB: $F0 $FE
@@ -266,7 +266,7 @@ BananasSchuleSaleEntityHandler::
 
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6F17: $21 $40 $C3
     add  hl, bc                                   ; $6F1A: $09
-    ld   [hl], $C3                                ; $6F1B: $36 $C3
+    ld   [hl], 3 | ENTITY_PHYSICS_HARMLESS | ENTITY_PHYSICS_PROJECTILE_NOCLIP ; $6F1B: $36 $C3
     ld   hl, Data_019_6F05                        ; $6F1D: $21 $05 $6F
     ld   c, $03                                   ; $6F20: $0E $03
     jp   RenderActiveEntitySpritesRect            ; $6F22: $C3 $E6 $3C
@@ -324,7 +324,7 @@ BananasSchuleSaleEntityHandler::
     ld   [hl], a                                  ; $6F7A: $77
     pop  bc                                       ; $6F7B: $C1
     call func_019_7039                            ; $6F7C: $CD $39 $70
-    call func_019_7CA2                            ; $6F7F: $CD $A2 $7C
+    call PushLinkOutOfEntity_19                   ; $6F7F: $CD $A2 $7C
     ldh  a, [hActiveEntityState]                  ; $6F82: $F0 $F0
     JP_TABLE                                      ; $6F84
 ._00 dw func_019_6F8B                             ; $6F85
@@ -387,7 +387,7 @@ func_019_6FC5::
     ld   [hl], $01                                ; $6FCE: $36 $01
 
 .jr_6FD0
-    call entityLinkPositionXDifference            ; $6FD0: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $6FD0: $CD $0B $7E
     ld   a, e                                     ; $6FD3: $7B
     add  $02                                      ; $6FD4: $C6 $02
     jp   SetEntitySpriteVariant                   ; $6FD6: $C3 $0C $3B
@@ -427,7 +427,7 @@ func_019_7039::
     ld   hl, Data_019_7029                        ; $705C: $21 $29 $70
     ld   c, $04                                   ; $705F: $0E $04
     call RenderActiveEntitySpritesRect            ; $7061: $CD $E6 $3C
-    call func_019_7CA2                            ; $7064: $CD $A2 $7C
+    call PushLinkOutOfEntity_19                   ; $7064: $CD $A2 $7C
     ldh  a, [hLinkPositionX]                      ; $7067: $F0 $98
     sub  $68                                      ; $7069: $D6 $68
     add  $04                                      ; $706B: $C6 $04
@@ -486,7 +486,7 @@ label_019_70A9:
 
 .jr_70C2
     call func_019_717C                            ; $70C2: $CD $7C $71
-    call func_019_7CA2                            ; $70C5: $CD $A2 $7C
+    call PushLinkOutOfEntity_19                   ; $70C5: $CD $A2 $7C
     ld   hl, wEntitiesDirectionTable              ; $70C8: $21 $80 $C3
     add  hl, bc                                   ; $70CB: $09
     ldh  a, [hFrameCounter]                       ; $70CC: $F0 $E7
@@ -497,12 +497,12 @@ label_019_70A9:
     inc  a                                        ; $70D3: $3C
     add  [hl]                                     ; $70D4: $86
     call SetEntitySpriteVariant                   ; $70D5: $CD $0C $3B
-    call entityLinkPositionYDifference            ; $70D8: $CD $1B $7E
+    call EntityLinkPositionYDifference_19         ; $70D8: $CD $1B $7E
     add  $13                                      ; $70DB: $C6 $13
     cp   $26                                      ; $70DD: $FE $26
     jr   nc, .jr_70F2                             ; $70DF: $30 $11
 
-    call entityLinkPositionXDifference            ; $70E1: $CD $0B $7E
+    call EntityLinkPositionXDifference_19         ; $70E1: $CD $0B $7E
     add  $13                                      ; $70E4: $C6 $13
     cp   $26                                      ; $70E6: $FE $26
     jr   nc, .jr_70F2                             ; $70E8: $30 $08

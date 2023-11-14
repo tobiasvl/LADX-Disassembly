@@ -85,7 +85,7 @@ jr_018_79CF:
     cp   LINK_MOTION_REVOLVING_DOOR               ; $79E3: $FE $05
     ret  z                                        ; $79E5: $C8
 
-    ld   a, [wDDD6]                               ; $79E6: $FA $D6 $DD
+    ld   a, [wBGPaletteTransitionEffect]          ; $79E6: $FA $D6 $DD
     and  a                                        ; $79E9: $A7
     ret  nz                                       ; $79EA: $C0
 
@@ -131,14 +131,14 @@ jr_018_79CF:
     jr   z, .jr_7A39                              ; $7A2D: $28 $0A
 
     ld   a, $40                                   ; $7A2F: $3E $40
-    ld   [wDDD6], a                               ; $7A31: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $7A31: $EA $D6 $DD
     ld   a, $0B                                   ; $7A34: $3E $0B
     ld   [wDDD7], a                               ; $7A36: $EA $D7 $DD
 
 .jr_7A39
     call GetEntityTransitionCountdown             ; $7A39: $CD $05 $0C
     ld   [hl], b                                  ; $7A3C: $70
-    ld   a, $12                                   ; $7A3D: $3E $12
+    ld   a, NOISE_SFX_BURSTING_FLAME              ; $7A3D: $3E $12
     ldh  [hNoiseSfx], a                           ; $7A3F: $E0 $F4
     ld   de, Data_018_795E                        ; $7A41: $11 $5E $79
     push de                                       ; $7A44: $D5
@@ -208,7 +208,7 @@ label_018_7A5D:
     ret  nz                                       ; $7AA7: $C0
 
     ld   a, $80                                   ; $7AA8: $3E $80
-    ld   [wDDD6], a                               ; $7AAA: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $7AAA: $EA $D6 $DD
     ld   a, $0B                                   ; $7AAD: $3E $0B
     ld   [wDDD7], a                               ; $7AAF: $EA $D7 $DD
 

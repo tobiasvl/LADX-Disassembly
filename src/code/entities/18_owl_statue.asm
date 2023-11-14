@@ -65,7 +65,7 @@ func_018_5E5D::
     call IncrementEntityState                     ; $5E70: $CD $12 $3B
     ld   [hl], b                                  ; $5E73: $70
     ld   hl, wOverworldRoomStatus + $AC           ; $5E74: $21 $AC $D8
-    set  4, [hl]                                  ; $5E77: $CB $E6
+    set  OW_ROOM_STATUS_FLAG_CHANGED, [hl]        ; $5E77: $CB $E6
 
 .ret_5E79
     ret                                           ; $5E79: $C9
@@ -75,7 +75,7 @@ OwlStatueEntityHandler::
     cp   MAP_S_FACE_SHRINE                        ; $5E7C: $FE $16
     jp   z, OwlStatueSouthFaceShrine              ; $5E7E: $CA $1B $5E
 
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     ld   hl, hActiveEntityVisualPosY
     inc  [hl]
 ELSE
@@ -86,11 +86,11 @@ ENDC
     ld   de, OwlStatueSpriteVariants              ; $5E87: $11 $F7 $5D
     call RenderActiveEntitySpritesPair            ; $5E8A: $CD $C0 $3B
 
-IF __PATCH_0__
+IF __OPTIMIZATIONS_1__
     call ReturnIfNonInteractive_18
-    call func_018_7D36
+    call PushLinkOutOfEntity_18
 ELSE
-    call func_018_7D36                            ; $5E8D: $CD $36 $7D
+    call PushLinkOutOfEntity_18                   ; $5E8D: $CD $36 $7D
     call ReturnIfNonInteractive_18                ; $5E90: $CD $E8 $7D
 ENDC
 

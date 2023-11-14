@@ -141,7 +141,7 @@ LoadRoomPalettes::
     ret  nz                                       ; $40BE: $C0
 
     call func_021_5318                            ; $40BF: $CD $18 $53
-    ld   a, [wDDD6]                               ; $40C2: $FA $D6 $DD
+    ld   a, [wBGPaletteTransitionEffect]          ; $40C2: $FA $D6 $DD
     and  a                                        ; $40C5: $A7
     ret  nz                                       ; $40C6: $C0
 
@@ -613,14 +613,14 @@ InteriorPalettes::
     dw   InteriorPalette1B ; Camera Shop
     dw   InteriorPalette1C ; Fisherman under the bridge
     dw   InteriorPalette1D ; Pegasus Boots cave at indoor_b $E4, $F4
-    dw   InteriorPalette1E ; magnifying glass cave
+    dw   InteriorPalette1E ; magnifying lens cave
     dw   InteriorPalette1F ; the guy who expands your bags
     dw   InteriorPalette20 ; Dream Shrine dreamworld
     dw   InteriorPalette21 ; Manbo
     dw   InteriorPalette22 ; Great Fairy $FB
 
 CaveBPaletteMap:: ;0A MAP_CAVE_B
-    ; magnifying glass cave, Manbo, cave in Mysterious Woods, 
+    ; magnifying lens cave, Manbo, cave in Mysterious Woods, 
     ; cave at indoor_b $B6 $B7, something at $C5, something at $B3 B4
      ;    0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f
     db   $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00; 0
@@ -1022,7 +1022,7 @@ TilemapPaletteTable::
 
 IndoorSpritePaletteIndexData::
     ; This is a table with 4 byte records:
-    ; hMapId, RoomId, Transition Direction, wPaletteToLoadForTileMap
+    ; hMapId, hRoomId, wTransitionDirection, wPaletteToLoadForTileMap
     db   MAP_TAIL_CAVE,      $17, DIRECTION_ENTER, $81 ; dungeon entrance
     db   MAP_TAIL_CAVE,      $13, DIRECTION_LEFT,  $80
     db   MAP_TAIL_CAVE,      $13, DIRECTION_RIGHT, $80 
@@ -1071,7 +1071,7 @@ IndoorSpritePaletteIndexData::
 
 OverworldSpritePaletteIndexData::
     ; This is table with 3 byte records:
-    ; RoomId, Transition Direction, wPaletteToLoadForTileMap
+    ; hRoomId, wTransitionDirection, wPaletteToLoadForTileMap
     db   $44, DIRECTION_DOWN,  $94
     db   $36, DIRECTION_RIGHT, $94
     db   $16, DIRECTION_UP,    $95
@@ -1092,8 +1092,8 @@ func_021_5318::
     and  a                                        ; $531B: $A7
     jr   nz, ret_021_5342                         ; $531C: $20 $24
 
-    ld   b, $06                                   ; $531E: $06 $06
-    ld   hl, Data_021_5343                        ; $5320: $21 $43 $53
+    ld   b, (OverworldBGPaletteTransitionData.end - OverworldBGPaletteTransitionData) / 3 ; $531E: $06 $06
+    ld   hl, OverworldBGPaletteTransitionData     ; $5320: $21 $43 $53
 
 jr_021_5323:
     ldh  a, [hMapRoom]                            ; $5323: $F0 $F6
@@ -1109,7 +1109,7 @@ jr_021_5323:
     jr   nz, jr_021_533E                          ; $5330: $20 $0C
 
     ld   a, [hl+]                                 ; $5332: $2A
-    ld   [wDDD6], a                               ; $5333: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $5333: $EA $D6 $DD
     ld   a, $0B                                   ; $5336: $3E $0B
     ld   [wDDD7], a                               ; $5338: $EA $D7 $DD
     jr   ret_021_5342                             ; $533B: $18 $05
@@ -1125,15 +1125,17 @@ jr_021_533E:
 ret_021_5342:
     ret                                           ; $5342: $C9
 
-; Array indexed by wRoomTransitionDirection
-Data_021_5343::
-    db   $40, $03, $40, $30
-    db   $02, $80, $44, $00  ; $5343 |@.@0..D.|
-    db   $80, $43, $01, $40
-    db   $90, $03, $80, $80  ; $534B |.C.@....|
-
-    ld   [bc], a                                  ; $5353: $02
-    ld   b, b                                     ; $5354: $40
+OverworldBGPaletteTransitionData::
+    ; Only used when going to/from the Mysterious Forest.
+    ; This is a table with 3 byte records:
+    ; hRoomId, wRoomTransitionDirection, wBGPaletteTransitionEffect
+    db   $40, DIRECTION_DOWN,  $40
+    db   $30, DIRECTION_UP,    $80
+    db   $44, DIRECTION_RIGHT, $80
+    db   $43, DIRECTION_LEFT,  $40
+    db   $90, DIRECTION_DOWN,  $80
+    db   $80, DIRECTION_UP,    $40
+.end
 
 func_021_5355::
     call func_021_5366                            ; $5355: $CD $66 $53
@@ -1270,7 +1272,7 @@ func_021_53F3::
     ld   a, $80                                   ; $541D: $3E $80
 
 jr_021_541F:
-    ld   [wDDD6], a                               ; $541F: $EA $D6 $DD
+    ld   [wBGPaletteTransitionEffect], a          ; $541F: $EA $D6 $DD
     ldh  a, [hMapId]                              ; $5422: $F0 $F7
     cp   MAP_TURTLE_ROCK                          ; $5424: $FE $07
     jr   nz, .jr_542C                             ; $5426: $20 $04
@@ -2437,7 +2439,7 @@ InteriorPalette1D:: ; Pegasus Boots cave at indoor_b $E4, $F4
     rgb   #000000, #3800B8, #1880F8, #F8F8F8
     rgb   #000000, #000000, #1880F8, #F8F8F8
 
-InteriorPalette1E:: ; magnifying glass cave
+InteriorPalette1E:: ; magnifying lens cave
     rgb   #C88818, #9878A0, #381850, #000000
     rgb   #F8F888, #9878A0, #381850, #000000
     rgb   #F8F888, #B80028, #400020, #000000
@@ -2841,7 +2843,7 @@ Data_021_74F0::
     dw Data_021_75B6
     dw 0
     dw Data_021_7536
-    dw Data_021_786E
+    dw WorldMapPalette
     dw Data_021_7536
     dw Data_021_75B6
     dw 0
@@ -2991,7 +2993,7 @@ Data_021_776E:
     rgb   #F8F888, #20B048, #084828, #000000
     rgb   #F8F888, #9878A0, #381850, #000000
 
-Data_021_786E:
+WorldMapPalette:
     rgb   #F8F888, #20B048, #282828, #000000
     rgb   #F8F888, #9878A0, #282828, #000000
     rgb   #F8F888, #B80028, #282828, #000000
@@ -3005,8 +3007,12 @@ Data_021_786E:
     rgb   #F8F888, #000000, #F87808, #F8B888
     rgb   #F8F8F8, #000000, #F80828, #F8B898
 IF __PATCH_0__
+    ; Palette used by the blinking "you are here"
+    ; map marker (alternates with OAM palette 0)
     rgb   #F8F8F8, #F8B030, #D80000, #000000
 ELSE
+    ; Bug: In early revisions, the map marker only
+    ; blinks on DMG, and this palette is unused
     rgb   #F8F8F8, #F8F8F8, #F8F8F8, #F8F8F8
 ENDC
     rgb   #F8F888, #606000, #10A840, #000000

@@ -606,7 +606,7 @@ VireState7Handler::
     jp   nz, label_018_6E36                       ; $6D95: $C2 $36 $6E
 
 func_018_6D98::
-    ld   a, $0D                                   ; $6D98: $3E $0D
+    ld   a, NOISE_SFX_MAGIC_ROD                   ; $6D98: $3E $0D
     ldh  [hNoiseSfx], a                           ; $6D9A: $E0 $F4
     ldh  a, [hLinkPositionY]                      ; $6D9C: $F0 $99
     push af                                       ; $6D9E: $F5
@@ -682,7 +682,7 @@ jr_018_6DC3:
     ld   [hl], $02                                ; $6E08: $36 $02
     ld   hl, wEntitiesPhysicsFlagsTable           ; $6E0A: $21 $40 $C3
     add  hl, de                                   ; $6E0D: $19
-    ld   [hl], $02                                ; $6E0E: $36 $02
+    ld   [hl], 2                                  ; $6E0E: $36 $02
     ld   hl, wEntitiesHealthTable                 ; $6E10: $21 $60 $C3
     add  hl, de                                   ; $6E13: $19
     ld   [hl], $4C                                ; $6E14: $36 $4C
