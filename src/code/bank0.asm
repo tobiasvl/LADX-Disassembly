@@ -7166,33 +7166,19 @@ data_37B4::
     db   $C1, $C2                                 ; $37B4
 
 LoadObject_IndoorEntrance::
-    ;
-    ; @bug
-    ;
-    ; This code is supposed to replace the Shop's indoor entrance
-    ; by a closed door if Link has stolen from the shop
-    ; (presumably for dramatic effect).
-    ;
-    ; However it doesn't work, because:
-    ; 1. the Shop's room was moved from $D3 to $A1, but the code was never updated,
-    ; 2. even when fixing the room id, the closed door has garbled tiles.
-    ;
-    ; In the final version, this code is never triggered, because the
-    ; $D3 room (Kanalet's Castle main entrance) doesn't have a
-    ; IndoorEntrance object at all.
-    ;
+    ; Replace the Shop's indoor entrance with a closed door
+    ; if Link has stolen from the shop
 
-    ; If on an Indoor B map…
+    ; If in the shop...
     ldh  a, [hMapId]                              ; $37B6: $F0 $F7
-    cp   MAP_INDOORS_B_END                        ; $37B8: $FE $1A
-    jr   nc, .end                                 ; $37BA: $30 $13
-    cp   MAP_INDOORS_B_START                      ; $37BC: $FE $06
-    jr   c, .end                                  ; $37BE: $38 $0F
-
-    ; … and in Kanalet main entrance room (probably used to be the Shop's room)…
+    cp   MAP_SHOP
+    jr   nz, .end
     ldh  a, [hMapRoom]                            ; $37C0: $F0 $F6
-    cp   ROOM_INDOOR_B_KANALET_MAIN_ENTRANCE      ; $37C2: $FE $D3
+    cp   $A1      ; $37C2: $FE $D3
     jr   nz, .end                                 ; $37C4: $20 $09
+
+    ld a, 1
+    ld   [wHasStolenFromShop], a                  ; $37C6: $FA $46 $DB
 
     ; … and has stolen from shop…
     ld   a, [wHasStolenFromShop]                  ; $37C6: $FA $46 $DB
@@ -7200,6 +7186,8 @@ LoadObject_IndoorEntrance::
     jr   z, .end                                  ; $37CA: $28 $03
 
     ; … load a closed entrance instead of a open one.
+    ld   a, $26
+    ld   [wRoomEvent], a
     jp   LoadObject_ClosedDoorBottom              ; $37CC: $C3 $77 $36
 
 .end
@@ -7544,3 +7532,25 @@ ReloadColorDungeonNpcTiles::
     ld   a, BANK(InventoryEntryPoint)             ; $3FE9: $3E $20
     ld   [rSelectROMBank], a                      ; $3FEB: $EA $00 $21
     ret                                           ; $3FEE: $C9
+
+FixShopDoorPalette::
+    push bc
+    ld bc, .doorPalette
+    ld hl, wDrawCommandAlt
+    ld a, [wDrawCommandsAltSize]
+    ld e, a
+    ld d, $00
+    add hl, de
+    ld e, .end - .doorPalette
+.loop
+    ld a, [bc]
+    ld [hli], a
+    inc bc
+    dec e
+    jr nz, .loop
+
+    pop bc
+    ret
+.doorPalette:
+    db $99, $E8, $00, $04, $99, $EB, $00, $04, $00
+.end

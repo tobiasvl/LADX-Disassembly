@@ -141,6 +141,7 @@ func_004_77F8::
 
 .jr_77FC
     jr   z, jr_004_7839                           ; $77FC: $28 $3B
+    call FixShopDoorPalette
 
     ld   hl, wEntitiesPosYTable                   ; $77FE: $21 $10 $C2
     add  hl, bc                                   ; $7801: $09
@@ -158,10 +159,39 @@ func_004_77F8::
     cp   $04                                      ; $781A: $FE $04
     jr   nz, .ret_7838                            ; $781C: $20 $1A
 
+    ld   a, [wD1C3]
+    and  a
+    jr   z, .moveUp
+    cp   $20
+    jr   z, .moveDown
+    jr   c, .hesitate
+    ret
+
+.moveUp
     ldh  a, [hLinkPositionY]                      ; $781E: $F0 $99
-    sub  $01                                      ; $7820: $D6 $01
+    dec  a
+    ;sub  $01                                      ; $7820: $D6 $01
     ldh  [hLinkPositionY], a                      ; $7822: $E0 $99
-    cp   $74                                      ; $7824: $FE $74
+    cp   $68                                      ; $7824: $FE $74
+    jr   nz, .ret_7838                            ; $7826: $20 $10
+    ld   a, [wD1C3]
+    inc  a
+    ld   [wD1C3], a
+    ret
+
+.hesitate
+    ;jr   nz, .ret_7838
+    ld   a, [wD1C3]
+    inc  a
+    ld   [wD1C3], a
+    ret
+
+.moveDown
+    ldh  a, [hLinkPositionY]                      ; $781E: $F0 $99
+    inc  a
+    ;add  $01                                      ; $7820: $D6 $01
+    ldh  [hLinkPositionY], a                      ; $7822: $E0 $99
+    cp   $72                                      ; $7824: $FE $74
     jr   nz, .ret_7838                            ; $7826: $20 $10
 
     call_open_dialog Dialog038                    ; $7828
