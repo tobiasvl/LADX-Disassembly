@@ -430,12 +430,17 @@ Dialog13A:: ; Richard
     db "    Okay No Way<ask>"
 
 Dialog13B:: ; Richard
-    db "I am impressed. "
-    db "There are five  "
-    db "leaves in all.  "
-    db "Remember to buy "
-    db "a shovel on your"
-    db "way back.@"
+    db "Smashing!  To   "
+    db "tell you the    "
+    db "truth, there are" 
+    db "five leaves, and"
+    db "I want them all!"
+    db "Oh, you'll need "
+    db "to do some dig- "
+    db "ing, so buy a   "
+    db "shovel! Are you "
+    db "off, then?  Good"
+    db "luck!@"
 
 Dialog13C:: ; Richard
     db "Well, I never!  "

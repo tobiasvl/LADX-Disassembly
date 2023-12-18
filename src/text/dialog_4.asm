@@ -613,7 +613,8 @@ Dialog1EB:: ; Fisherman
 
 Dialog1EC:: ; Narrator
     db "The <fishhook> became a  "
-    db "necklace <bra>!     "
+    db "pink swimming   "
+    db "suit top <bra>!     "
     db "L-l-lucky!@"
 
 Dialog1ED:: ; Fisherman
@@ -640,27 +641,26 @@ Dialog1EF:: ; Secret Zora
 Dialog1F0:: ; Mermaid
     db "When I was swim-"
     db "ming in the bay,"
-    db "the waves took a"
-    db "very important  "
-    db "necklace from   "
-    db "around my neck! "
-    db "If you find it, "
-    db "I will let you  "
-    db "take a scale    "
-    db "from my tail!   @"
+    db "a wave came and "
+    db "took my swim    "
+    db "suit top...  If "
+    db "you find it, I  "
+    db "will give you..."
+    db "Something.@"
 
 Dialog1F1:: ; Mermaid
-    db "I have already  "
-    db "looked around   "
-    db "here!@"
+    db "Hey!  Quit it,  "
+    db "you rascal!@"
 
 Dialog1F2:: ; Mermaid
     db "Ahh!  That's it!"
-    db "That's my neck- "
-    db "lace!  Give it! "
-    db "Give it back!  I"
-    db "will give you a "
-    db "scale as I said!"
+    db "My swim suit!   "
+    db "Hey!  Give it to"
+    db "me!  Give it!   "
+    db "If you give it  "
+    db "back, I will let"
+    db "you take a scale"
+    db "from my tail!   "
     db "    Give Keep<ask>"
 
 Dialog1F3:: ; Mermaid
@@ -668,12 +668,12 @@ Dialog1F3:: ; Mermaid
     db "only take one!@"
 
 Dialog1F4:: ; Mermaid
-    db "You are heart-  "
-    db "less and cruel!@"
+    db "Boo hoo!  You're"
+    db "such a meanie!@"
 
 Dialog1F5:: ; Narrator
     db "You returned the"
-    db "necklace <bra> and  "
+    db "swim suit <bra> and "
     db "got a scale <scale> of"
     db "the mermaid's   "
     db "tail.  How will "
@@ -1167,7 +1167,7 @@ Dialog22F:: ; Narrator
 Dialog230:: ; Narrator
     db "Hunh?  A keyhole"
     db "here?  It says, "
-    db "'Tale Keyhole'@"
+    db "'Tail Keyhole'@"
 
 Dialog231:: ; Narrator
     db "Hunh?  A keyhole"
