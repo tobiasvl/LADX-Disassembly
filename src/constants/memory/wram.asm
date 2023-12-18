@@ -2062,8 +2062,13 @@ wD1C1::
 wD1C2::
   ds 1 ; D1C2
 
+; Hero Mode, D1C3
+wHeroMode::
+  ds 1
+
 ; Unused
-ds $2
+wD1C4::
+ds $1
 
 ; Unlabeled
 wD1C5::
