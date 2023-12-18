@@ -776,12 +776,20 @@ TitleScreenSfxHandler::
 TitleScreenCopyrightDrawCommand::
     db   $9B, $B7, $0D, $65, $66, $67, $68, $69   ; $7364 ;; 01:7364
     db   $6A, $6B, $6C, $6D, $6E, $6F, $70, $71   ; $736C ;; 01:736C
-    db   $72, $00                                 ; $7374 ;; 01:7374
+    db   $72
+
+    db   $9B, $D8, $0B
+    db   $F0, $F1, $F2, $F3, $F4, $F5, $F6, $F7, $F8, $F9, $FA, $FB
+
+    db   $9B, $F8, $0B
+    db   $FC, $FD, $FE, $FF, $00, $01, $02, $03, $04, $05, $06, $07
+
+    db   $00
 
 IntroStageAHandler::
-    ld   de, TitleScreenCopyrightDrawCommand      ;; 01:7376 $11 $64 $73
-    ld   hl, wDrawCommand                         ;; 01:7379 $21 $01 $D6
-    ld   c, $12                                   ;; 01:737C $0E $12
+    ld   de, TitleScreenCopyrightDrawCommand      ; $7376: $11 $64 $73
+    ld   hl, wDrawCommand                         ; $7379: $21 $01 $D6
+    ld   c, IntroStageAHandler - TitleScreenCopyrightDrawCommand
 
 .loop
     ld   a, [de]                                  ;; 01:737E $1A

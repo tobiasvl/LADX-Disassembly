@@ -114,7 +114,7 @@ PlayAudioStep::
     ; If a wave SFX is playing, return early
     ldh  a, [hWaveSfx]                            ;; 00:08AC $F0 $F3
     and  a                                        ;; 00:08AE $A7
-    jr   nz, .return                              ;; 00:08AF $20 $25
+    ret  z
 
     ; If wMusicTrackTiming != 0…
     ld   a, [wMusicTrackTiming]                   ;; 00:08B1 $FA $0B $C1
@@ -127,7 +127,7 @@ PlayAudioStep::
     ; Otherwise, play the audio step only on odd frames (half speed)
     ldh  a, [hFrameCounter]                       ;; 00:08BB $F0 $E7
     and  $01                                      ;; 00:08BD $E6 $01
-    jr   nz, .return                              ;; 00:08BF $20 $15
+    ret  nz
 
     jr   .doAudioStep                             ;; 00:08C1 $18 $03
 
@@ -466,8 +466,7 @@ Spawn2x2RubbleEntities_trampoline::
 
 RestoreStackedBank::
     pop  af                                       ;; 00:0AB0 $F1
-    call SwitchBank                               ;; 00:0AB1 $CD $0C $08
-    ret                                           ;; 00:0AB4 $C9
+    jp   SwitchBank
 
 ChangeBGColumnPaletteAndExecuteDrawCommands::
     push af                                       ;; 00:0AB5 $F5
@@ -4972,9 +4971,7 @@ LoadIndoorTiles::
     ; Replace Magic Powder tile by Toadstool if needed
     ld   a, [wHasToadstool]                       ;; 00:2CFE $FA $4B $DB
     and  a                                        ;; 00:2D01 $A7
-    jr   z, .noToadstoolEnd                       ;; 00:2D02 $28 $03
-    call ReplaceMagicPowderTilesByToadstool       ;; 00:2D04 $CD $2B $1E
-.noToadstoolEnd
+    call nz, ReplaceMagicPowderTilesByToadstool
 
     ; Replace Slime Key tile by Golden Leaf if needed
     ld   a, [wIsIndoor]                           ;; 00:2D07 $FA $A5 $DB
@@ -4988,14 +4985,13 @@ LoadIndoorTiles::
 .jr_2D17
     ld   a, [wGoldenLeavesCount]                  ;; 00:2D17 $FA $15 $DB
     cp   SLIME_KEY                                ;; 00:2D1A $FE $06
-    jr   c, .goldenLeafEnd                        ;; 00:2D1C $38 $03
-    call ReplaceSlimeKeyTilesByGoldenLeaf         ;; 00:2D1E $CD $A1 $1E
+    call nc, ReplaceSlimeKeyTilesByGoldenLeaf
 .goldenLeafEnd
 
     ; Update the trading sequence item tile if needed
     ld   a, [wTradeSequenceItem]                  ;; 00:2D21 $FA $0E $DB
     cp   TRADING_ITEM_RIBBON                      ;; 00:2D24 $FE $02
-    jr   c, .return                               ;; 00:2D26 $38 $04
+    ret  c
     ld   a, REPLACE_TILES_TRADING_ITEM            ;; 00:2D28 $3E $0D
     ldh  [hReplaceTiles], a                       ;; 00:2D2A $E0 $A5
 
@@ -5050,8 +5046,7 @@ func_2D50::
     ld   hl, LinkCharacterTiles + $200            ;; 00:2D6C $21 $00 $42
     ld   de, vTiles0 + $200                       ;; 00:2D6F $11 $00 $82
     ld   bc, TILE_SIZE * $10                      ;; 00:2D72 $01 $00 $01
-    call CopyData                                 ;; 00:2D75 $CD $14 $29
-    ret                                           ;; 00:2D78 $C9
+    jp   CopyData
 
 ; Copy opening sequence tiles to tiles memory
 LoadIntroSequenceTiles::
@@ -5103,6 +5098,19 @@ LoadTitleScreenTiles::
     ld   de, vTiles0 + $400                       ;; 00:2DCA $11 $00 $84
     ld   bc, TILE_SIZE * $40                      ;; 00:2DCD $01 $00 $04
     call CopyData                                 ;; 00:2DD0 $CD $14 $29
+
+    ldh  a, [hIsGBC]                              ; $2DBD: $F0 $FE
+    and  a                                        ; $2DBF: $A7
+    jr   z, .dxTilesDMG2                          ; $2DC0: $20 $05
+    ld   hl, TitleDXTilesCGB + $140                      ; $2DC2: $21 $00 $5C
+    jr   .dxTilesEnd2                              ; $2DC5: $18 $03
+.dxTilesDMG2
+    ld   hl, TitleDXTilesDMG + $140                      ; $2DC7: $21 $00 $58
+.dxTilesEnd2
+
+    ld   de, vTiles0 + $F00                       ; $2DCA: $11 $00 $84
+    ld   bc, TILE_SIZE * $2B                      ; $2DCD: $01 $00 $04
+    call CopyData                                 ; $2DD0: $CD $14 $29
 
     ; Load OAM tiles for the large "DX" text
     ; (used to fade-in the "DX" progressively, by updating the OAM palette)
@@ -5300,9 +5308,7 @@ LoadRoomSpecificTiles::
     add  hl, de                                   ;; 00:2EEA $19
     ld   a, [hl]                                  ;; 00:2EEB $7E
     and  a                                        ;; 00:2EEC $A7
-    jr   z, .bankAdjustmentEnd                    ;; 00:2EED $28 $03
-    call AdjustBankNumberForGBC                   ;; 00:2EEF $CD $0B $0B
-.bankAdjustmentEnd
+    call nz, AdjustBankNumberForGBC
 
     ; Do the actual copy to OAM tiles
     ld   [rSelectROMBank], a                      ;; 00:2EF2 $EA $00 $21
@@ -5370,8 +5376,7 @@ LoadRoomSpecificTiles::
     ; Copy sideview tiles to the BG tiles
     ld   de, vTiles2                              ;; 00:2F41 $11 $00 $90
     ld   bc, TILE_SIZE * $80                      ;; 00:2F44 $01 $00 $08
-    call CopyData                                 ;; 00:2F47 $CD $14 $29
-    ret                                           ;; 00:2F4A $C9
+    jp   CopyData
 
 .loadTopViewTiles
     ;
@@ -5409,8 +5414,7 @@ LoadRoomSpecificTiles::
     ld   hl, CameraShopIndoorTiles                ;; 00:2F7A $21 $00 $66
     ld   de, vTiles1 + $700                       ;; 00:2F7D $11 $00 $8F
     ld   bc, TILE_SIZE * $20                      ;; 00:2F80 $01 $00 $02
-    call CopyData                                 ;; 00:2F83 $CD $14 $29
-    ret                                           ;; 00:2F86 $C9
+    jp   CopyData
 .cameraShopEnd
 
     ; Hack: on GBC, load 2 tiles to a specific location
@@ -5434,8 +5438,7 @@ LoadRoomSpecificTiles::
     ld   hl, PhotoAlbumTiles + $610               ;; 00:2FA0 $21 $10 $6E
     ld   de, vTiles2 + $790                       ;; 00:2FA3 $11 $90 $97
     ld   bc, TILE_SIZE                            ;; 00:2FA6 $01 $10 $00
-    call CopyData                                 ;; 00:2FA9 $CD $14 $29
-    ret                                           ;; 00:2FAC $C9
+    jp   CopyData
 
 .loadOverworldBGTiles
     ;
@@ -5448,7 +5451,7 @@ LoadRoomSpecificTiles::
     ; If the tileset is W_TILESET_KEEP, do nothing.
     ldh  a, [hWorldTileset]                       ;; 00:2FB5 $F0 $94
     cp   W_TILESET_KEEP                           ;; 00:2FB7 $FE $0F
-    jr   z, .return                               ;; 00:2FB9 $28 $0B
+    ret  z
 
     ; hl = ($40 + hWorldTileset) * $100
     add  a, $40                                   ;; 00:2FBB $C6 $40
