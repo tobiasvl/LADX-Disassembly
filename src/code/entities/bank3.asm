@@ -4704,7 +4704,7 @@ PickDroppableFairy::
 ;   c:   set the carry flag if no slots were available
 SpawnNewEntity::
     ; Enumerate all entities (starting from the last one)
-    ld   e, MAX_ENTITIES - 1                      ; $64CA: $1E $0F
+    ld   e, MAX_ENTITIES                      ; $64CA: $1E $0F
 
 ; Create a new active entity in the last available slot starting from E?
 ; Inputs:
@@ -4715,11 +4715,22 @@ SpawnNewEntity::
 ;   c:   set the carry flag if no slots were available
 SpawnNewEntityInRange::
     push af                                       ; $64CC: $F5
+
+    ld a, [wHeroMode]
+    and a
+    jr z, .continue
+    cp a, ENTITY_DROPPABLE_HEART
+    jr z, .setCarryAndReturn
+    cp a, ENTITY_DROPPABLE_FAIRY
+    jr z, .setCarryAndReturn
+
+.continue
     ld   d, $00                                   ; $64CD: $16 $00
 
     ; For each entity slot:
 .loop
     ; Find an available (i.e. disabled) entity slot
+    dec  e
     ld   hl, wEntitiesStatusTable                 ; $64CF: $21 $80 $C2
     add  hl, de                                   ; $64D2: $19
     ld   a, [hl]                                  ; $64D3: $7E
@@ -4727,13 +4738,13 @@ SpawnNewEntityInRange::
     jr   z, .entitySlotIsAvailable                ; $64D5: $28 $09
 
     ; Loop down until slot 0 is reached
-    dec  e                                        ; $64D7: $1D
     ld   a, e                                     ; $64D8: $7B
-    cp   $FF                                      ; $64D9: $FE $FF
-    jr   nz, .loop                                ; $64DB: $20 $F2
+    and  a
+    jr   z, .loop                                ; $64DB: $20 $F2
 
     ; No available slot was found:
     ; set the carry flag and return.
+.setCarryAndReturn
     pop  af                                       ; $64DD: $F1
     scf                                           ; $64DE: $37
     ret                                           ; $64DF: $C9
@@ -4748,29 +4759,30 @@ SpawnNewEntityInRange::
     add  hl, de                                   ; $64E6: $19
     ld   [hl], a                                  ; $64E7: $77
 
-    ; hMultiPurpose0 = previous entity pos X
-    ld   hl, wEntitiesPosXTable                   ; $64E8: $21 $00 $C2
-    add  hl, bc                                   ; $64EB: $09
-    ld   a, [hl]                                  ; $64EC: $7E
-    ldh  [hMultiPurpose0], a                      ; $64ED: $E0 $D7
-
-    ; hMultiPurpose1 = previous entity pos Y
-    ld   hl, wEntitiesPosYTable                   ; $64EF: $21 $10 $C2
-    add  hl, bc                                   ; $64F2: $09
-    ld   a, [hl]                                  ; $64F3: $7E
-    ldh  [hMultiPurpose1], a                      ; $64F4: $E0 $D8
-
     ; hMultiPurpose2 = previous entity wEntitiesDirectionTable
-    ld   hl, wEntitiesDirectionTable              ; $64F6: $21 $80 $C3
+    ld   l, LOW(wEntitiesDirectionTable)              ; $64F6: $21 $80 $C3
     add  hl, bc                                   ; $64F9: $09
     ld   a, [hl]                                  ; $64FA: $7E
     ldh  [hMultiPurpose2], a                      ; $64FB: $E0 $D9
 
     ; hMultiPurpose3 = previous entity pos Z
-    ld   hl, wEntitiesPosZTable                   ; $64FD: $21 $10 $C3
+    ld   l, LOW(wEntitiesPosZTable)                   ; $64FD: $21 $10 $C3
     add  hl, bc                                   ; $6500: $09
     ld   a, [hl]                                  ; $6501: $7E
     ldh  [hMultiPurpose3], a                      ; $6502: $E0 $DA
+
+    ; hMultiPurpose1 = previous entity pos Y
+    dec  h
+    ld   l, c
+    ;ld   l, LOW(wEntitiesPosYTable)                   ; $64EF: $21 $10 $C2
+    ld   a, [hl]                                  ; $64F3: $7E
+    ldh  [hMultiPurpose1], a                      ; $64F4: $E0 $D8
+
+    ; hMultiPurpose0 = previous entity pos X
+    ld   hl, wEntitiesPosXTable                   ; $64E8: $21 $00 $C2
+    add  hl, bc                                   ; $64EB: $09
+    ld   a, [hl]                                  ; $64EC: $7E
+    ldh  [hMultiPurpose0], a                      ; $64ED: $E0 $D7
 
     call ConfigureNewEntity_helper                ; $6504: $CD $24 $65
 
@@ -4782,13 +4794,13 @@ SpawnNewEntityInRange::
     ld   hl, wEntitiesPosXSignTable               ; $650D: $21 $20 $C2
     add  hl, bc                                   ; $6510: $09
     ld   a, [hl]                                  ; $6511: $7E
-    ld   hl, wEntitiesPosXSignTable               ; $6512: $21 $20 $C2
+    ld   l, LOW(wEntitiesPosXSignTable)               ; $6512: $21 $20 $C2
     add  hl, de                                   ; $6515: $19
     ld   [hl], a                                  ; $6516: $77
-    ld   hl, wEntitiesPosYSignTable               ; $6517: $21 $30 $C2
+    ld   l, LOW(wEntitiesPosYSignTable)               ; $6517: $21 $30 $C2
     add  hl, bc                                   ; $651A: $09
     ld   a, [hl]                                  ; $651B: $7E
-    ld   hl, wEntitiesPosYSignTable               ; $651C: $21 $30 $C2
+    ld   l, LOW(wEntitiesPosYSignTable)               ; $651C: $21 $30 $C2
     add  hl, de                                   ; $651F: $19
     ld   [hl], a                                  ; $6520: $77
 

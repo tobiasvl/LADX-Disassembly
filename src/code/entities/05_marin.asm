@@ -780,10 +780,10 @@ func_005_5294::
 
 func_005_52AF::
     ldh  [hActiveEntitySpriteVariant], a          ; $52AF: $E0 $F1
-    ld   a, $38                                   ; $52B1: $3E $38
+    ld   a, $28                                   ; $52B1: $3E $38
     ldh  [hActiveEntityPosX], a                   ; $52B3: $E0 $EE
     ldh  [hLinkPositionX], a                      ; $52B5: $E0 $98
-    ld   a, $34                                   ; $52B7: $3E $34
+    ld   a, $24                                   ; $52B7: $3E $34
     ldh  [hActiveEntityVisualPosY], a             ; $52B9: $E0 $EC
     ldh  [hLinkPositionY], a                      ; $52BB: $E0 $99
     ld   a, $02                                   ; $52BD: $3E $02

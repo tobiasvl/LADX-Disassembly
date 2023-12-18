@@ -106,10 +106,12 @@ DropFairyEffectHandler::
 
     ld   a, ENTITY_DROPPABLE_FAIRY                ; $5DC5: $3E $2F
     call SpawnNewEntity_trampoline                ; $5DC7: $CD $86 $3B
+    jr   c, MakeEffectObjectAppear.clear
 
     ld   hl, wEntitiesPosXTable                   ; $5DCA: $21 $00 $C2
     add  hl, de                                   ; $5DCD: $19
     ld   [hl], $88                                ; $5DCE: $36 $88
+    ldh  [hMultiPurpose0], a                      ; $5DDE: $E0 $D7
 
     ld   hl, wEntitiesPosYTable                   ; $5DD0: $21 $10 $C2
     add  hl, de                                   ; $5DD3: $19
@@ -119,8 +121,6 @@ DropFairyEffectHandler::
     add  hl, de                                   ; $5DD9: $19
     ld   [hl], $80                                ; $5DDA: $36 $80
 
-    ld   a, $88                                   ; $5DDC: $3E $88
-    ldh  [hMultiPurpose0], a                      ; $5DDE: $E0 $D7
     ld   a, $30                                   ; $5DE0: $3E $30
     ldh  [hMultiPurpose1], a                      ; $5DE2: $E0 $D8
     ld   a, TRANSCIENT_VFX_POOF                   ; $5DE4: $3E $02
@@ -138,6 +138,7 @@ RevealStairwayEffectHandler::
 MakeEffectObjectAppear::
     call AddTranscientVfx                         ; $5DF6: $CD $C7 $0C
 
+.clear
     ; Mark the room as cleared
     call GetRoomStatusAddress                     ; $5DF9: $CD $9F $5B
     ld   a, [hl]                                  ; $5DFC: $7E
