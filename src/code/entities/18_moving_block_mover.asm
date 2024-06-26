@@ -31,17 +31,17 @@ MovingBlockMoverEntityHandler::
     cp   $04                                      ; $5401: $FE $04
     jr   nc, jr_018_5466                          ; $5403: $30 $61
 
-    ld   e, J_B                                   ; $5405: $1E $20
-    ld   a, [wInventoryItems.BButtonSlot]         ; $5407: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $540A: $FE $03
-    jr   z, .jr_5417                              ; $540C: $28 $09
+    ;ld   e, J_B                                   ; $5405: $1E $20
+    ;ld   a, [wInventoryItems.BButtonSlot]         ; $5407: $FA $00 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $540A: $FE $03
+    ;jr   z, .jr_5417                              ; $540C: $28 $09
 
-    ld   e, J_A                                   ; $540E: $1E $10
-    ld   a, [wInventoryItems.AButtonSlot]         ; $5410: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $5413: $FE $03
-    jr   nz, jr_018_5466                          ; $5415: $20 $4F
+    ;ld   e, J_A                                   ; $540E: $1E $10
+    ;ld   a, [wInventoryItems.AButtonSlot]         ; $5410: $FA $01 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $5413: $FE $03
+    ;jr   nz, jr_018_5466                          ; $5415: $20 $4F
 
-.jr_5417
+;.jr_5417
 IF __PATCH_0__
     ld   a, [wC3CF]
     and  a
@@ -49,7 +49,8 @@ IF __PATCH_0__
 ENDC
 
     ldh  a, [hPressedButtonsMask]                 ; $5417: $F0 $CB
-    and  e                                        ; $5419: $A3
+    ;and  e                                        ; $5419: $A3
+    and  J_A                                      ; $5419: $A3
     jr   z, jr_018_5466                           ; $541A: $28 $4A
 
     ld   a, $02                                   ; $541C: $3E $02

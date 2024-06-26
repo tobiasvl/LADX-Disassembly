@@ -69,20 +69,20 @@ LiftableStatueState_Standing::
     and  a                                        ; $408D: $A7
     jp   nz, .notBeingLifted                      ; $408E: $C2 $1C $41
 
-    ld   a, [wInventoryItems.BButtonSlot]         ; $4091: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $4094: $FE $03
-    jr   nz, .powerBraceletNotOnB                 ; $4096: $20 $08
+    ;ld   a, [wInventoryItems.BButtonSlot]         ; $4091: $FA $00 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $4094: $FE $03
+    ;jr   nz, .powerBraceletNotOnB                 ; $4096: $20 $08
 
-    ldh  a, [hPressedButtonsMask]                 ; $4098: $F0 $CB
-    and  J_B                                      ; $409A: $E6 $20
-    jr   nz, .usePowerBracelet                    ; $409C: $20 $0F
+    ;ldh  a, [hPressedButtonsMask]                 ; $4098: $F0 $CB
+    ;and  J_B                                      ; $409A: $E6 $20
+    ;jr   nz, .usePowerBracelet                    ; $409C: $20 $0F
 
-    jr   .notBeingLifted                          ; $409E: $18 $7C
+    ;jr   .notBeingLifted                          ; $409E: $18 $7C
 
 .powerBraceletNotOnB
-    ld   a, [wInventoryItems.AButtonSlot]         ; $40A0: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $40A3: $FE $03
-    jr   nz, .notBeingLifted                      ; $40A5: $20 $75
+    ;ld   a, [wInventoryItems.AButtonSlot]         ; $40A0: $FA $01 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $40A3: $FE $03
+    ;jr   nz, .notBeingLifted                      ; $40A5: $20 $75
 
     ldh  a, [hPressedButtonsMask]                 ; $40A7: $F0 $CB
     and  J_A                                      ; $40A9: $E6 $10

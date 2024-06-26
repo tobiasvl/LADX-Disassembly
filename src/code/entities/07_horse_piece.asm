@@ -249,20 +249,20 @@ HorsePieceCheckForPickup:
     and  a                                        ; $773B: $A7
     jr   nz, .ret                                 ; $773C: $20 $45
 
-    ld   a, [wInventoryItems.BButtonSlot]         ; $773E: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $7741: $FE $03
-    jr   nz, .noBraceletB                         ; $7743: $20 $08
+    ;ld   a, [wInventoryItems.BButtonSlot]         ; $773E: $FA $00 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $7741: $FE $03
+    ;jr   nz, .noBraceletB                         ; $7743: $20 $08
 
-    ldh  a, [hJoypadState]                        ; $7745: $F0 $CC
-    and  J_B                                      ; $7747: $E6 $20
-    jr   nz, .useBracelet                         ; $7749: $20 $0F
+    ;ldh  a, [hJoypadState]                        ; $7745: $F0 $CC
+    ;and  J_B                                      ; $7747: $E6 $20
+    ;jr   nz, .useBracelet                         ; $7749: $20 $0F
 
-    jr   .ret                                     ; $774B: $18 $36
+    ;jr   .ret                                     ; $774B: $18 $36
 
-.noBraceletB
-    ld   a, [wInventoryItems.AButtonSlot]         ; $774D: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $7750: $FE $03
-    jr   nz, .ret                                 ; $7752: $20 $2F
+;.noBraceletB
+    ;ld   a, [wInventoryItems.AButtonSlot]         ; $774D: $FA $01 $DB
+    ;cp   INVENTORY_POWER_BRACELET                 ; $7750: $FE $03
+    ;jr   nz, .ret                                 ; $7752: $20 $2F
 
     ldh  a, [hJoypadState]                        ; $7754: $F0 $CC
     and  J_A                                      ; $7756: $E6 $10

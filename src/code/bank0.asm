@@ -3702,29 +3702,35 @@ ENDC
 
 .specialCasesEnd
 
-    ld   a, [wInventoryItems.BButtonSlot]         ; $20CF: $FA $00 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $20D2: $FE $03
-    jr   nz, .jr_20DD                             ; $20D4: $20 $07
-    ldh  a, [hPressedButtonsMask]                 ; $20D6: $F0 $CB
-    and  J_B                                      ; $20D8: $E6 $20
-    jr   nz, .jr_20EC                             ; $20DA: $20 $10
-    ret                                           ; $20DC: $C9
-
-.jr_20DD
-    ld   a, [wInventoryItems.AButtonSlot]         ; $20DD: $FA $01 $DB
-    cp   INVENTORY_POWER_BRACELET                 ; $20E0: $FE $03
-IF __OPTIMIZATIONS_1__
-    ret  nz
-ELSE
-    jp   nz, func_2165.return                     ; $20E2: $C2 $77 $21
-ENDC
+    ; INVENTORY_POWER_BRACELET
+    ld   a, [wPowerBraceletLevel]
+    and a
+    ret  z
     ldh  a, [hPressedButtonsMask]                 ; $20E5: $F0 $CB
     and  J_A                                      ; $20E7: $E6 $10
-IF __OPTIMIZATIONS_1__
     ret  z
-ELSE
-    jp   z, func_2165.return                      ; $20E9: $CA $77 $21
-ENDC
+
+    ; If sword is currently held out, don't lift
+    ld   a, [wC16E]
+    ; Or shield
+    ld   hl, wIsUsingShield
+    or   [hl]
+    ; Or anything
+    ld   hl, wLinkAttackStepAnimationCountdown
+    or   [hl]
+    ret  nz
+    ld   d, a ; Saves an extra byte for $20FB
+    ; If powder is equipped, use instead of lifting
+    ld   a, [wInventoryItems.AButtonSlot]
+    cp   INVENTORY_MAGIC_POWDER
+    ret  z
+    ; If bombs are equipped...
+    cp   INVENTORY_BOMBS
+    jr   nz, .jr_20EC
+    ; ... and no bomb has been placed, place bomb instead of lifting
+    ld   a, [wHasPlacedBomb]
+    and  a
+    ret  z
 
 .jr_20EC
     callsb label_002_48B0                         ; $20EC: $3E $02 $EA $00 $21 $CD $B0 $48
@@ -3732,7 +3738,7 @@ ENDC
     ldh  [hLinkInteractiveMotionBlocked], a       ; $20F6: $E0 $A1
     ldh  a, [hLinkDirection]                      ; $20F8: $F0 $9E
     ld   e, a                                     ; $20FA: $5F
-    ld   d, $00                                   ; $20FB: $16 $00
+    ;ld   d, $00                                   ; $20FB: $16 $00
     ld   hl, LinkDirectionToLinkAnimationState_2  ; $20FD: $21 $51 $1F
 
     add  hl, de                                   ; $2100: $19

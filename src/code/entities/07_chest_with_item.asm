@@ -1,10 +1,10 @@
 
 ChestItemSpriteTableAlt::
-    db $82, $17        ; CHEST_POWER_BRACELET (in face shrine)
+    db $82, $15        ; CHEST_POWER_BRACELET (in face shrine) with blue palette ($15, was purple $17)
     db $86, $14        ; CHEST_SHIELD (in eagles tower)
 
 ChestItemSpriteTable::
-    db $82, $15        ; CHEST_POWER_BRACELET
+    db $82, $16        ; CHEST_POWER_BRACELET (in Bottle Grotto) with orange palette ($16, was blue $15)
     db $86, $15        ; CHEST_SHIELD
     db $88, $10        ; CHEST_BOW
     db $8A, $10        ; CHEST_HOOKSHOT
