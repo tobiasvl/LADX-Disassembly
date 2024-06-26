@@ -2253,7 +2253,7 @@ jr_003_556F:
     add  hl, bc                                   ; $5580: $09
     ld   [hl], $1F                                ; $5581: $36 $1F
     ld   a, [wTunicType]                          ; $5583: $FA $0F $DC
-    and  a                                        ; $5586: $A7
+    and  $03                                        ; $5586: $A7
     jr   nz, .jr_5594                             ; $5587: $20 $0B
 
     ld   a, [wActivePowerUp]                      ; $5589: $FA $7C $D4
@@ -6078,8 +6078,9 @@ ApplyLinkCollisionWithEnemy::
 
     ; If using the Blue Tunic, take half damages
     ld   a, [wTunicType]                          ; $6D94: $FA $0F $DC
-    cp   TUNIC_BLUE                               ; $6D97: $FE $02
-    jr   z, .takeHalfDamages                      ; $6D99: $28 $0E
+    ;cp   TUNIC_BLUE                               ; $6D97: $FE $02
+    and  TUNIC_BLUE
+    jr   nz, .takeHalfDamages                     ; $6D99: $28 $0E
 
     ; If having an active Guardian Acorn, take no damages
     ld   a, [wActivePowerUp]                      ; $6D9B: $FA $7C $D4
@@ -6708,8 +6709,9 @@ ENDC
 
     ; … make the Genie jar recoil less than usual enemies…
     ld   a, [wTunicType]                          ; $70CD: $FA $0F $DC
-    cp   TUNIC_RED                                ; $70D0: $FE $01
-    jr   z, .genieJarExtraRecoil                  ; $70D2: $28 $09
+    ;cp   TUNIC_RED                                 ; $70D0: $FE $01
+    and   TUNIC_RED                                ; $70D0: $FE $01
+    jr   nz, .genieJarExtraRecoil                  ; $70D2: $28 $09
     ld   a, [wActivePowerUp]                      ; $70D4: $FA $7C $D4
     cp   ACTIVE_POWER_UP_PIECE_OF_POWER           ; $70D7: $FE $01
     ld   a, SWORD_RECOIL_GENIE_JAR_DEFAULT        ; $70D9: $3E $20
@@ -6823,7 +6825,8 @@ ENDC
 
     ; If wearing the attack tunic or having a Piece of power…
     ld   a, [wTunicType]                          ; $716C: $FA $0F $DC
-    cp   TUNIC_RED                                ; $716F: $FE $01
+    ;cp   TUNIC_RED                                ; $716F: $FE $01
+    and  TUNIC_RED
     jr   z, .powerRecoil                          ; $7171: $28 $07
 
     ld   a, [wActivePowerUp]                      ; $7173: $FA $7C $D4

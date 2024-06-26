@@ -341,7 +341,7 @@ OwlState4Handler::
 
 IF !__PATCH_0__
     ld   a, [wTunicType]                          ; $69F7: $FA $0F $DC
-    and  a                                        ; $69FA: $A7
+    and  $03                                      ; $69FA: $A7
     jr   nz, .return                              ; $69FB: $20 $07
 ENDC
 

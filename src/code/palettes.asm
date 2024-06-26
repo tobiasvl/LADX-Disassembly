@@ -382,7 +382,7 @@ jr_021_4222:
     jr   nz, jr_021_4254                          ; $4226: $20 $2C
 
     ld   a, [wTunicType]                          ; $4228: $FA $0F $DC
-    and  a                                        ; $422B: $A7
+    and  $03                                        ; $422B: $A7
     jr   z, jr_021_4254                           ; $422C: $28 $26
 
     ld   hl, RedTunicPalette + 4                  ; $422E: $21 $2C $55

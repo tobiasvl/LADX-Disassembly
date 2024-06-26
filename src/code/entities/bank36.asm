@@ -3084,7 +3084,7 @@ TunicFairyState6::
     inc  [hl]                                     ; $525B: $34
     ld   hl, wObjPal1 + 2*2                       ; $525C: $21 $54 $DC
     ld   a, [wTunicType]                          ; $525F: $FA $0F $DC
-    and  a                                        ; $5262: $A7
+    and  $03                                        ; $5262: $A7
     jr   z, .jr_526E                              ; $5263: $28 $09
 
     inc  a                                        ; $5265: $3C
@@ -3175,7 +3175,7 @@ TunicFairyState7::
     ldh  [hAnimatedTilesGroup], a                 ; $52E5: $E0 $A4
     ld_dialog_low e, Dialog25B ; "got the Red Clothes" ; $52E7: $1E $5B
     ld   a, [wTunicType]                          ; $52E9: $FA $0F $DC
-    cp   TUNIC_RED                                ; $52EC: $FE $01
+    and  TUNIC_RED                                ; $52EC: $FE $01
     jr   z, .jr_52F2                              ; $52EE: $28 $02
 
     ld_dialog_low e, Dialog25A ; "got the Blue Clothes" ; $52F0: $1E $5A

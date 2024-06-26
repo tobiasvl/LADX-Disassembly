@@ -6648,7 +6648,7 @@ func_017_7D34::
     push hl                                       ; $7D54: $E5
     ld   hl, hMultiPurpose0                       ; $7D55: $21 $D7 $FF
     ld   a, [wTunicType]                          ; $7D58: $FA $0F $DC
-    and  a                                        ; $7D5B: $A7
+    and  $03                                        ; $7D5B: $A7
     jr   z, .jr_7D5F                              ; $7D5C: $28 $01
 
     inc  a                                        ; $7D5E: $3C
