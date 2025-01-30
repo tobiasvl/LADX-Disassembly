@@ -371,7 +371,7 @@ MovingBlockBottomRightUpdateHandler::
     inc  [hl]                                     ;; 15:42E2 $34
     ld   a, [hl]                                  ;; 15:42E3 $7E
     cp   $0A                                      ;; 15:42E4 $FE $0A
-    jr   c, .return                               ;; 15:42E6 $38 $12
+    ret  c
 
     ld   [hl], b                                  ;; 15:42E8 $70
     ld   a, NOISE_SFX_RUMBLE                      ;; 15:42E9 $3E $11
@@ -382,7 +382,7 @@ MovingBlockBottomRightUpdateHandler::
     ld   hl, wEntitiesPosXTable                   ;; 15:42F2 $21 $00 $C2
     add  hl, bc                                   ;; 15:42F5 $09
     cp   [hl]                                     ;; 15:42F6 $BE
-    jr   z, .return                               ;; 15:42F7 $28 $01
+    ret  z
 
     inc  [hl]                                     ;; 15:42F9 $34
 

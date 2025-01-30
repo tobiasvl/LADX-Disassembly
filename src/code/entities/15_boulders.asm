@@ -5,7 +5,7 @@ BouldersEntityHandler::
 
     call ReturnIfNonInteractive_15                ;; 15:436B $CD $0D $7B
     call GetEntityTransitionCountdown             ;; 15:436E $CD $05 $0C
-    jr   nz, .ret_43AD                            ;; 15:4371 $20 $3A
+    ret  nz
 
     call GetRandomByte                            ;; 15:4373 $CD $0D $28
     and  $3F                                      ;; 15:4376 $E6 $3F
@@ -20,10 +20,10 @@ BouldersEntityHandler::
     ret  c                                        ;; 15:4385 $D8
 
     call GetRandomByte                            ;; 15:4386 $CD $0D $28
-    rla                                           ;; 15:4389 $17
-    rla                                           ;; 15:438A $17
-    rla                                           ;; 15:438B $17
-    rla                                           ;; 15:438C $17
+;    rla                                           ;; 15:4389 $17 ; we sacrifice some entropy here to get a smaller patch diff
+;    rla                                           ;; 15:438A $17
+;    rla                                           ;; 15:438B $17
+;    rla                                           ;; 15:438C $17
     and  $70                                      ;; 15:438D $E6 $70
     add  $18                                      ;; 15:438F $C6 $18
     ld   hl, wEntitiesPosXTable                   ;; 15:4391 $21 $00 $C2
