@@ -2063,7 +2063,12 @@ wD1C2::
   ds 1 ; D1C2
 
 ; Unused
-ds $2
+wD1C3::
+  ds 1
+
+; Unused
+wD1C4::
+ds $1
 
 ; Unlabeled
 wD1C5::

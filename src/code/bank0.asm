@@ -5796,6 +5796,7 @@ LoadRoom::
     ld   [rSelectROMBank], a                      ;; 00:3126 $EA $00 $21
     ldh  [hRoomBank], a                           ;; 00:3129 $E0 $E8
     call func_014_5897                            ;; 00:312B $CD $97 $58
+.indoorSpecialCodeEnd
     ; Reset wKillCount and wKillOrder array
     ld   e, a                                     ;; 00:312E $5F
     ld   hl, wKillCount                           ;; 00:312F $21 $B5 $DB
@@ -5806,7 +5807,6 @@ LoadRoom::
     ld   a, e                                     ;; 00:3135 $7B
     cp   wKillOrder.end - wKillOrder              ;; 00:3136 $FE $11
     jr   nz, .loop                                ;; 00:3138 $20 $F8
-.indoorSpecialCodeEnd
 
     ;
     ; Load the room status
@@ -7212,33 +7212,19 @@ data_37B4::
     db   $C1, $C2                                 ;; 00:37B4
 
 LoadObject_IndoorEntrance::
-    ;
-    ; @bug
-    ;
-    ; This code is supposed to replace the Shop's indoor entrance
-    ; by a closed door if Link has stolen from the shop
-    ; (presumably for dramatic effect).
-    ;
-    ; However it doesn't work, because:
-    ; 1. the Shop's room was moved from $D3 to $A1, but the code was never updated,
-    ; 2. even when fixing the room id, the closed door has garbled tiles.
-    ;
-    ; In the final version, this code is never triggered, because the
-    ; $D3 room (Kanalet's Castle main entrance) doesn't have a
-    ; IndoorEntrance object at all.
-    ;
+    ; Replace the Shop's indoor entrance with a closed door
+    ; if Link has stolen from the shop
 
-    ; If on an Indoor B map…
-    ldh  a, [hMapId]                              ;; 00:37B6 $F0 $F7
-    cp   MAP_INDOORS_B_END                        ;; 00:37B8 $FE $1A
-    jr   nc, .end                                 ;; 00:37BA $30 $13
-    cp   MAP_INDOORS_B_START                      ;; 00:37BC $FE $06
-    jr   c, .end                                  ;; 00:37BE $38 $0F
+    ; If in the shop...
+    ldh  a, [hMapId]
+    cp   MAP_SHOP
+    jr   nz, .end
+    ldh  a, [hMapRoom]
+    cp   $A1
+    jr   nz, .end
 
-    ; … and in Kanalet main entrance room (probably used to be the Shop's room)…
-    ldh  a, [hMapRoom]                            ;; 00:37C0 $F0 $F6
-    cp   ROOM_INDOOR_B_KANALET_MAIN_ENTRANCE      ;; 00:37C2 $FE $D3
-    jr   nz, .end                                 ;; 00:37C4 $20 $09
+    ld a, 1
+    ld   [wHasStolenFromShop], a                  ; $37C6: $FA $46 $DB
 
     ; … and has stolen from shop…
     ld   a, [wHasStolenFromShop]                  ;; 00:37C6 $FA $46 $DB
@@ -7246,7 +7232,9 @@ LoadObject_IndoorEntrance::
     jr   z, .end                                  ;; 00:37CA $28 $03
 
     ; … load a closed entrance instead of a open one.
-    jp   LoadObject_ClosedDoorBottom              ;; 00:37CC $C3 $77 $36
+    ld   a, $26
+    ld   [wRoomEvent], a
+    jp   LoadObject_ClosedDoorBottom
 
 .end
 
@@ -7590,3 +7578,25 @@ ReloadColorDungeonNpcTiles::
     ld   a, BANK(InventoryEntryPoint)             ;; 00:3FE9 $3E $20
     ld   [rSelectROMBank], a                      ;; 00:3FEB $EA $00 $21
     ret                                           ;; 00:3FEE $C9
+
+FixShopDoorPalette::
+    push bc
+    ld bc, .doorPalette
+    ld hl, wDrawCommandAlt
+    ld a, [wDrawCommandsAltSize]
+    ld e, a
+    ld d, $00
+    add hl, de
+    ld e, .end - .doorPalette
+.loop
+    ld a, [bc]
+    ld [hli], a
+    inc bc
+    dec e
+    jr nz, .loop
+
+    pop bc
+    ret
+.doorPalette:
+    db $99, $E8, $00, $04, $99, $EB, $00, $04, $00
+.end
