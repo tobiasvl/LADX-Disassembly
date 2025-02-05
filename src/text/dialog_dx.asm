@@ -370,8 +370,7 @@ Dialog289:: ; Owl Statue
 Dialog28A:: ; Owl Statue
     db "Part of the     "
     db "floor is raised."
-    db "Tap the blue    "
-    db "crystal.@"
+    db "Tap the crystal.@"
 
 Dialog28B:: ; Owl Statue
     db "To defeat the   "
