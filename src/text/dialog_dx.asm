@@ -370,8 +370,7 @@ Dialog289:: ; Owl Statue
 Dialog28A:: ; Owl Statue
     db "Part of the     "
     db "floor is raised."
-    db "Tap the blue    "
-    db "crystal.@"
+    db "Tap the crystal.@"
 
 Dialog28B:: ; Owl Statue
     db "To defeat the   "
@@ -404,7 +403,7 @@ Dialog28E:: ; Owl Statue
 
 Dialog28F:: ; Owl Statue
     db "Hop on top of   "
-    db "the crystals to "
+    db "the blocks to   "
     db "move forward.@"
 
 Dialog290:: ; Owl Statue
@@ -418,7 +417,7 @@ Dialog291:: ; Owl Statue
     db "Jump off the    "
     db "floor above to  "
     db "reach the chest "
-    db "on the table.@"
+    db "on the ledge.@"
 
 Dialog292:: ; Owl Statue
     db "To defeat the   "

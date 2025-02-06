@@ -68,11 +68,10 @@ Dialog0AE:: ; Narrator
     db "You're Ecstatic!@"
 
 Dialog0AF:: ; Hippo
-    db "Leave me alone! "
-    db "I'm trying to   "
-    db "sit still so    "
-    db "Schule can paint"
-    db "my portrait!@"
+    db "Stop trying to  "
+    db "take my towel!  "
+    db "You aren't an   "
+    db "artist! Quit it!@"
 
 Dialog0B0:: ; Moldorm (D1 Nightmare)
     db "BUZZZZZ! BUZZZZ!"
